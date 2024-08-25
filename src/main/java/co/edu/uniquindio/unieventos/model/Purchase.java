@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -23,8 +24,10 @@ public class Purchase {
     private float individualPrice;
     private LocalDateTime date;
 
-
     //Relaciones
     //private Location location; (Localidad)
-    //private String codigoEvento
+    //private String eventCode
+    //Falta la del cliente tambien private String client
+
+    //Lo del cupon que se relaciono con compra en el diagrama
 }
