@@ -19,7 +19,9 @@ public class Coupon {
     @EqualsAndHashCode.Include
     private int id;
     private String name;
-    private float discount;
-    private LocalDateTime expirationDate;
     private CouponType type;
+    private CouponStatus status;
+    private String code;
+    private LocalDateTime expirationDate;
+    private float discount;
 }
