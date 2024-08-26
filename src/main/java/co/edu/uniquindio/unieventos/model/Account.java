@@ -9,7 +9,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class Account {
     @EqualsAndHashCode.Include
-    private String id;
+    private String id;//Cedula
     private String name;
     private String email;
     private String password;
