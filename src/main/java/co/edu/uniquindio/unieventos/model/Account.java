@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.model;
 
 import lombok.*;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -13,8 +14,9 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Account {
+    @Id
     @EqualsAndHashCode.Include
-    private String id;//Cedula
+    private String id;
     private ObjectId userId;
     private String email;
     private String password;

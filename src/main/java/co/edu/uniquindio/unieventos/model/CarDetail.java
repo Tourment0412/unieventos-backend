@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 @Setter
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class CarDetail {
     private int amount;
