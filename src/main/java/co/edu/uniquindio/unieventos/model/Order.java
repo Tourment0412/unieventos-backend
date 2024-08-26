@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document("purchases")
+@Document("Orders")
 @Setter
 @Getter
 @ToString
