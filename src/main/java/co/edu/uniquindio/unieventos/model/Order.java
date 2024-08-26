@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document("Orders")
 @Setter
@@ -16,20 +17,15 @@ import java.time.LocalDateTime;
 public class Order {
     @Id
     @EqualsAndHashCode.Include
-    private int id;
+    private String id;
 
-    private int ticketsQuantity;
+    private List<OrderDetail> items;
+    private String gatewayCode;//codigo pasarela
+    private LocalDateTime orderDate;
     private float total;
-    private int units;
-    private float individualPrice;
-    private LocalDateTime date;
-
-    private Location location;
 
     //Relations
-    private ObjectId client;
-    private ObjectId event;
-
-    //This one may be optional on a purchase (Depends on the event, and the user)
-    private ObjectId coupon;
+    private ObjectId idClient;
+    private ObjectId idCoupon;
+    private Payment payment;
 }

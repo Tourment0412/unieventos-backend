@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.model;
 
 import lombok.*;
+import org.bson.types.ObjectId;
 
 @Setter
 @Getter
@@ -8,4 +9,12 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class OrderDetail {
+    @EqualsAndHashCode.Include
+    private String id;
+
+    private ObjectId idEvent;
+    private float price;
+    private String locationName;
+    private int quantity;
+
 }
