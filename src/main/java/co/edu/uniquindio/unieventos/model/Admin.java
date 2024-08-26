@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.model;
 
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("admins")
@@ -10,4 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @ToString
 public class Admin extends Account {
+    @Id
+    private String code;
 }
