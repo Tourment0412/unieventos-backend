@@ -1,4 +1,5 @@
 package co.edu.uniquindio.unieventos.model;
 
-public class AccountStatus {
+public enum AccountStatus {
+    ACTIVE, INACTIVE, DELETED;
 }
