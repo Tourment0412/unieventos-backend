@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document("events")
 @Getter
@@ -19,7 +20,10 @@ public class Event {
     private String name;
     private String address;
     private String city;
-    private String poster;
-    private String locationDistribution;
+    private String poster;//Imagen
+    private String locationDistribution;//Imagen
     private LocalDateTime date;
+
+
+    private List<Location> locations;
 }
