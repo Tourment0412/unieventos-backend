@@ -1,5 +1,6 @@
-package co.edu.uniquindio.unieventos.model;
+package co.edu.uniquindio.unieventos.model.documents;
 
+import co.edu.uniquindio.unieventos.model.vo.CarDetail;
 import lombok.*;
 import  java.util.*;
 

@@ -1,5 +1,8 @@
-package co.edu.uniquindio.unieventos.model;
+package co.edu.uniquindio.unieventos.model.documents;
 
+import co.edu.uniquindio.unieventos.model.enums.AccountStatus;
+import co.edu.uniquindio.unieventos.model.enums.Role;
+import co.edu.uniquindio.unieventos.model.vo.ValidationCode;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;

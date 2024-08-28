@@ -1,8 +1,10 @@
-package co.edu.uniquindio.unieventos.model;
+package co.edu.uniquindio.unieventos.model.documents;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document("users")
 @Setter
 @Getter
 @NoArgsConstructor

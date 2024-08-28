@@ -1,5 +1,8 @@
-package co.edu.uniquindio.unieventos.model;
+package co.edu.uniquindio.unieventos.model.documents;
 
+import co.edu.uniquindio.unieventos.model.enums.EventType;
+import co.edu.uniquindio.unieventos.model.vo.Location;
+import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,10 +23,14 @@ public class Event {
     private String name;
     private String address;
     private String city;
-    private String poster;//Imagen
+    private String coverImage;//Imagen portada (poster)
     private String locationDistribution;//Imagen
     private LocalDateTime date;
+    //Added based on the map given by teacher
+    private String description;
 
 
+    private EventType type;
+    private EventStatus status;
     private List<Location> locations;
 }

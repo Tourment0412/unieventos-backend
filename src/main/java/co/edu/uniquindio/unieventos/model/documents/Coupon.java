@@ -1,5 +1,7 @@
-package co.edu.uniquindio.unieventos.model;
+package co.edu.uniquindio.unieventos.model.documents;
 
+import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
+import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

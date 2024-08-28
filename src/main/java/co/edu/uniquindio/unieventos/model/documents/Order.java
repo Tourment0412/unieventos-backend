@@ -1,5 +1,7 @@
-package co.edu.uniquindio.unieventos.model;
+package co.edu.uniquindio.unieventos.model.documents;
 
+import co.edu.uniquindio.unieventos.model.vo.OrderDetail;
+import co.edu.uniquindio.unieventos.model.vo.Payment;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -8,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document("Orders")
+@Document("orders")
 @Setter
 @Getter
 @ToString
@@ -25,7 +27,7 @@ public class Order {
     private float total;
 
     //Relations
-    private ObjectId idClient;
-    private ObjectId idCoupon;
+    private ObjectId clientId;
+    private ObjectId couponId;
     private Payment payment;
 }
