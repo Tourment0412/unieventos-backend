@@ -25,4 +25,10 @@ public class ShoppingCar {
     private List<CarDetail> items;
     private ObjectId userId;
 
+    @Builder
+    public ShoppingCar(LocalDateTime date, List<CarDetail> items, ObjectId userId) {
+        this.date = date;
+        this.items = items;
+        this.userId = userId;
+    }
 }

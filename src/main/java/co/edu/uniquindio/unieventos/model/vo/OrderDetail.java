@@ -17,4 +17,12 @@ public class OrderDetail {
     private String locationName;
     private int quantity;
 
+    @Builder
+    public OrderDetail(String id, ObjectId idEvent, float price, String locationName, int quantity) {
+        this.id = id;
+        this.idEvent = idEvent;
+        this.price = price;
+        this.locationName = locationName;
+        this.quantity = quantity;
+    }
 }

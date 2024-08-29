@@ -12,4 +12,11 @@ public class Location {
     private String name;
     private float price;
     private int maxCapacity;//COMN
+
+    @Builder
+    public Location(String name, float price, int maxCapacity) {
+        this.name = name;
+        this.price = price;
+        this.maxCapacity = maxCapacity;
+    }
 }

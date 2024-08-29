@@ -20,4 +20,17 @@ public class Payment {
     private LocalDateTime date;
     private float transactionValue;
     private String status;
+
+    @Builder
+    public Payment(String id, String currency, String paymentMethod, String statusDetail,
+                   String authorizationCode, LocalDateTime date, float transactionValue, String status) {
+        this.id = id;
+        this.currency = currency;
+        this.paymentMethod = paymentMethod;
+        this.statusDetail = statusDetail;
+        this.authorizationCode = authorizationCode;
+        this.date = date;
+        this.transactionValue = transactionValue;
+        this.status = status;
+    }
 }

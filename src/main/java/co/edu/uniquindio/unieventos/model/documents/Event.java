@@ -29,9 +29,23 @@ public class Event {
     private LocalDateTime date;
     //Added based on the map given by teacher
     private String description;
-
-
     private EventType type;
     private EventStatus status;
     private List<Location> locations;
+
+    @Builder
+    public Event(String name, String address, String city, String coverImage, String locationDistribution,
+                 LocalDateTime date, String description, EventType type, EventStatus status,
+                 List<Location> locations) {
+        this.name = name;
+        this.address = address;
+        this.city = city;
+        this.coverImage = coverImage;
+        this.locationDistribution = locationDistribution;
+        this.date = date;
+        this.description = description;
+        this.type = type;
+        this.status = status;
+        this.locations = locations;
+    }
 }
