@@ -32,5 +32,15 @@ public class Account {
     private AccountStatus status;
     private ValidationCode PasswordValidationCode;
 
+    //This was created in this way for the test
+    @Builder
+    public Account(User user, String email, String password, Role role, LocalDateTime registrationDate, AccountStatus status) {
+        this.user = user;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.RegistrationDate = registrationDate;
+        this.status = status;
 
+    }
 }

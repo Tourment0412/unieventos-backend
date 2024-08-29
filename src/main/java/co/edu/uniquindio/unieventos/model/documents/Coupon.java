@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 public class Coupon {
     @Id
     @EqualsAndHashCode.Include
-    private int id;
+    private String id;
+
     private String name;
     private CouponType type;
     private CouponStatus status;

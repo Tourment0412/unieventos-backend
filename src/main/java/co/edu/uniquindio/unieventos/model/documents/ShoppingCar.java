@@ -20,6 +20,7 @@ public class ShoppingCar {
     @Id
     @EqualsAndHashCode.Include
     private String id;
+
     private LocalDateTime date;
     private List<CarDetail> items;
     private ObjectId userId;

@@ -20,6 +20,7 @@ public class Event {
     @Id
     @EqualsAndHashCode.Include
     private String id;
+
     private String name;
     private String address;
     private String city;
