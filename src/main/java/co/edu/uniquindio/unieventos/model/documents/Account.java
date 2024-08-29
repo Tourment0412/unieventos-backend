@@ -23,24 +23,26 @@ public class Account {
     private String id;
 
     private User user;
-
     private String email;
     private String password;
-    private ValidationCode RegistrationValidationCode;
+    private ValidationCode registrationValidationCode;
     private Role role;
-    private LocalDateTime RegistrationDate;
+    private LocalDateTime registrationDate;
     private AccountStatus status;
-    private ValidationCode PasswordValidationCode;
+    private ValidationCode passwordValidationCode;
 
     //This was created in this way for the test
     @Builder
-    public Account(User user, String email, String password, Role role, LocalDateTime registrationDate, AccountStatus status) {
+    public Account(User user, String email, String password,ValidationCode registrationValidationCode, Role role,
+                   LocalDateTime registrationDate, AccountStatus status, ValidationCode passwordValidationCode) {
         this.user = user;
         this.email = email;
         this.password = password;
+        this.registrationValidationCode = registrationValidationCode;
         this.role = role;
-        this.RegistrationDate = registrationDate;
+        this.registrationDate = registrationDate;
         this.status = status;
+        this.passwordValidationCode = passwordValidationCode;
 
     }
 }
