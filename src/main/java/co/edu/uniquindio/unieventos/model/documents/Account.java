@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.model.documents;
 
 import co.edu.uniquindio.unieventos.model.enums.AccountStatus;
 import co.edu.uniquindio.unieventos.model.enums.Role;
+import co.edu.uniquindio.unieventos.model.vo.User;
 import co.edu.uniquindio.unieventos.model.vo.ValidationCode;
 import lombok.*;
 import org.bson.types.ObjectId;
@@ -20,7 +21,9 @@ public class Account {
     @Id
     @EqualsAndHashCode.Include
     private String id;
-    private ObjectId userId;
+
+    private User user;
+
     private String email;
     private String password;
     private ValidationCode RegistrationValidationCode;

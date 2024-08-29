@@ -1,17 +1,14 @@
-package co.edu.uniquindio.unieventos.model.documents;
+package co.edu.uniquindio.unieventos.model.vo;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("users")
+
 @Setter
 @Getter
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
-    @Id
     @EqualsAndHashCode.Include
     private String id;
     private String phoneNumber;
