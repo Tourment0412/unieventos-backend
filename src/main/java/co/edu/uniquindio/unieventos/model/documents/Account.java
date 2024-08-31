@@ -21,7 +21,7 @@ public class Account {
     @EqualsAndHashCode.Include
     private String id;
 
-    private User userId;
+    private User user;
     private String email;
     private String password;
     private ValidationCode registrationValidationCode;
@@ -34,7 +34,7 @@ public class Account {
     @Builder
     public Account(User user, String email, String password,ValidationCode registrationValidationCode, Role role,
                    LocalDateTime registrationDate, AccountStatus status, ValidationCode passwordValidationCode) {
-        this.userId = user;
+        this.user = user;
         this.email = email;
         this.password = password;
         this.registrationValidationCode = registrationValidationCode;
