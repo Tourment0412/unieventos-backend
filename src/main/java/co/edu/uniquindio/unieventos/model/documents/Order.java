@@ -23,7 +23,7 @@ public class Order {
 
     private List<OrderDetail> items;
     private String gatewayCode;//codigo pasarela
-    private LocalDateTime orderDate;
+    private LocalDateTime date;
     private float total;
     //Relations
     private ObjectId clientId;
@@ -36,7 +36,7 @@ public class Order {
                  ObjectId clientId, ObjectId couponId, Payment payment) {
         this.items = items;
         this.gatewayCode = gatewayCode;
-        this.orderDate = orderDate;
+        this.date = orderDate;
         this.total = total;
         this.clientId = clientId;
         this.couponId = couponId;

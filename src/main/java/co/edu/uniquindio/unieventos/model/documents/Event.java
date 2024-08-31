@@ -25,7 +25,7 @@ public class Event {
     private String address;
     private String city;
     private String coverImage;//Imagen portada (poster)
-    private String locationDistribution;//Imagen
+    private String localitiesImage;//Imagen
     private LocalDateTime date;
     //Added based on the map given by teacher
     private String description;
@@ -41,7 +41,7 @@ public class Event {
         this.address = address;
         this.city = city;
         this.coverImage = coverImage;
-        this.locationDistribution = locationDistribution;
+        this.localitiesImage = locationDistribution;
         this.date = date;
         this.description = description;
         this.type = type;
