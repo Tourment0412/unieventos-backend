@@ -12,7 +12,7 @@ public class OrderDetail {
     @EqualsAndHashCode.Include
     private String id;
 
-    private ObjectId idEvent;
+    private ObjectId eventId;
     private float price;
     private String locationName;
     private int quantity;
@@ -20,7 +20,7 @@ public class OrderDetail {
     @Builder
     public OrderDetail(String id, ObjectId idEvent, float price, String locationName, int quantity) {
         this.id = id;
-        this.idEvent = idEvent;
+        this.eventId = idEvent;
         this.price = price;
         this.locationName = locationName;
         this.quantity = quantity;

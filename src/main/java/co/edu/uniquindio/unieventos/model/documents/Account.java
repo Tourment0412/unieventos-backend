@@ -5,7 +5,6 @@ import co.edu.uniquindio.unieventos.model.enums.Role;
 import co.edu.uniquindio.unieventos.model.vo.User;
 import co.edu.uniquindio.unieventos.model.vo.ValidationCode;
 import lombok.*;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,7 +21,7 @@ public class Account {
     @EqualsAndHashCode.Include
     private String id;
 
-    private User user;
+    private User userId;
     private String email;
     private String password;
     private ValidationCode registrationValidationCode;
@@ -35,7 +34,7 @@ public class Account {
     @Builder
     public Account(User user, String email, String password,ValidationCode registrationValidationCode, Role role,
                    LocalDateTime registrationDate, AccountStatus status, ValidationCode passwordValidationCode) {
-        this.user = user;
+        this.userId = user;
         this.email = email;
         this.password = password;
         this.registrationValidationCode = registrationValidationCode;

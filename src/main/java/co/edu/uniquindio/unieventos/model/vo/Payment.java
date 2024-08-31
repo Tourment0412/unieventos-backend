@@ -14,7 +14,7 @@ public class Payment {
     private String id;
 
     private String currency; //Moneda (Dollar, Euro, ETC)
-    private String paymentMethod;//Tipo de pago
+    private String paymentType;//Tipo de pago
     private String statusDetail;
     private String authorizationCode;
     private LocalDateTime date;
@@ -26,7 +26,7 @@ public class Payment {
                    String authorizationCode, LocalDateTime date, float transactionValue, String status) {
         this.id = id;
         this.currency = currency;
-        this.paymentMethod = paymentMethod;
+        this.paymentType = paymentMethod;
         this.statusDetail = statusDetail;
         this.authorizationCode = authorizationCode;
         this.date = date;
