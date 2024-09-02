@@ -18,6 +18,6 @@ public interface AccountRepo extends MongoRepository<Account, String> {
     //YOU SHOULD TO BE CAREFUL WITH THE SYNTAX OF THE NAME OF THIS METHOD
     Optional<Account> findByUserDni(String dni);
 
-    @Query("{user.email:  ?0}")
+    @Query("{email:  ?0}")
     Optional<Account> findAccountByEmail(String email);
 }
