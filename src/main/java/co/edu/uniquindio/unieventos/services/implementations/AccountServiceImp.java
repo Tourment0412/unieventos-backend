@@ -25,6 +25,15 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public String createAccount(CreateAccountDTO account) throws Exception {
+        if (existsDni(account.dni())){
+            //Remember adding custom exceptions
+            throw new Exception("Account with this dni already exists");
+        }
+
+        if(existsEmail(account.email())){
+            throw new Exception("Account with this email already exists");
+        }
+
         Account newAccount = new Account();
         //Te id on the account class is given by mongodb
         accountRepo.save(newAccount);
@@ -43,8 +52,19 @@ public class AccountServiceImp implements AccountService {
                 .adress(account.phoneNumber())
                 .build());
         newAccount.setRegistrationValidationCode(new ValidationCode(LocalDateTime.now(), generateValidationCode()));
+        
+        //TODO Method for mail sending for activation on account
+
         Account accountCreated= accountRepo.save(newAccount);
         return accountCreated.getId();
+    }
+
+    private boolean existsEmail(String email) {
+        return accountRepo.findAccountByEmail(email).isPresent();
+    }
+
+    private boolean existsDni(String dni){
+        return accountRepo.findAccountByDni(dni).isPresent();
     }
 
     private String generateValidationCode() {
