@@ -14,10 +14,16 @@ public interface AccountRepo extends MongoRepository<Account, String> {
     @Query("{user.dni:  ?0}")
     Optional<Account> findAccountByDni(String dni);
 
+    @Query("{id:  ?0}")
+    Optional<Account> findAccountById(String id);
+
     //In this way simple queries like this one are going to be done without the query annotation
     //YOU SHOULD TO BE CAREFUL WITH THE SYNTAX OF THE NAME OF THIS METHOD
     Optional<Account> findByUserDni(String dni);
 
     @Query("{email:  ?0}")
     Optional<Account> findAccountByEmail(String email);
+
+    @Query("{email: ?0, password: ?1}")
+    Optional<Account> validateAuthenticationData(String email, String password);
 }

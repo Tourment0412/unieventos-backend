@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Transactional()
@@ -81,31 +82,100 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public String updateAccount(UpdateAccountDTO account) throws Exception {
-        return "";
+
+        Account accountToUpdate = getAccount(account.id());
+
+        accountToUpdate.getUser().setName(account.name());
+        accountToUpdate.getUser().setAdress(account.address());
+        accountToUpdate.getUser().setPhoneNumber(account.phoneNumber());
+        accountToUpdate.setPassword(account.password());
+
+        accountRepo.save(accountToUpdate);
+
+        return accountToUpdate.getId();
     }
 
     @Override
     public String deleteAccount(String id) throws Exception {
-        return "";
+
+        Account accountToDelete = getAccount(id);
+        accountToDelete.setStatus(AccountStatus.DELETED);
+        return "Account deleted successfully";
+    }
+
+    private Account getAccount(String id) throws Exception {
+        Optional<Account> accountOptional= accountRepo.findAccountById(id);
+        if(accountOptional.isEmpty()){
+            throw new Exception("Account with this id does not exist");
+        }
+
+        return accountOptional.get();
     }
 
     @Override
     public AccountInfoDTO getInfoAccount(String id) throws Exception {
-        return null;
+        Account account = getAccount(id);
+        return new AccountInfoDTO(
+                account.getId(),
+                account.getUser().getDni(),
+                account.getUser().getName(),
+                account.getUser().getPhoneNumber(),
+                account.getUser().getAdress(),
+                account.getEmail()
+        );
     }
 
     @Override
     public String sendRecoverPasswordCode(String email) throws Exception {
-        return "";
+        Account account = getAccount1(email);
+        String validationCode = generateValidationCode();
+        //TODO Send this code to the user (Account) email
+
+        account.setPasswordValidationCode(new ValidationCode(LocalDateTime.now(),validationCode));
+        accountRepo.save(account);
+        return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
+    }
+
+    private Account getAccount1(String email) throws Exception {
+        Optional<Account> accountOptional= accountRepo.findAccountByEmail(email);
+        if(accountOptional.isEmpty()){
+            throw new Exception("This email is not registered");
+        }
+        return accountOptional.get();
     }
 
     @Override
     public String changePassword(ChangePasswordDTO changePasswordDTO) throws Exception {
-        return "";
+        Optional<Account> accountOptional= accountRepo.findAccountByEmail(changePasswordDTO.email());
+        if(accountOptional.isEmpty()){
+            throw new Exception("This email is not registered");
+        }
+        Account account = accountOptional.get();
+        ValidationCode passwordValidationCode = account.getPasswordValidationCode();
+        if(passwordValidationCode !=null){
+            if(passwordValidationCode.getCode().equals(changePasswordDTO.verificationCode())){
+                if(passwordValidationCode.getCreationDate().plusMinutes(15).isBefore(LocalDateTime.now())){
+                    account.setPassword(changePasswordDTO.newPassword());
+                    accountRepo.save(account);
+                }else{
+                    account.setPasswordValidationCode(null);
+                    accountRepo.save(account);
+                    throw new Exception("This verification code has expired");
+                }
+            }else{
+                throw new Exception("This verification is incorrect");
+            }
+        }
+        return "The password has been changed successfully";
     }
 
     @Override
     public String login(LoginDTO loginDTO) throws Exception {
-        return "";
+        Optional<Account> accouOptional = accountRepo.validateAuthenticationData(loginDTO.email(),loginDTO.password());
+        if(accouOptional.isEmpty()){
+            throw new Exception("Authentication data incorrect");
+        }
+        //TODO This is return is going to be a token that's going to be sent to the backend
+        return "TOKEN_JWT";
     }
 }

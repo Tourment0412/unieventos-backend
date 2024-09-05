@@ -9,11 +9,11 @@ public record CreateAccountDTO(
                 "tener maximo 10 caracteres")
         String dni,
 
-        @NotBlank String name,
-        @Length(max = 10) String phoneNumber,
-        @Length(max = 30) String address,
+        @NotBlank @Length(max = 50) String name,
+        @Length(max = 50) String phoneNumber,
+        @Length(max = 100) String address,
         @NotBlank @Length(max = 50) String email,
-        @NotBlank @Length(min = 6) String password) {
+        @NotBlank @Length(min = 7,max = 20) String password) {
 
 
 }
