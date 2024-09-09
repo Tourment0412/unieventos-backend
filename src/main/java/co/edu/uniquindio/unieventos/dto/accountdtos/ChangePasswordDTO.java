@@ -1,4 +1,4 @@
-package co.edu.uniquindio.unieventos.dto;
+package co.edu.uniquindio.unieventos.dto.accountdtos;
 
 public record ChangePasswordDTO(
         String email,
