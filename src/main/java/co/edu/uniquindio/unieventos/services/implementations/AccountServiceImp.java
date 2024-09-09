@@ -53,7 +53,7 @@ public class AccountServiceImp implements AccountService {
                 .adress(account.phoneNumber())
                 .build());
         newAccount.setRegistrationValidationCode(new ValidationCode(LocalDateTime.now(), generateValidationCode()));
-        
+
         //TODO Method for mail sending for activation on account
 
         Account accountCreated= accountRepo.save(newAccount);
@@ -100,6 +100,7 @@ public class AccountServiceImp implements AccountService {
 
         Account accountToDelete = getAccount(id);
         accountToDelete.setStatus(AccountStatus.DELETED);
+        accountRepo.save(accountToDelete);//Faltraba esta linea
         return "Account deleted successfully";
     }
 

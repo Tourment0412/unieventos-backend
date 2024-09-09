@@ -35,4 +35,8 @@ public class Coupon {
         this.expirationDate = expirationDate;
         this.discount = discount;
     }
+
+    public Coupon() {
+
+    }
 }
