@@ -127,7 +127,7 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public String sendRecoverPasswordCode(String email) throws Exception {
-        Account account = getAccount1(email);
+        Account account = getAccountEmail(email);
         String validationCode = generateValidationCode();
         //TODO Send this code to the user (Account) email
 
@@ -136,7 +136,7 @@ public class AccountServiceImp implements AccountService {
         return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
     }
 
-    private Account getAccount1(String email) throws Exception {
+    private Account getAccountEmail(String email) throws Exception {
         Optional<Account> accountOptional= accountRepo.findAccountByEmail(email);
         if(accountOptional.isEmpty()){
             throw new Exception("This email is not registered");
