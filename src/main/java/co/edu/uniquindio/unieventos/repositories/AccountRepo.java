@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unieventos.repositories;
 
+import co.edu.uniquindio.unieventos.dto.accountdtos.UserObtainedByMailPassDTO;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -26,4 +27,8 @@ public interface AccountRepo extends MongoRepository<Account, String> {
 
     @Query("{email: ?0, password: ?1}")
     Optional<Account> validateAuthenticationData(String email, String password);
+
+    @Query(value = "{ 'email': ?0, 'password': ?1 }", fields = "{ 'user.phoneNumber' : 1, 'user.address' : 1, " +
+            "'user.dni' :1, 'user.name': 1  }")
+    UserObtainedByMailPassDTO findUserObtainedByMailPassDTOByDni(String email, String password);
 }
