@@ -1,6 +1,6 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
-import co.edu.uniquindio.unieventos.dto.*;
+import co.edu.uniquindio.unieventos.dto.accountdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import co.edu.uniquindio.unieventos.model.enums.AccountStatus;
 import co.edu.uniquindio.unieventos.model.enums.Role;
@@ -86,7 +86,7 @@ public class AccountServiceImp implements AccountService {
         Account accountToUpdate = getAccount(account.id());
 
         accountToUpdate.getUser().setName(account.name());
-        accountToUpdate.getUser().setAdress(account.address());
+        accountToUpdate.getUser().setAddress(account.address());
         accountToUpdate.getUser().setPhoneNumber(account.phoneNumber());
         accountToUpdate.setPassword(account.password());
 
@@ -120,7 +120,7 @@ public class AccountServiceImp implements AccountService {
                 account.getUser().getDni(),
                 account.getUser().getName(),
                 account.getUser().getPhoneNumber(),
-                account.getUser().getAdress(),
+                account.getUser().getAddress(),
                 account.getEmail()
         );
     }
