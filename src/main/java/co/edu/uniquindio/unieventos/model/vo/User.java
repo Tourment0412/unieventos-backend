@@ -12,7 +12,7 @@ public class User {
     @EqualsAndHashCode.Include
     private String id;
     private String phoneNumber;
-    private String adress;
+    private String address;
     private String dni;
     private String name;
 
