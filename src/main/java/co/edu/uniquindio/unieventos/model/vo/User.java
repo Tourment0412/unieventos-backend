@@ -20,7 +20,7 @@ public class User {
     public User(String id, String phoneNumber, String adress, String dni, String name) {
         this.id = id;
         this.phoneNumber = phoneNumber;
-        this.adress = adress;
+        this.address = adress;
         this.dni = dni;
         this.name = name;
     }
