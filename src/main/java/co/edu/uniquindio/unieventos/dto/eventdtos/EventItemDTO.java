@@ -1,4 +1,12 @@
 package co.edu.uniquindio.unieventos.dto.eventdtos;
 
-public record EventItemDTO() {
+import java.time.LocalDateTime;
+
+public record EventItemDTO(
+
+        String name,
+        LocalDateTime date,
+        String address,
+        String coverImage
+) {
 }
