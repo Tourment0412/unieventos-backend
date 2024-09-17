@@ -27,4 +27,16 @@ public interface EventRepo extends MongoRepository<Event, String> {
     Optional<Event> findByName(String name);
 
 
+    /*
+        TODO Ask to teacher if the treatment of null values to make them empty strings can be done in controllers
+        or can be done on services
+     */
+
+    @Query("{ $and: [ " +
+            " { $or: [ { 'name': { $regex: ?0, $options: 'i' } }, { 'name': '' } ] }, " +
+            " { $or: [ { 'type': ?1 }, { 'type': { $exists: true } } ] }, " +  // Manejo de tipo de evento
+            " { $or: [ { 'city': { $regex: ?2, $options: 'i' } }, { 'city': '' } ] } " +
+            "] }")
+    List<Event> findEventsByFilters(String name, EventType eventType, String city);
+
 }

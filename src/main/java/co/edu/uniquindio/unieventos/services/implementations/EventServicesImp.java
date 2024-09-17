@@ -125,8 +125,8 @@ public class EventServicesImp implements EventService {
         //listar excluyendo los inactivos y los vencidos
         List<Event> events = eventRepo.findAll();
         return events.stream()
-                .filter(event -> event.getStatus() == EventStatus.ACTIVE)  // Filtrar eventos activos
-                .filter(event -> event.getDate().isAfter(LocalDateTime.now()))  // Filtrar por fecha posterior a la actual
+                .filter(event -> event.getStatus() == EventStatus.ACTIVE)
+                .filter(event -> event.getDate().isAfter(LocalDateTime.now()))
                 .map(event -> new EventItemDTO(
                         event.getName(),
                         event.getDate(),
@@ -139,6 +139,23 @@ public class EventServicesImp implements EventService {
 
     @Override
     public List<EventItemDTO> filterEvents(EventFilterDTO eventFilterDTO) {
-        return List.of();
+        List<Event> eventsFiltered = eventRepo.findEventsByFilters(
+                eventFilterDTO.name(),
+                eventFilterDTO.eventType(),
+                eventFilterDTO.city()
+        );
+        return eventsFiltered.stream()
+                .filter(event -> event.getStatus() == EventStatus.ACTIVE)
+                .filter(event -> event.getDate().isAfter(LocalDateTime.now()))
+                .map(event -> new EventItemDTO(
+                        event.getName(),
+                        event.getDate(),
+                        event.getAddress(),
+                        event.getCoverImage()
+                ))
+                .collect(Collectors.toList());
+        /*
+            TODO ask if only active and available events are going to be shown.
+         */
     }
 }
