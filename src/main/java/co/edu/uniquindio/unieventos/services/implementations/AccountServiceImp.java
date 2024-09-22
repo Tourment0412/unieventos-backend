@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.accountdtos.*;
+import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import co.edu.uniquindio.unieventos.model.enums.AccountStatus;
 import co.edu.uniquindio.unieventos.model.enums.Role;
@@ -8,6 +9,7 @@ import co.edu.uniquindio.unieventos.model.vo.User;
 import co.edu.uniquindio.unieventos.model.vo.ValidationCode;
 import co.edu.uniquindio.unieventos.repositories.AccountRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.AccountService;
+import co.edu.uniquindio.unieventos.services.interfaces.EmailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +21,12 @@ import java.util.Optional;
 public class AccountServiceImp implements AccountService {
     //This repo is final because we are not going to modify the repo
     private final AccountRepo accountRepo;
+    private final EmailService emailService;
 
-    public AccountServiceImp(AccountRepo accountRepo) {
+    public AccountServiceImp(AccountRepo accountRepo,EmailService emailService) {
+
         this.accountRepo = accountRepo;
+        this.emailService = emailService;
     }
 
     @Override
@@ -52,12 +57,23 @@ public class AccountServiceImp implements AccountService {
                 .phoneNumber(account.phoneNumber())
                 .adress(account.phoneNumber())
                 .build());
-        newAccount.setRegistrationValidationCode(new ValidationCode(LocalDateTime.now(), generateValidationCode()));
+        String validationCode= generateValidationCode();
+        newAccount.setRegistrationValidationCode(new ValidationCode(LocalDateTime.now(), validationCode));
 
         //TODO Method for mail sending for activation on account
+        String subject = "Hey! this is your activation code for your Unieventos account";
+        String body = "Your activation code is " + validationCode + " you have 15 minutes to do the activation " +
+                "of your Unieventos account.";
+        sendEmail(subject,body,account.email());
 
         Account accountCreated = accountRepo.save(newAccount);
         return accountCreated.getId();
+    }
+
+    //TODO Ask teacher for a review of the following method for email sending.
+    private void sendEmail(String subject, String body, String email) throws Exception {
+       EmailDTO emailDTO = new EmailDTO(subject, body, email);
+       emailService.sendEmail(emailDTO);
     }
 
     private boolean existsEmail(String email) {
@@ -129,11 +145,14 @@ public class AccountServiceImp implements AccountService {
     @Override
     public String sendRecoverPasswordCode(String email) throws Exception {
         Account account = getAccountEmail(email);
-        String validationCode = generateValidationCode();
+        String recoverCode = generateValidationCode();
         //TODO Send this code to the user (Account) email
-
-        account.setPasswordValidationCode(new ValidationCode(LocalDateTime.now(), validationCode));
+        String subject= "Recover Password Code";
+        String body= "Hey! you have requested the recover of your password code for your Unieventos account\nThis " +
+                "is your recover password code: "+ recoverCode +"\nThis code lasts 15 minutes.";
+        account.setPasswordValidationCode(new ValidationCode(LocalDateTime.now(), recoverCode));
         accountRepo.save(account);
+        sendEmail(subject,body,email);
         return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
     }
 
