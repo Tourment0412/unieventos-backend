@@ -3,7 +3,6 @@ package co.edu.uniquindio.unieventos.services.implementations;
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
-import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,13 +19,15 @@ import java.util.stream.Collectors;
 public class EventServicesImp implements EventService {
 
     private final EventRepo eventRepo;
+
     public EventServicesImp(EventRepo eventRepo) {
         this.eventRepo = eventRepo;
     }
+
     @Override
     public String createEvent(CreateEventDTO createEventDTO) throws Exception {
 
-        if(existEventActiveName(createEventDTO.name())){
+        if (existEventActiveName(createEventDTO.name())) {
             throw new Exception("An event with this name is already active");
         }
         Event event = new Event();
@@ -51,7 +51,7 @@ public class EventServicesImp implements EventService {
     private boolean existEventActiveName(String name) {
 
         Optional<Event> eventOptional = eventRepo.findByName(name);
-        if(eventOptional.isPresent()){
+        if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             return event.getStatus() == EventStatus.ACTIVE;
         }
@@ -60,7 +60,7 @@ public class EventServicesImp implements EventService {
 
     @Override
     public String updateEvent(UpdateEventDTO updateEventDTO) throws Exception {
-        Event eventToUpdate=getEvent(updateEventDTO.id());
+        Event eventToUpdate = getEvent(updateEventDTO.id());
         eventToUpdate.setName(updateEventDTO.name());
         eventToUpdate.setAddress(updateEventDTO.address());
         eventToUpdate.setCity(updateEventDTO.city());
@@ -76,8 +76,8 @@ public class EventServicesImp implements EventService {
     }
 
     private Event getEvent(String id) throws Exception {
-        Optional<Event> eventToUpdate= eventRepo.findById(id);
-        if(eventToUpdate.isEmpty()){
+        Optional<Event> eventToUpdate = eventRepo.findById(id);
+        if (eventToUpdate.isEmpty()) {
             throw new Exception("Event with this id does not exist");
         }
         return eventToUpdate.get();
@@ -94,22 +94,23 @@ public class EventServicesImp implements EventService {
 
     @Override
     public EventInfoDTO getInfoEvent(String id) throws Exception {
-        Event event= getEvent(id);
+        Event event = getEvent(id);
         return new EventInfoDTO(
-            event.getName(),
-            event.getAddress(),
-            event.getCoverImage(),
-            event.getLocalitiesImage(),
-            event.getDate(),
-            event.getDescription(),
-            event.getType(),
-            event.getLocations()
+                event.getName(),
+                event.getAddress(),
+                event.getCoverImage(),
+                event.getLocalitiesImage(),
+                event.getDate(),
+                event.getDescription(),
+                event.getType(),
+                event.getLocations()
         );
 
     }
 
     @Override
     public List<EventItemDTO> listEventsAdmin() {
+        //For the admin, all events are going to be shown.
         List<Event> events = eventRepo.findAll();
 
         return events.stream().map(event -> new EventItemDTO(
@@ -123,10 +124,8 @@ public class EventServicesImp implements EventService {
     @Override
     public List<EventItemDTO> listEventsClient() {
         //listar excluyendo los inactivos y los vencidos
-        List<Event> events = eventRepo.findAll();
+        List<Event> events = eventRepo.findAllEventsClient(LocalDateTime.now());
         return events.stream()
-                .filter(event -> event.getStatus() == EventStatus.ACTIVE)
-                .filter(event -> event.getDate().isAfter(LocalDateTime.now()))
                 .map(event -> new EventItemDTO(
                         event.getName(),
                         event.getDate(),
@@ -138,15 +137,14 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> filterEvents(EventFilterDTO eventFilterDTO) {
-        List<Event> eventsFiltered = eventRepo.findEventsByFilters(
-                eventFilterDTO.name(),
-                eventFilterDTO.eventType(),
-                eventFilterDTO.city()
+    public List<EventItemDTO> filterEventsClient(EventFilterClientDTO eventFilterClientDTO) {
+        List<Event> eventsFiltered = eventRepo.findEventsByFiltersClient(
+                eventFilterClientDTO.name(),
+                eventFilterClientDTO.eventType(),
+                eventFilterClientDTO.city(),
+                eventFilterClientDTO.date()
         );
         return eventsFiltered.stream()
-                .filter(event -> event.getStatus() == EventStatus.ACTIVE)
-                .filter(event -> event.getDate().isAfter(LocalDateTime.now()))
                 .map(event -> new EventItemDTO(
                         event.getName(),
                         event.getDate(),
@@ -154,8 +152,21 @@ public class EventServicesImp implements EventService {
                         event.getCoverImage()
                 ))
                 .collect(Collectors.toList());
-        /*
-            TODO ask if only active and available events are going to be shown.
-         */
+    }
+
+    @Override
+    public List<EventItemDTO> filterEventsAdmin(EventFilterAdminDTO eventFilterAdminDTO) {
+        List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(
+                eventFilterAdminDTO.name(),
+                eventFilterAdminDTO.eventType(),
+                eventFilterAdminDTO.city()
+        );
+        return eventsFiltered.stream().
+                map(event -> new EventItemDTO(
+                        event.getName(),
+                        event.getDate(),
+                        event.getAddress(),
+                        event.getCoverImage()
+                )).collect(Collectors.toList());
     }
 }
