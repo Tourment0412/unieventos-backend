@@ -48,3 +48,5 @@ bin/
 /*/bin/
 /*/build/
 /build/
+
+src/main/resources/unieventos-images-service-firebase.json
