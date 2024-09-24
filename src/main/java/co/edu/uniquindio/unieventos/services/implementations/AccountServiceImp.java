@@ -1,7 +1,9 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
+import co.edu.uniquindio.unieventos.config.JWTUtils;
 import co.edu.uniquindio.unieventos.dto.accountdtos.*;
 import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
+import co.edu.uniquindio.unieventos.dto.jwtdtos.TokenDTO;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import co.edu.uniquindio.unieventos.model.enums.AccountStatus;
 import co.edu.uniquindio.unieventos.model.enums.Role;
@@ -10,10 +12,12 @@ import co.edu.uniquindio.unieventos.model.vo.ValidationCode;
 import co.edu.uniquindio.unieventos.repositories.AccountRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.AccountService;
 import co.edu.uniquindio.unieventos.services.interfaces.EmailService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,11 +26,13 @@ public class AccountServiceImp implements AccountService {
     //This repo is final because we are not going to modify the repo
     private final AccountRepo accountRepo;
     private final EmailService emailService;
+    private final JWTUtils jwtUtils;
 
-    public AccountServiceImp(AccountRepo accountRepo,EmailService emailService) {
+    public AccountServiceImp(AccountRepo accountRepo,EmailService emailService, JWTUtils jwtUtils) {
 
         this.accountRepo = accountRepo;
         this.emailService = emailService;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -44,7 +50,10 @@ public class AccountServiceImp implements AccountService {
         //Te id on the account class is given by mongodb
 
         newAccount.setEmail(account.email());
-        newAccount.setPassword(account.password());
+
+        String encryptedPassword=encryptPassword(account.password());
+
+        newAccount.setPassword(encryptedPassword);
         //The goal of this register is to be for a client (Admins directly registered on db)
         newAccount.setRole(Role.CLIENT);
         newAccount.setRegistrationDate(LocalDateTime.now());
@@ -64,17 +73,13 @@ public class AccountServiceImp implements AccountService {
         String subject = "Hey! this is your activation code for your Unieventos account";
         String body = "Your activation code is " + validationCode + " you have 15 minutes to do the activation " +
                 "of your Unieventos account.";
-        sendEmail(subject,body,account.email());
 
+        //emailService.sendEmail(new EmailDTO(subject,body,account.email()));
         Account accountCreated = accountRepo.save(newAccount);
-        return accountCreated.getId();
+        return accountCreated.getUser().getDni();
     }
 
-    //TODO Ask teacher for a review of the following method for email sending.
-    private void sendEmail(String subject, String body, String email) throws Exception {
-       EmailDTO emailDTO = new EmailDTO(subject, body, email);
-       emailService.sendEmail(emailDTO);
-    }
+
 
     private boolean existsEmail(String email) {
         return accountRepo.findAccountByEmail(email).isPresent();
@@ -152,7 +157,7 @@ public class AccountServiceImp implements AccountService {
                 "is your recover password code: "+ recoverCode +"\nThis code lasts 15 minutes.";
         account.setPasswordValidationCode(new ValidationCode(LocalDateTime.now(), recoverCode));
         accountRepo.save(account);
-        sendEmail(subject,body,email);
+        emailService.sendEmail(new EmailDTO(subject,body,account.getEmail()));
         return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
     }
 
@@ -175,7 +180,7 @@ public class AccountServiceImp implements AccountService {
         if (passwordValidationCode != null) {
             if (passwordValidationCode.getCode().equals(changePasswordDTO.verificationCode())) {
                 if (passwordValidationCode.getCreationDate().plusMinutes(15).isBefore(LocalDateTime.now())) {
-                    account.setPassword(changePasswordDTO.newPassword());
+                    account.setPassword(encryptPassword(changePasswordDTO.newPassword()));
                     accountRepo.save(account);
                 } else {
                     account.setPasswordValidationCode(null);
@@ -190,13 +195,24 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String login(LoginDTO loginDTO) throws Exception {
-        Optional<Account> accouOptional = accountRepo.validateAuthenticationData(loginDTO.email(), loginDTO.password());
-        if (accouOptional.isEmpty()) {
-            throw new Exception("Authentication data incorrect");
+    public TokenDTO login(LoginDTO loginDTO) throws Exception {
+        Account account= getAccountEmail(loginDTO.email());
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if(!passwordEncoder.matches(loginDTO.password(), account.getPassword())) {
+            throw new Exception("Invalid password");
         }
-        //TODO This is return is going to be a token that's going to be sent to the backend
-        return "TOKEN_JWT";
+        Map<String,Object> map = buildClaims(account);
+        return new TokenDTO(jwtUtils.generarToken(account.getEmail(), map));
+    }
+
+    private Map<String, Object> buildClaims(Account account) {
+        return Map.of(
+                "rol", account.getRole(),
+                "name", account.getUser().getName(),
+                "status", account.getStatus(),
+                "id", account.getId()
+        );
+
     }
 
     public String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws Exception {
@@ -227,4 +243,10 @@ public class AccountServiceImp implements AccountService {
 
         return accountObtained.getId();
     }
+
+    private String encryptPassword(String password){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.encode( password );
+    }
+
 }

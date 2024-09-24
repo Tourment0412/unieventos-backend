@@ -7,18 +7,14 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
-    @EqualsAndHashCode.Include
-    private String id;
     private String phoneNumber;
     private String address;
     private String dni;
     private String name;
 
     @Builder
-    public User(String id, String phoneNumber, String adress, String dni, String name) {
-        this.id = id;
+    public User(String phoneNumber, String adress, String dni, String name) {
         this.phoneNumber = phoneNumber;
         this.address = adress;
         this.dni = dni;

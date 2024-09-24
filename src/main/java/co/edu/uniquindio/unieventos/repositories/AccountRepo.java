@@ -12,17 +12,17 @@ import java.util.Optional;
 public interface AccountRepo extends MongoRepository<Account, String> {
     //If we don't use any query instruction is going to do a find()
     //Same syntax as the MongoDB Shell (This is the recommended way to query)
-    @Query("{user.dni:  ?0}")
+    @Query("{'user': { $ne: null }, 'user.dni':  ?0}")
     Optional<Account> findAccountByDni(String dni);
 
-    @Query("{id:  ?0}")
+    @Query("{'id':  ?0}")
     Optional<Account> findAccountById(String id);
 
     //In this way simple queries like this one are going to be done without the query annotation
     //YOU SHOULD TO BE CAREFUL WITH THE SYNTAX OF THE NAME OF THIS METHOD
     Optional<Account> findByUserDni(String dni);
 
-    @Query("{email:  ?0}")
+    @Query("{'email':  ?0}")
     Optional<Account> findAccountByEmail(String email);
 
     @Query("{email: ?0, password: ?1}")

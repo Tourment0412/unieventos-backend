@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.accountdtos.*;
+import co.edu.uniquindio.unieventos.dto.jwtdtos.TokenDTO;
 
 public interface AccountService {
 
@@ -17,7 +18,7 @@ public interface AccountService {
 
     String changePassword(ChangePasswordDTO changePasswordDTO) throws Exception;
 
-    String login(LoginDTO loginDTO)throws Exception;
+    TokenDTO login(LoginDTO loginDTO)throws Exception;
 
 
 }
