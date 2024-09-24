@@ -65,6 +65,7 @@ public class OrderServiceImp implements OrderService {
         return total-(total*optionalCoupon.get().getDiscount());
     }
 
+    //TODO Remove this method, ID on Order should be the Mongodb ID
     private String createIdOrder() {
         String string = "ABCOEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder result = new StringBuilder();
