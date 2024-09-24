@@ -75,7 +75,8 @@ public class EventServicesImp implements EventService {
         return eventToUpdate.getId();
     }
 
-    private Event getEvent(String id) throws Exception {
+    @Override
+    public Event getEvent(String id) throws Exception {
         Optional<Event> eventToUpdate = eventRepo.findById(id);
         if (eventToUpdate.isEmpty()) {
             throw new Exception("Event with this id does not exist");
@@ -124,7 +125,7 @@ public class EventServicesImp implements EventService {
     @Override
     public List<EventItemDTO> listEventsClient() {
         //listar excluyendo los inactivos y los vencidos
-        List<Event> events = eventRepo.findAllEventsClient(LocalDateTime.now());
+        List<Event> events = eventRepo.findAllEventsClient();
         return events.stream()
                 .map(event -> new EventItemDTO(
                         event.getName(),
@@ -139,10 +140,9 @@ public class EventServicesImp implements EventService {
     @Override
     public List<EventItemDTO> filterEventsClient(EventFilterClientDTO eventFilterClientDTO) {
         List<Event> eventsFiltered = eventRepo.findEventsByFiltersClient(
-                eventFilterClientDTO.name(),
+                eventFilterClientDTO.name() == null ? "" : eventFilterClientDTO.name(),
                 eventFilterClientDTO.eventType(),
-                eventFilterClientDTO.city(),
-                eventFilterClientDTO.date()
+                eventFilterClientDTO.city() == null ? "" : eventFilterClientDTO.city()
         );
         return eventsFiltered.stream()
                 .map(event -> new EventItemDTO(

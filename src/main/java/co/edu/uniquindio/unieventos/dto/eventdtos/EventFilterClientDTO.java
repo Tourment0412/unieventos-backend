@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 public record EventFilterClientDTO(
         String name,
         EventType eventType,
-        String city,
-        LocalDateTime date
+        String city
 ) {
 }

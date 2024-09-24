@@ -37,17 +37,17 @@ public interface EventRepo extends MongoRepository<Event, String> {
             " { $or: [ { 'name': { $regex: ?0, $options: 'i' } }, { 'name': { $exists: true } } ] }, " +
             " { $or: [ { 'type': ?1 }, { 'type': { $exists: true } } ] }, " +  // Manejo de tipo de evento
             " { $or: [ { 'city': { $regex: ?2, $options: 'i' } }, { 'city': { $exists: true } } ] }, " +  // Filtrado por ciudad
-            " { 'date': { $gte: ?3} }, " +  // Fecha igual o posterior a la actual
+            " { 'date': { $gte: new Date()} }, " +  // Fecha igual o posterior a la actual
             " { 'status': 'ACTIVE' } " +  // Estado ACTIVE
             "] }")
-    List<Event> findEventsByFiltersClient(String name, EventType eventType, String city, LocalDateTime now);
+    List<Event> findEventsByFiltersClient(String name, EventType eventType, String city);
 
 
     @Query("{" +
             "'status': 'ACTIVE'," +
-            "'date': { $gte: ?0 }" +
+            "'date': { $gte: new Date() }" +
             "}")
-    List<Event> findAllEventsClient(LocalDateTime now);
+    List<Event> findAllEventsClient();
 
     @Query("{ $and: [ " +
             " { $or: [ { 'name': { $regex: ?0, $options: 'i' } }, { 'name': { $exists: true } } ] }, " +
