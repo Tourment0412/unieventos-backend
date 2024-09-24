@@ -1,7 +1,7 @@
 package co.edu.uniquindio.unieventos.test;
 
 import co.edu.uniquindio.unieventos.dto.eventdtos.CreateEventDTO;
-import co.edu.uniquindio.unieventos.dto.eventdtos.EventFilterClientDTO;
+import co.edu.uniquindio.unieventos.dto.eventdtos.EventFilterDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventItemDTO;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class EventTest {
+public class EventServiceTest {
 
     @Autowired
     private EventService eventService;
@@ -74,7 +74,7 @@ public class EventTest {
     @Test
     public void filterEventsTest(){
 
-        List<EventItemDTO> events = eventService.filterEventsClient(new EventFilterClientDTO(
+        List<EventItemDTO> events = eventService.filterEventsClient(new EventFilterDTO(
                 null,
                 EventType.CONCERT,
                 null
@@ -83,7 +83,7 @@ public class EventTest {
         Assertions.assertEquals(1, events.size());
 
         /*
-        List<EventItemDTO> lista = eventService.filterEventsClient( new EventFilterClientDTO(
+        List<EventItemDTO> lista = eventService.filterEventsClient( new EventFilterDTO(
                 null,
                 EventType.CONCERT,
                 "Armenia"
