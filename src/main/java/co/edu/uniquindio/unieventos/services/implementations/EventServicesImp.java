@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -138,11 +137,11 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> filterEventsClient(EventFilterClientDTO eventFilterClientDTO) {
+    public List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO) {
         List<Event> eventsFiltered = eventRepo.findEventsByFiltersClient(
-                eventFilterClientDTO.name() == null ? "" : eventFilterClientDTO.name(),
-                eventFilterClientDTO.eventType(),
-                eventFilterClientDTO.city() == null ? "" : eventFilterClientDTO.city()
+                eventFilterDTO.name() == null ? "" : eventFilterDTO.name(),
+                eventFilterDTO.eventType(),
+                eventFilterDTO.city() == null ? "" : eventFilterDTO.city()
         );
         return eventsFiltered.stream()
                 .map(event -> new EventItemDTO(
@@ -155,11 +154,11 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> filterEventsAdmin(EventFilterAdminDTO eventFilterAdminDTO) {
+    public List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO) {
         List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(
-                eventFilterAdminDTO.name(),
-                eventFilterAdminDTO.eventType(),
-                eventFilterAdminDTO.city()
+                eventFilterDTO.name(),
+                eventFilterDTO.eventType(),
+                eventFilterDTO.city()
         );
         return eventsFiltered.stream().
                 map(event -> new EventItemDTO(

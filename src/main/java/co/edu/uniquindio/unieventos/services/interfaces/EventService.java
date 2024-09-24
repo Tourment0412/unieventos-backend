@@ -14,7 +14,7 @@ public interface EventService {
     List<EventItemDTO> listEventsAdmin();
     List<EventItemDTO> listEventsClient();
     //The filter depends on the requirements of the  project
-    List<EventItemDTO> filterEventsClient(EventFilterClientDTO eventFilterClientDTO);
-    List<EventItemDTO> filterEventsAdmin(EventFilterAdminDTO eventFilterAdminDTO);
+    List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO);
+    List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO);
     Event getEvent(String id) throws Exception;
 }
