@@ -4,8 +4,10 @@ import co.edu.uniquindio.unieventos.dto.orderdtos.CreateOrderDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.OrderFilterDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.OrderInfoDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.OrderItemDTO;
+import com.mercadopago.resources.preference.Preference;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderService {
     String createOrder(CreateOrderDTO createOrderDTO) throws Exception;
@@ -18,6 +20,10 @@ public interface OrderService {
     List<OrderItemDTO> listOrdersCient(String cientId) throws Exception;
 
     List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO);
-    void makePayment(String orderId);
+
+    
+    //Methods for payment gateway
+    Preference makePayment(String idOrden) throws Exception;
+    void receiveNotificationFromMercadoPago(Map<String, Object> request);
 
 }
