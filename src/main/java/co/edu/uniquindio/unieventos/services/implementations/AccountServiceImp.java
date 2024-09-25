@@ -74,7 +74,7 @@ public class AccountServiceImp implements AccountService {
         String body = "Your activation code is " + validationCode + " you have 15 minutes to do the activation " +
                 "of your Unieventos account.";
 
-        //emailService.sendEmail(new EmailDTO(subject,body,account.email()));
+        emailService.sendEmail(new EmailDTO(subject,body,account.email()));
         Account accountCreated = accountRepo.save(newAccount);
         return accountCreated.getUser().getDni();
     }
