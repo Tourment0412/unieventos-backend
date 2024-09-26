@@ -186,7 +186,7 @@ public class OrderServiceImp implements OrderService {
 
             // Obtener el evento y la localidad del ítem
             Event event = eventService.getEvent(item.getEventId().toString());
-            Location location = event.getLocation(item.getLocationName());
+            Location location = eventService.findLocationByEventNameAndLocationName(event.getName(),item.getLocationName());
 
 
             // Crear el item de la pasarela

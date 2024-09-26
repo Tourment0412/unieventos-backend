@@ -2,7 +2,9 @@ package co.edu.uniquindio.unieventos.repositories;
 
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
+import co.edu.uniquindio.unieventos.model.vo.Location;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -55,6 +57,15 @@ public interface EventRepo extends MongoRepository<Event, String> {
             " { $or: [ { 'city': { $regex: ?2, $options: 'i' } }, { 'city': { $exists: true } } ] } " +
             "] }")
     List<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city);
+
+
+    @Aggregation(pipeline = {
+            "{ '$match': { 'name': ?0 } }",  // Filtrar por nombre de evento
+            "{ '$unwind': '$locations' }",   // Desenrollar la lista de localidades
+            "{ '$match': { 'locations.name': ?1 } }", // Filtrar por nombre de localidad
+            "{ '$project': { 'location': '$locations' } }" // Proyectar solo la localidad encontrada
+    })
+    List<Location> findLocationByEventNameAndLocationName(String eventName, String locationName);
 
 
 

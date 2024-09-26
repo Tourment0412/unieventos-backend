@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Event;
+import co.edu.uniquindio.unieventos.model.vo.Location;
 
 import java.util.List;
 
@@ -17,4 +18,5 @@ public interface EventService {
     List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO);
     List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO);
     Event getEvent(String id) throws Exception;
+    Location findLocationByEventNameAndLocationName(String eventName, String locationName) throws Exception;
 }

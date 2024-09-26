@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.services.implementations;
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
+import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,15 @@ public class EventServicesImp implements EventService {
             throw new Exception("Event with this id does not exist");
         }
         return eventToUpdate.get();
+    }
+
+    @Override
+    public Location findLocationByEventNameAndLocationName(String eventName, String locationName) throws Exception {
+        List<Location> locationsEvent = eventRepo.findLocationByEventNameAndLocationName(eventName, locationName);
+        if(locationsEvent.size() != 1) {
+            throw new Exception("Invalid number of Locations with this name");
+        }
+        return locationsEvent.get(0);
     }
 
     @Override
