@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
+import co.edu.uniquindio.unieventos.model.documents.Coupon;
 
 public interface CouponSevice {
 
@@ -11,7 +12,5 @@ public interface CouponSevice {
     String updateCoupon(UpdateCouponDTO coupon) throws Exception;
 
     String deleteCoupon(String id) throws Exception;
-
-
 
 }

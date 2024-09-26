@@ -85,4 +85,12 @@ public class CouponServiceImp implements CouponSevice {
         couponRepo.save(couponToDelete);
         return "Account deleted successfully";
     }
+    
+    public Coupon getCouponById(String id) throws Exception {
+        Optional<Coupon> coupon=couponRepo.findByCode(id);
+        if (coupon.isEmpty()) {
+            return null;
+        }
+        return coupon.get();
+    }
 }
