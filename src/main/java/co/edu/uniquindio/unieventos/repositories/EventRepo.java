@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.repositories;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -42,30 +43,23 @@ public interface EventRepo extends MongoRepository<Event, String> {
             " { 'date': { $gte: new Date()} }, " +  // Fecha igual o posterior a la actual
             " { 'status': 'ACTIVE' } " +  // Estado ACTIVE
             "] }")
-    List<Event> findEventsByFiltersClient(String name, EventType eventType, String city);
+    Page<Event> findEventsByFiltersClient(String name, EventType eventType, String city,Pageable pageable);
 
 
     @Query("{" +
             "'status': 'ACTIVE'," +
             "'date': { $gte: new Date() }" +
             "}")
-    List<Event> findAllEventsClient();
+    Page<Event> findAllEventsClient(Pageable pageable);
 
     @Query("{ $and: [ " +
             " { $or: [ { 'name': { $regex: ?0, $options: 'i' } }, { 'name': { $exists: true } } ] }, " +
             " { $or: [ { 'type': ?1 }, { 'type': { $exists: true } } ] }, " +  // Manejo de tipo de evento
             " { $or: [ { 'city': { $regex: ?2, $options: 'i' } }, { 'city': { $exists: true } } ] } " +
             "] }")
-    List<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city);
+    Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
 
 
-    @Aggregation(pipeline = {
-            "{ '$match': { 'name': ?0 } }",  // Filtrar por nombre de evento
-            "{ '$unwind': '$locations' }",   // Desenrollar la lista de localidades
-            "{ '$match': { 'locations.name': ?1 } }", // Filtrar por nombre de localidad
-            "{ '$project': { 'location': '$locations' } }" // Proyectar solo la localidad encontrada
-    })
-    List<Location> findLocationByEventNameAndLocationName(String eventName, String locationName);
 
 
 

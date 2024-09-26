@@ -21,4 +21,9 @@ public class Location {
         this.ticketsSold = ticketsSold;
         this.maxCapacity = maxCapacity;
     }
+
+    public boolean isCapacityAvaible(int quantity){
+        return ticketsSold + quantity<= maxCapacity;
+
+    }
 }
