@@ -6,6 +6,7 @@ import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,14 +85,6 @@ public class EventServicesImp implements EventService {
         return eventToUpdate.get();
     }
 
-    @Override
-    public Location findLocationByEventNameAndLocationName(String eventName, String locationName) throws Exception {
-        List<Location> locationsEvent = eventRepo.findLocationByEventNameAndLocationName(eventName, locationName);
-        if(locationsEvent.size() != 1) {
-            throw new Exception("Invalid number of Locations with this name");
-        }
-        return locationsEvent.get(0);
-    }
 
     @Override
     public String deleteEvent(String id) throws Exception {
@@ -119,9 +112,9 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> listEventsAdmin() {
+    public List<EventItemDTO> listEventsAdmin(int page) {
         //For the admin, all events are going to be shown.
-        List<Event> events = eventRepo.findAll();
+        List<Event> events = eventRepo.findAll(PageRequest.of(page, 10)).getContent();
 
         return events.stream().map(event -> new EventItemDTO(
                 event.getName(),
@@ -132,9 +125,9 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> listEventsClient() {
+    public List<EventItemDTO> listEventsClient(int page) {
         //listar excluyendo los inactivos y los vencidos
-        List<Event> events = eventRepo.findAllEventsClient();
+        List<Event> events = eventRepo.findAllEventsClient(PageRequest.of(page, 10)).getContent();
         return events.stream()
                 .map(event -> new EventItemDTO(
                         event.getName(),
@@ -151,8 +144,10 @@ public class EventServicesImp implements EventService {
         List<Event> eventsFiltered = eventRepo.findEventsByFiltersClient(
                 eventFilterDTO.name() == null ? "" : eventFilterDTO.name(),
                 eventFilterDTO.eventType(),
-                eventFilterDTO.city() == null ? "" : eventFilterDTO.city()
-        );
+                eventFilterDTO.city() == null ? "" : eventFilterDTO.city(),
+                //The 10 is how many events i want for page
+                PageRequest.of(eventFilterDTO.page(),10)
+        ).getContent();
         return eventsFiltered.stream()
                 .map(event -> new EventItemDTO(
                         event.getName(),
@@ -161,6 +156,7 @@ public class EventServicesImp implements EventService {
                         event.getCoverImage()
                 ))
                 .collect(Collectors.toList());
+
     }
 
     @Override
@@ -168,8 +164,10 @@ public class EventServicesImp implements EventService {
         List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(
                 eventFilterDTO.name(),
                 eventFilterDTO.eventType(),
-                eventFilterDTO.city()
-        );
+                eventFilterDTO.city(),
+                //The 10 is how many events i want for page
+                PageRequest.of(eventFilterDTO.page(),10)
+        ).getContent();
         return eventsFiltered.stream().
                 map(event -> new EventItemDTO(
                         event.getName(),

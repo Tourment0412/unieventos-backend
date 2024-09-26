@@ -48,4 +48,8 @@ public class Event {
         this.status = status;
         this.locations = locations;
     }
+
+    public Location findLocationByName(String name) {
+        return locations.stream().filter(loc -> loc.getName().equals(name)).findFirst().orElse(null);
+    }
 }

@@ -5,6 +5,7 @@ import co.edu.uniquindio.unieventos.model.enums.EventType;
 public record EventFilterDTO(
         String name,
         EventType eventType,
-        String city
+        String city,
+        int page
 ) {
 }

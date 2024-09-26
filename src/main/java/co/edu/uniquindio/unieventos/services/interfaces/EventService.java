@@ -12,11 +12,10 @@ public interface EventService {
     String updateEvent(UpdateEventDTO updateEventDTO) throws Exception;
     String deleteEvent(String id) throws Exception;
     EventInfoDTO getInfoEvent(String id) throws Exception;
-    List<EventItemDTO> listEventsAdmin();
-    List<EventItemDTO> listEventsClient();
+    List<EventItemDTO> listEventsAdmin(int page);
+    List<EventItemDTO> listEventsClient(int page);
     //The filter depends on the requirements of the  project
     List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO);
     List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO);
     Event getEvent(String id) throws Exception;
-    Location findLocationByEventNameAndLocationName(String eventName, String locationName) throws Exception;
 }
