@@ -8,7 +8,6 @@ public record CreateOrderDTO(
 
 
         String clientId,
-        List<OrderDetail> items,
         String couponId
 ) {
 
