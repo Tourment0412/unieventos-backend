@@ -13,4 +13,6 @@ public interface CouponSevice {
 
     String deleteCoupon(String id) throws Exception;
 
+    Coupon getCouponById(String id) throws Exception;
+
 }

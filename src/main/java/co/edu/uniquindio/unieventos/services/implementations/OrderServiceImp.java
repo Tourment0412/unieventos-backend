@@ -7,14 +7,17 @@ import co.edu.uniquindio.unieventos.dto.orderdtos.OrderItemDTO;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.documents.Order;
+import co.edu.uniquindio.unieventos.model.documents.ShoppingCar;
+import co.edu.uniquindio.unieventos.model.enums.CouponType;
+import co.edu.uniquindio.unieventos.model.vo.CarDetail;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.model.vo.OrderDetail;
 import co.edu.uniquindio.unieventos.model.vo.Payment;
-import co.edu.uniquindio.unieventos.repositories.CouponRepo;
-import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.repositories.OrderRepo;
+import co.edu.uniquindio.unieventos.services.interfaces.CouponSevice;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
+import co.edu.uniquindio.unieventos.services.interfaces.ShoppingCarService;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -26,7 +29,6 @@ import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.html.HTMLScriptElement;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,89 +40,95 @@ import java.util.stream.Collectors;
 
 
 @Service
-@Transactional(rollbackFor=Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class OrderServiceImp implements OrderService {
     private final OrderRepo orderRepo;
-    private final CouponRepo couponRepo;
-    private final EventRepo eventRepo;
-    private final EventServicesImp eventServicesImp;
+    private final CouponSevice couponService;
     private final EventService eventService;
+    private final ShoppingCarService shoppingCarService;
 
-    public OrderServiceImp(OrderRepo orderRepo, CouponRepo couponRepo, EventRepo eventRepo, EventServicesImp eventServicesImp, EventService eventService) {
+
+    public OrderServiceImp(OrderRepo orderRepo, CouponSevice couponService, EventService eventService, ShoppingCarService shoppingCarService) {
         this.orderRepo = orderRepo;
-        this.couponRepo = couponRepo;
-        this.eventRepo = eventRepo;
-        this.eventServicesImp = eventServicesImp;
+        this.couponService = couponService;
         this.eventService = eventService;
+        this.shoppingCarService = shoppingCarService;
     }
 
     @Override
     public String createOrder(CreateOrderDTO createOrderDTO) throws Exception {
-
-
         Order order = new Order();
+        //I need to create the createOrderDTO?
+        ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
+        List<OrderDetail> items = new ArrayList<>();
+        List<CarDetail> details = shoppingCar.getItems();
+        details.forEach(carDetail -> {
+            try {
 
-        order.setItems(createOrderDTO.items());
+                Event event = eventService.getEvent(String.valueOf(carDetail.getIdEvent()));
+                Location location = event.findLocationByName(carDetail.getLocationName());
+                if (!location.isCapacityAvaible(carDetail.getAmount())) {
+                    throw new Exception("Max capacity exceeded");
+                } else {
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setEventId(carDetail.getIdEvent());
+                    orderDetail.setLocationName(carDetail.getLocationName());
+                    orderDetail.setPrice(carDetail.getAmount()*location.getPrice());
+                    orderDetail.setQuantity(carDetail.getAmount());
+                    items.add(orderDetail);
+                }
+
+
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
+        });
+
         //TODO code for gateway
-        order.setGatewayCode("GATEWAYCODE");
+        //TODO Payment
+        order.setItems(items);
         order.setDate(LocalDateTime.now());
-        order.setTotal(calculateTotal(createOrderDTO.items(), createOrderDTO.couponId()));
+        order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
         order.setCouponId(new ObjectId(createOrderDTO.couponId()));
-
-        //TODO Agregar Pago
-        order.setPayment(new Payment());
 
         Order createOrder = orderRepo.save(order);
         return createOrder.getId();
     }
 
-    private float calculateTotal(List<OrderDetail> items, String couponId) {
+    private float calculateTotal(List<OrderDetail> items, String couponId) throws Exception {
         float total = 0;
-        Optional<Coupon> optionalCoupon= couponRepo.findByCode(couponId);
+        Coupon coupon = couponService.getCouponById(couponId);
         for (OrderDetail orderDetail : items) {
-            total+=orderDetail.getPrice();
+            total += orderDetail.getPrice();
         }
-        return total-(total*optionalCoupon.get().getDiscount());
-    }
-
-    //TODO Remove this method, ID on Order should be the Mongodb ID
-    private String createIdOrder() {
-        String string = "ABCOEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            int index = (int) (Math.random() * string.length());
-            char character = string.charAt(index);
-
-            result.append(character);
+        if (coupon.getType().equals(CouponType.UNIQUE)) {
+            couponService.deleteCoupon(couponId);
         }
-        return result.toString();
+        return total - (total * coupon.getDiscount());
     }
 
-
-    private boolean existIdOrder(String s) {
-        return orderRepo.findOrderById(s).isPresent();
-    }
 
 
     private Order getOrder(String s) throws Exception {
         Optional<Order> orderOptional = orderRepo.findById(s);
         if (orderOptional.isEmpty()) {
-            throw new Exception("The Order with the id: "+s+" does not exist");
+            throw new Exception("The Order with the id: " + s + " does not exist");
         }
         return orderOptional.get();
     }
 
     @Override
     public String deleteOrder(String orderId) throws Exception {
-         Order orderToDelete = getOrder(orderId);
-         orderRepo.delete(orderToDelete);
-         return "The order was deleted";
+        Order orderToDelete = getOrder(orderId);
+        orderRepo.delete(orderToDelete);
+        return "The order was deleted";
     }
 
     @Override
     public OrderInfoDTO getInfoOrder(String orderId) throws Exception {
-        Order order=getOrder(orderId);
+        Order order = getOrder(orderId);
 
         return new OrderInfoDTO(
                 order.getClientId().toString(),
@@ -181,12 +189,12 @@ public class OrderServiceImp implements OrderService {
 
 
         // Recorrer los items de la orden y crea los ítems de la pasarela
-        for(OrderDetail item : saveOrder.getItems()){
+        for (OrderDetail item : saveOrder.getItems()) {
 
 
             // Obtener el evento y la localidad del ítem
             Event event = eventService.getEvent(item.getEventId().toString());
-            Location location = eventService.findLocationByEventNameAndLocationName(event.getName(),item.getLocationName());
+            Location location = event.findLocationByName(item.getLocationName());
 
 
             // Crear el item de la pasarela
@@ -233,7 +241,7 @@ public class OrderServiceImp implements OrderService {
 
 
         // Guardar el código de la pasarela en la orden
-        saveOrder.setGatewayCode( preference.getId() );
+        saveOrder.setGatewayCode(preference.getId());
         orderRepo.save(saveOrder);
 
 
@@ -263,7 +271,7 @@ public class OrderServiceImp implements OrderService {
 
                 // Se crea el cliente de MercadoPago y se obtiene el pago con el id
                 PaymentClient client = new PaymentClient();
-                com.mercadopago.resources.payment.Payment payment = client.get( Long.parseLong(idPago) );
+                com.mercadopago.resources.payment.Payment payment = client.get(Long.parseLong(idPago));
 
 
                 // Obtener el id de la orden asociada al pago que viene en los metadatos
@@ -287,7 +295,7 @@ public class OrderServiceImp implements OrderService {
     private Payment createPayment(com.mercadopago.resources.payment.Payment payment) {
         Payment orderPayment = new Payment();
         orderPayment.setId(payment.getId().toString());
-        orderPayment.setDate( payment.getDateCreated().toLocalDateTime() );
+        orderPayment.setDate(payment.getDateCreated().toLocalDateTime());
         orderPayment.setStatus(payment.getStatus());
         orderPayment.setStatusDetail(payment.getStatusDetail());
         orderPayment.setPaymentType(payment.getPaymentTypeId());

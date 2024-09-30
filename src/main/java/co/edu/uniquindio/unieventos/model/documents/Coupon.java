@@ -39,4 +39,9 @@ public class Coupon {
     public Coupon() {
 
     }
+
+    public Coupon(CouponType couponType, float v) {
+        this.type = couponType;
+        this.discount = v;
+    }
 }
