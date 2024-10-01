@@ -20,5 +20,9 @@ public interface AccountService {
 
     TokenDTO login(LoginDTO loginDTO)throws Exception;
 
+    String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws Exception;
+
+    String reassignValidationRegistrationCode(String email) throws Exception;
+
 
 }

@@ -47,8 +47,6 @@ public class AccountServiceImp implements AccountService {
         }
 
         Account newAccount = new Account();
-        //Te id on the account class is given by mongodb
-
         newAccount.setEmail(account.email());
 
         String encryptedPassword=encryptPassword(account.password());
@@ -197,6 +195,9 @@ public class AccountServiceImp implements AccountService {
     @Override
     public TokenDTO login(LoginDTO loginDTO) throws Exception {
         Account account= getAccountEmail(loginDTO.email());
+        if(account.getStatus()==AccountStatus.DELETED){
+            throw new Exception("Account with this email does not exist");
+        }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if(!passwordEncoder.matches(loginDTO.password(), account.getPassword())) {
             throw new Exception("Invalid password");
@@ -207,7 +208,7 @@ public class AccountServiceImp implements AccountService {
 
     private Map<String, Object> buildClaims(Account account) {
         return Map.of(
-                "rol", account.getRole(),
+                "role", account.getRole(),
                 "name", account.getUser().getName(),
                 "status", account.getStatus(),
                 "id", account.getId()
@@ -215,6 +216,7 @@ public class AccountServiceImp implements AccountService {
 
     }
 
+    @Override
     public String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws Exception {
         Account accountObtained = getAccountEmail(activateAccountDTO.email());
         ValidationCode registrationValidationCode = accountObtained.getRegistrationValidationCode();
@@ -234,7 +236,7 @@ public class AccountServiceImp implements AccountService {
         }
         return accountObtained.getId();
     }
-
+    @Override
     public String reassignValidationRegistrationCode(String email) throws Exception {
         Account accountObtained = getAccountEmail(email);
         ValidationCode reassignValidationCode = new ValidationCode(LocalDateTime.now(), generateValidationCode());
