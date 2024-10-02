@@ -33,14 +33,14 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public String createShoppingCar(CreateShoppingCarDTO createShoppingCarDTO) throws Exception {
+    public String createShoppingCar(String idUser) throws Exception {
 
 
-        if (existsShoppingCar(createShoppingCarDTO.accountId())) {
+        if (existsShoppingCar(idUser)) {
             throw new Exception("Shopping car already exists for this account");
         }
         ShoppingCar shoppingCar = new ShoppingCar();
-        shoppingCar.setUserId(new ObjectId(createShoppingCarDTO.accountId()));
+        shoppingCar.setUserId(new ObjectId(idUser));
         shoppingCar.setDate(LocalDateTime.now());
         shoppingCar.setItems(new ArrayList<>());
         return shoppingCarRepo.save(shoppingCar).getId();

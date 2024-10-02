@@ -9,7 +9,7 @@ import java.util.List;
 public interface ShoppingCarService {
 
 
-    String createShoppingCar(CreateShoppingCarDTO createShoppingCarDTO) throws Exception;
+    String createShoppingCar(String idUser) throws Exception;
 
     String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception;
     void deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception;
