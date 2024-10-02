@@ -117,6 +117,7 @@ public class EventServicesImp implements EventService {
         List<Event> events = eventRepo.findAll(PageRequest.of(page, 10)).getContent();
 
         return events.stream().map(event -> new EventItemDTO(
+                event.getId(),
                 event.getName(),
                 event.getDate(),        // Asegúrate de que sea LocalDateTime si es necesario
                 event.getAddress(),
@@ -130,6 +131,7 @@ public class EventServicesImp implements EventService {
         List<Event> events = eventRepo.findAllEventsClient(PageRequest.of(page, 10)).getContent();
         return events.stream()
                 .map(event -> new EventItemDTO(
+                        event.getId(),
                         event.getName(),
                         event.getDate(),
                         event.getAddress(),
@@ -150,6 +152,7 @@ public class EventServicesImp implements EventService {
         ).getContent();
         return eventsFiltered.stream()
                 .map(event -> new EventItemDTO(
+                        event.getId(),
                         event.getName(),
                         event.getDate(),
                         event.getAddress(),
@@ -162,18 +165,32 @@ public class EventServicesImp implements EventService {
     @Override
     public List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO) {
         List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(
-                eventFilterDTO.name(),
+                eventFilterDTO.name() == null ? "" : eventFilterDTO.name(),
                 eventFilterDTO.eventType(),
-                eventFilterDTO.city(),
+                eventFilterDTO.city() == null ? "" : eventFilterDTO.city(),
                 //The 10 is how many events i want for page
                 PageRequest.of(eventFilterDTO.page(),10)
         ).getContent();
         return eventsFiltered.stream().
                 map(event -> new EventItemDTO(
+                        event.getId(),
                         event.getName(),
                         event.getDate(),
                         event.getAddress(),
                         event.getCoverImage()
                 )).collect(Collectors.toList());
+    }
+
+
+    public void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception {
+        Event event = getEvent(idEvent);
+        Location location = event.findLocationByName(nameLocation);
+        if (location == null) {
+            throw new Exception("Location " + nameLocation + " does not exist");
+        } else if (location.getTicketsSold()+numLocations>location.getMaxCapacity()) {
+            throw new Exception("Location " + nameLocation + " is too high");
+        }
+        location.setTicketsSold(location.getTicketsSold()+numLocations);
+        eventRepo.save(event);
     }
 }
