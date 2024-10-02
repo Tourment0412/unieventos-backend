@@ -198,6 +198,9 @@ public class AccountServiceImp implements AccountService {
         if(account.getStatus()==AccountStatus.DELETED){
             throw new Exception("Account with this email does not exist");
         }
+        if(account.getStatus()==AccountStatus.INACTIVE){
+            throw new Exception("Account with this email is not active");
+        }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if(!passwordEncoder.matches(loginDTO.password(), account.getPassword())) {
             throw new Exception("Invalid password");
