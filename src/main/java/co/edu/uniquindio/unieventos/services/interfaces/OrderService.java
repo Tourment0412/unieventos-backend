@@ -13,12 +13,7 @@ public interface OrderService {
     String createOrder(CreateOrderDTO createOrderDTO) throws Exception;
     String deleteOrder(String orderId) throws Exception;
     OrderInfoDTO getInfoOrder(String orderId) throws Exception;
-
-
-
-    List<OrderItemDTO> listOrdersAdmin();
-    List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
-
+    List<OrderItemDTO> listOrdersCient(String cientId) throws Exception;
     List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO);
 
     

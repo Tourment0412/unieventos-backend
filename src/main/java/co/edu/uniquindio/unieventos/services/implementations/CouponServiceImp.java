@@ -32,7 +32,7 @@ public class CouponServiceImp implements CouponSevice {
 
     public Coupon getCupon(String id) throws Exception {
         Optional<Coupon> coupon = couponRepo.findById(id);
-        if (coupon.isPresent()) {
+        if (coupon.isEmpty()) { // Cambié a negación para verificar si el cupón NO está presente
             throw new Exception("Coupon with this id does not exist");
         }
         return coupon.get();
@@ -42,6 +42,7 @@ public class CouponServiceImp implements CouponSevice {
     public CouponInfoDTO getInfoCoupon(String id) throws Exception {
         Coupon coupon = getCupon(id);
         return new CouponInfoDTO (
+                coupon.getId(),
                 coupon.getName(),
                 coupon.getType(),
                 coupon.getStatus(),
@@ -88,10 +89,7 @@ public class CouponServiceImp implements CouponSevice {
 
     @Override
     public Coupon getCouponById(String id) throws Exception {
-        Optional<Coupon> coupon=couponRepo.findByCode(id);
-        if (coupon.isEmpty()) {
-            return null;
-        }
-        return coupon.get();
+        Optional<Coupon> coupon=couponRepo.findById(id);
+        return coupon.orElse(null);
     }
 }

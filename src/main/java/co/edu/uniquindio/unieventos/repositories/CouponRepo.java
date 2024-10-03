@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface CouponRepo extends MongoRepository<Coupon, String> {
 
-    @Query("{code:  ?0}")
-    Optional<Coupon> findByCode(String code);
+    @Query("{_id:  ?0}")
+    Optional<Coupon> findById(String code);
 
     @Query(" {expirationDate: { $gt: new Date() }}")
     Optional<Coupon> getAvailableMultipleCupons();

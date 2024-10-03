@@ -18,4 +18,5 @@ public interface EventService {
     List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO);
     List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO);
     Event getEvent(String id) throws Exception;
+    public void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception;
 }

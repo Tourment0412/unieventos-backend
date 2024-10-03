@@ -48,8 +48,21 @@ public class Event {
         this.status = status;
         this.locations = locations;
     }
-
+/*
     public Location findLocationByName(String name) {
         return locations.stream().filter(loc -> loc.getName().equals(name)).findFirst().orElse(null);
+    }
+
+ */
+
+    public Location findLocationByName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Location name cannot be null.");
+        }
+
+        return locations.stream()
+                .filter(loc -> loc.getName() != null && loc.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 }

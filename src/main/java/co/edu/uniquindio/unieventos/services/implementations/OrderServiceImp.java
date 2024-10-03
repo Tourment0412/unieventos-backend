@@ -58,7 +58,6 @@ public class OrderServiceImp implements OrderService {
     @Override
     public String createOrder(CreateOrderDTO createOrderDTO) throws Exception {
         Order order = new Order();
-        //I need to create the createOrderDTO?
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
         List<OrderDetail> items = new ArrayList<>();
         List<CarDetail> details = shoppingCar.getItems();
@@ -76,6 +75,8 @@ public class OrderServiceImp implements OrderService {
                     orderDetail.setPrice(carDetail.getAmount()*location.getPrice());
                     orderDetail.setQuantity(carDetail.getAmount());
                     items.add(orderDetail);
+
+
                 }
 
 
@@ -144,11 +145,6 @@ public class OrderServiceImp implements OrderService {
         );
     }
 
-    @Override
-    public List<OrderItemDTO> listOrdersAdmin() {
-        List<Order> orders = orderRepo.findAll();
-        return getOrderItemDTOS(orders);
-    }
 
     @Override
     public List<OrderItemDTO> listOrdersClient(String idClient) throws Exception {
@@ -214,15 +210,15 @@ public class OrderServiceImp implements OrderService {
         }
 
 
-        // Configurar las credenciales de MercadoPago
+        //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
         MercadoPagoConfig.setAccessToken("ACCESS_TOKEN");
 
-
+        //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("URL PAGO EXITOSO")
-                .failure("URL PAGO FALLIDO")
-                .pending("URL PAGO PENDIENTE")
+                .success("https://e6b1-2801-12-2800-21-d26e-b2c8-908b-efc3.ngrok-free.app/payment-success")
+                .failure("https://e6b1-2801-12-2800-21-d26e-b2c8-908b-efc3.ngrok-free.app/payment-failure")
+                .pending("https://e6b1-2801-12-2800-21-d26e-b2c8-908b-efc3.ngrok-free.app/payment-pending")
                 .build();
 
 
@@ -230,8 +226,10 @@ public class OrderServiceImp implements OrderService {
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                 .backUrls(backUrls)
                 .items(itemsGateway)
+                //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
-                .notificationUrl("URL NOTIFICACION")
+                //TODO Agregar url de Ngrok (Se actualiza constantemente)
+                .notificationUrl("https://tu-ngrok-url.com/mercadopago/notification")
                 .build();
 
 

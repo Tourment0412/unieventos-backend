@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public record CouponInfoDTO(
 
+        String id,
         String name,
         CouponType type,
         CouponStatus status,
