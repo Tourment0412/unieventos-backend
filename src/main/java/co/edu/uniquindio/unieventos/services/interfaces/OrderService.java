@@ -13,12 +13,12 @@ public interface OrderService {
     String createOrder(CreateOrderDTO createOrderDTO) throws Exception;
     String deleteOrder(String orderId) throws Exception;
     OrderInfoDTO getInfoOrder(String orderId) throws Exception;
-    List<OrderItemDTO> listOrdersCient(String cientId) throws Exception;
+    List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
     List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO);
 
     
     //Methods for payment gateway
-    Preference makePayment(String idOrden) throws Exception;
+    Preference makePayment(String idOrder) throws Exception;
     void receiveNotificationFromMercadoPago(Map<String, Object> request);
 
 }
