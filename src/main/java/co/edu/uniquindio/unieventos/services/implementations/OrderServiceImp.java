@@ -151,8 +151,8 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public List<OrderItemDTO> listOrdersCient(String cientId) throws Exception {
-        ObjectId clientId = new ObjectId(cientId);
+    public List<OrderItemDTO> listOrdersClient(String idClient) throws Exception {
+        ObjectId clientId = new ObjectId(idClient);
 
         List<Order> orders = orderRepo.findOrdersByClientId(clientId);
 

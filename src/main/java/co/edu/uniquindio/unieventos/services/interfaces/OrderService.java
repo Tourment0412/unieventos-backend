@@ -17,7 +17,7 @@ public interface OrderService {
 
 
     List<OrderItemDTO> listOrdersAdmin();
-    List<OrderItemDTO> listOrdersCient(String cientId) throws Exception;
+    List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
 
     List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO);
 
