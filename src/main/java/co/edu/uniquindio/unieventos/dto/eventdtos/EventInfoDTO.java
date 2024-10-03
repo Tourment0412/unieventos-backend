@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record EventInfoDTO(
+        //TODO (ask) Should I return the information with the id too? I think yes because here
+        // I'm going to show the user the info and gonna be the option to add to the shopping car
+        String id,
 
         String name,
         String address,
