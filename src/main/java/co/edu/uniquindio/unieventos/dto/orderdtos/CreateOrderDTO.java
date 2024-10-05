@@ -6,7 +6,8 @@ import java.util.List;
 
 public record CreateOrderDTO(
 
-
+        boolean isForFriend,
+        String friendEmail,
         String clientId,
         String couponId
 ) {

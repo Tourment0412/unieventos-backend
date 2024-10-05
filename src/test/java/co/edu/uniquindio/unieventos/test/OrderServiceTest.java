@@ -64,7 +64,12 @@ public class OrderServiceTest {
     @Test
     public void testCreateOrder() throws Exception {
         // Arrange
-        CreateOrderDTO createOrderDTO = new CreateOrderDTO("66fadcb5d08fb70890780065", "66fafd1310b4027d916c95dd");
+        CreateOrderDTO createOrderDTO = new CreateOrderDTO(
+                false,
+                "miguel@example.com",
+                "clientID",
+                "couponID"
+                );
 
         // Crear un DTO de cupón con los datos requeridos
         //CreateCouponDTO createCouponDTO = new CreateCouponDTO(0.10f, LocalDateTime.now().plusDays(7), CouponType.UNIQUE, "3");
@@ -141,7 +146,7 @@ public class OrderServiceTest {
         orderRepo.save(order);
 
         // Ejecutar el método a probar
-        List<OrderItemDTO> orders = orderService.listOrdersCient("64f6d15801b1fc6c7c2037d4");
+        List<OrderItemDTO> orders = orderService.listOrdersClient("64f6d15801b1fc6c7c2037d4");
 
         // Verificar los resultados
         assertNotNull(orders);

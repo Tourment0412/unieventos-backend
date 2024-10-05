@@ -1,9 +1,6 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
-import co.edu.uniquindio.unieventos.dto.orderdtos.CreateOrderDTO;
-import co.edu.uniquindio.unieventos.dto.orderdtos.OrderFilterDTO;
-import co.edu.uniquindio.unieventos.dto.orderdtos.OrderInfoDTO;
-import co.edu.uniquindio.unieventos.dto.orderdtos.OrderItemDTO;
+import co.edu.uniquindio.unieventos.dto.orderdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.documents.Order;
@@ -68,14 +65,15 @@ public class OrderServiceImp implements OrderService {
                 Location location = event.findLocationByName(carDetail.getLocationName());
                 if (!location.isCapacityAvaible(carDetail.getAmount())) {
                     throw new Exception("Max capacity exceeded");
+                } else if (event.getDate().minusDays(2).isBefore(LocalDateTime.now())) {
+                    throw new Exception("Date is before current date");
                 } else {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setEventId(carDetail.getIdEvent());
                     orderDetail.setLocationName(carDetail.getLocationName());
-                    orderDetail.setPrice(carDetail.getAmount()*location.getPrice());
+                    orderDetail.setPrice(carDetail.getAmount() * location.getPrice());
                     orderDetail.setQuantity(carDetail.getAmount());
                     items.add(orderDetail);
-
 
                 }
 
@@ -93,7 +91,12 @@ public class OrderServiceImp implements OrderService {
         order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
         order.setCouponId(new ObjectId(createOrderDTO.couponId()));
-
+        order.setGift(false);
+        //TODO validadar si está registrada
+        if(createOrderDTO.isForFriend()){
+            order.setGift(true);
+            order.setFriendMail(createOrderDTO.friendEmail());
+        }
         Order createOrder = orderRepo.save(order);
         return createOrder.getId();
     }
@@ -109,7 +112,6 @@ public class OrderServiceImp implements OrderService {
         }
         return total - (total * coupon.getDiscount());
     }
-
 
 
     private Order getOrder(String s) throws Exception {
@@ -178,7 +180,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Preference makePayment(String idOrden) throws Exception {
+    public PaymentResponseDTO makePayment(String idOrden) throws Exception {
         // Obtener la orden guardada en la base de datos y los ítems de la orden
         Order saveOrder = getOrder(idOrden);
         List<PreferenceItemRequest> itemsGateway = new ArrayList<>();
@@ -211,14 +213,14 @@ public class OrderServiceImp implements OrderService {
 
 
         //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
-        MercadoPagoConfig.setAccessToken("ACCESS_TOKEN");
+        MercadoPagoConfig.setAccessToken("APP_USR-8178646482281064-100513-248819fc76ea7f7577f902e927eaefb7-2014458486");
 
         //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://e6b1-2801-12-2800-21-d26e-b2c8-908b-efc3.ngrok-free.app/payment-success")
-                .failure("https://e6b1-2801-12-2800-21-d26e-b2c8-908b-efc3.ngrok-free.app/payment-failure")
-                .pending("https://e6b1-2801-12-2800-21-d26e-b2c8-908b-efc3.ngrok-free.app/payment-pending")
+                .success("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/payment-success")
+                .failure("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/payment-failure")
+                .pending("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/payment-pending")
                 .build();
 
 
@@ -228,8 +230,8 @@ public class OrderServiceImp implements OrderService {
                 .items(itemsGateway)
                 //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
-                //TODO Agregar url de Ngrok (Se actualiza constantemente)
-                .notificationUrl("https://tu-ngrok-url.com/mercadopago/notification")
+                //TODO Agregar url de Ngrok (Se actualiza constantemente) la ruta debe incluir la direccion al controlador de las notificaciones 
+                .notificationUrl("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/mercadopago/notification")
                 .build();
 
 
@@ -242,8 +244,12 @@ public class OrderServiceImp implements OrderService {
         saveOrder.setGatewayCode(preference.getId());
         orderRepo.save(saveOrder);
 
+        PaymentResponseDTO paymentResponse = new PaymentResponseDTO(
+                preference.getInitPoint(),
+                idOrden
+        );
 
-        return preference;
+        return paymentResponse;
     }
 
     @Override

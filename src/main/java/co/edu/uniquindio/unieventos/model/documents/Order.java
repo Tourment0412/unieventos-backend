@@ -29,6 +29,8 @@ public class Order {
     private ObjectId clientId;
     private ObjectId couponId;
     private Payment payment;
+    private boolean isGift;
+    private String friendMail;
 
     @Builder
     //I think it is better to have the objectID parametters as strings and cast them on ObjectId inside the builder

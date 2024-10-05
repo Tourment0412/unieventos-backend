@@ -55,8 +55,8 @@ public class AccountServiceTest {
     public void testCreateAccount() throws Exception {
         // Crear el DTO para la cuenta
         CreateAccountDTO createAccountDTO = new CreateAccountDTO(
-                "1095550864",
-                "Miguel Mira",
+                "123131313",
+                "Pepe",
                 "3147830068",
                 "Mercedes del Norte No1",
                 "miraortega2020@gmail.com",

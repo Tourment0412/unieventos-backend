@@ -95,7 +95,7 @@ public class EventServiceTest {
     @Test
     void testGetInfoEvent() throws Exception {
 
-        EventInfoDTO eventInfo = eventService.getInfoEvent(eventId);
+        EventInfoDTO eventInfo = eventService.getInfoEventClient(eventId);
 
         //TODO Modificar valores compraracion (Preguntar si comparaciones son suficioente)
         assertNotNull(eventInfo);
