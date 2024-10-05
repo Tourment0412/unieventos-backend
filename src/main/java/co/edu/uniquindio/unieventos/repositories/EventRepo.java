@@ -45,6 +45,8 @@ public interface EventRepo extends MongoRepository<Event, String> {
             "] }")
     Page<Event> findEventsByFiltersClient(String name, EventType eventType, String city,Pageable pageable);
 
+    @Query("{ '_id': ?0, 'status': 'ACTIVE' }")
+    Optional<Event> findEventByIdClient(String id);
 
     @Query("{" +
             "'status': 'ACTIVE'," +

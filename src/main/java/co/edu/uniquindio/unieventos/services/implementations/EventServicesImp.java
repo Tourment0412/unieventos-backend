@@ -96,9 +96,31 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public EventInfoDTO getInfoEvent(String id) throws Exception {
+    public EventInfoAdminDTO getInfoEventAdmin(String id) throws Exception {
         Event event = getEvent(id);
+        return new EventInfoAdminDTO(
+                event.getId(),
+                event.getName(),
+                event.getAddress(),
+                event.getCoverImage(),
+                event.getLocalitiesImage(),
+                event.getDate(),
+                event.getDescription(),
+                event.getType(),
+                event.getStatus(),
+                event.getLocations()
+        );
+
+    }
+    @Override
+    public EventInfoDTO getInfoEventClient (String id) throws Exception {
+        Optional<Event> eventGot = eventRepo.findEventByIdClient(id);
+        if (eventGot.isEmpty()) {
+            throw new Exception("Event with this id does not exist");
+        }
+        Event event = eventGot.get();
         return new EventInfoDTO(
+                event.getId(),
                 event.getName(),
                 event.getAddress(),
                 event.getCoverImage(),
@@ -108,9 +130,7 @@ public class EventServicesImp implements EventService {
                 event.getType(),
                 event.getLocations()
         );
-
     }
-
     @Override
     public List<EventItemDTO> listEventsAdmin(int page) {
         //For the admin, all events are going to be shown.
