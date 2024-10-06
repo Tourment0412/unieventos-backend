@@ -31,7 +31,7 @@ public class PublicController {
     @GetMapping("/event/filter-events")
     public ResponseEntity<MessageDTO<List<EventItemDTO>>> filterEventsClient(@Valid @RequestBody EventFilterDTO eventFilterDTO){
         List<EventItemDTO> events = eventService.filterEventsClient(eventFilterDTO);
-        return ResponseEntity.ok(new MessageDTO<>(true,events));
+        return ResponseEntity.ok(new MessageDTO<>(false,events));
     }
 
     //TODO (ask) Teacher has a controller to get just 1 event it is for the object? same as admin or it h
@@ -39,7 +39,7 @@ public class PublicController {
     @GetMapping("/event/get-info/{id}")
     public ResponseEntity<MessageDTO<EventInfoDTO>> getInfoEvenClient(@PathVariable String id) throws Exception{
         EventInfoDTO eventInfo = eventService.getInfoEventClient(id);
-        return ResponseEntity.ok(new MessageDTO<>(true,eventInfo));
+        return ResponseEntity.ok(new MessageDTO<>(false,eventInfo));
     }
 
     //TODO (ask) if this service method still should be void or return
@@ -50,7 +50,7 @@ public class PublicController {
     @PostMapping("/order/receive-notification")
     public ResponseEntity<MessageDTO<String>> receiveNotificationFromMercadoPago(Map<String, Object> request){
         orderService.receiveNotificationFromMercadoPago(request);
-        return ResponseEntity.ok(new MessageDTO<>(true,"Notification received"));
+        return ResponseEntity.ok(new MessageDTO<>(false,"Notification received"));
     }
 
 }
