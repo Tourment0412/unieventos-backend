@@ -1,6 +1,5 @@
 package co.edu.uniquindio.unieventos.test;
 
-import co.edu.uniquindio.unieventos.dto.accountdtos.AccountInfoDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CreateCouponDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.UpdateCouponDTO;
@@ -8,8 +7,7 @@ import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
-import co.edu.uniquindio.unieventos.services.implementations.CouponServiceImp;
-import co.edu.uniquindio.unieventos.services.interfaces.CouponSevice;
+import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class CouponServiceTest {
 
     @Autowired
-    private CouponSevice couponService;
+    private CouponService couponService;
 
     @Autowired
     private CouponRepo couponRepo;
@@ -102,12 +100,12 @@ public class CouponServiceTest {
     }
 
     @Test
-    public void testGetInfoCoupon() throws Exception {
+    public void testGetInfoCouponAdmin() throws Exception {
         // Arrange
 
 
         // Act
-        CouponInfoDTO couponInfoDTO = couponService.getInfoCoupon(couponId);
+        CouponInfoDTO couponInfoDTO = couponService.getInfoCouponAdmin(couponId);
 
         // Assert
         //TODO Modificar valores de compracion
