@@ -13,6 +13,7 @@ import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
 import co.edu.uniquindio.unieventos.services.interfaces.ShoppingCarService;
 import com.mercadopago.resources.preference.Preference;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/client")
+//TODO Mirar bien como funcionan estas cosas con el Swagger
+@SecurityRequirement(name = "bearerAuth")
 public class ClientController {
 
     /*

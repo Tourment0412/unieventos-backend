@@ -4,6 +4,7 @@ import co.edu.uniquindio.unieventos.dto.accountdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.TokenDTO;
 import co.edu.uniquindio.unieventos.services.interfaces.AccountService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @Service
 @RequiredArgsConstructor
 @RequestMapping("/api/account")
+
+//TODO Mirar bien como funcionan estas cosas con el Swagger
+@SecurityRequirement(name = "bearerAuth")
 public class AccountController {
 
     private final AccountService accountService;
