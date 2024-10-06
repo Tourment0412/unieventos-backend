@@ -44,11 +44,11 @@ public class TokenFilter extends OncePerRequestFilter {
             String token = getToken(request);
             boolean error = true;
             try {
-                if (requestURI.startsWith("/auth/account")) {
+                if (requestURI.startsWith("/api/account")) {
                     error = validarToken(token, Role.CLIENT) && validarToken(token, Role.ADMIN);
-                } else if (requestURI.startsWith("/auth/admin")) {
+                } else if (requestURI.startsWith("/api/admin")) {
                     error = validarToken(token, Role.ADMIN);
-                } else if (requestURI.startsWith("/api/cliente")) {
+                } else if (requestURI.startsWith("/api/client")) {
                     error = validarToken(token, Role.CLIENT);
                 } else {
                     error = false;
