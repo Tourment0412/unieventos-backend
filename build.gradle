@@ -33,6 +33,11 @@ repositories {
 
 
 dependencies {
+    //QR Dependencies
+    implementation 'com.google.zxing:core:3.4.1' // Versión de ZXing
+    implementation 'com.google.zxing:javase:3.4.1' // Versión de ZXing para Java
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+    implementation 'jakarta.activation:jakarta.activation-api:2.0.0' // Ajusta la versión según sea necesario
     //Dependencies for payment gateway
     implementation 'com.mercadopago:sdk-java:2.1.27'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

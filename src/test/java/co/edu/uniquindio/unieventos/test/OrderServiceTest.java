@@ -15,7 +15,7 @@ import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.model.vo.OrderDetail;
 import co.edu.uniquindio.unieventos.repositories.OrderRepo;
 import co.edu.uniquindio.unieventos.services.implementations.OrderServiceImp;
-import co.edu.uniquindio.unieventos.services.interfaces.CouponSevice;
+import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
 import co.edu.uniquindio.unieventos.services.interfaces.ShoppingCarService;
@@ -45,7 +45,7 @@ public class OrderServiceTest {
     private OrderRepo orderRepo;
 
     @Autowired
-    private CouponSevice couponService;
+    private CouponService couponService;
 
     @Autowired
     private EventService eventService;
@@ -53,8 +53,10 @@ public class OrderServiceTest {
     @Autowired
     private ShoppingCarService shoppingCarService;
 
+    private PreferenceClient preferenceClient;
 
-    private PreferenceClient preferenceClient; // Cliente real de MercadoPago
+    private String clientId="67019b1d63e5b8567aabf871";
+    private String couponId="66fafd1310b4027d916c95dc";
 
     @BeforeEach
     void setUp() {
@@ -66,9 +68,9 @@ public class OrderServiceTest {
         // Arrange
         CreateOrderDTO createOrderDTO = new CreateOrderDTO(
                 false,
-                "miguel@example.com",
-                "clientID",
-                "couponID"
+                "",
+                clientId,
+                couponId
                 );
 
         // Crear un DTO de cupón con los datos requeridos
@@ -76,13 +78,13 @@ public class OrderServiceTest {
         //couponService.createCoupon(createCouponDTO);
 
         // Crear un carrito de compras con detalles
-        ShoppingCar shoppingCar = shoppingCarService.getShoppingCar("66fadcb5d08fb70890780065");
+        //ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(clientId);
 
         // Crear un DTO de detalle de carrito con los atributos necesarios: idUser, idEvent, locationName, quantity
-        AddShoppingCarDetailDTO addShoppingCarDetailDTO = new AddShoppingCarDetailDTO("66fadcb5d08fb70890780065", "66f9e4d542ac3e6f6a3d7672", "Locación 1", 2);
+        //AddShoppingCarDetailDTO addShoppingCarDetailDTO = new AddShoppingCarDetailDTO("66fadcb5d08fb70890780065", "66f9e4d542ac3e6f6a3d7672", "Locación 1", 2);
 
         // Agregar el detalle del carrito utilizando el DTO
-        shoppingCarService.addShoppingCarDetail(addShoppingCarDetailDTO);
+        //shoppingCarService.addShoppingCarDetail(addShoppingCarDetailDTO);
 
         // Act
         String orderId = orderService.createOrder(createOrderDTO);

@@ -1,20 +1,16 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
+import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
-import co.edu.uniquindio.unieventos.model.documents.Coupon;
-import co.edu.uniquindio.unieventos.model.documents.Event;
-import co.edu.uniquindio.unieventos.model.documents.Order;
-import co.edu.uniquindio.unieventos.model.documents.ShoppingCar;
+import co.edu.uniquindio.unieventos.model.documents.*;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
-import co.edu.uniquindio.unieventos.model.vo.CarDetail;
-import co.edu.uniquindio.unieventos.model.vo.Location;
-import co.edu.uniquindio.unieventos.model.vo.OrderDetail;
-import co.edu.uniquindio.unieventos.model.vo.Payment;
+import co.edu.uniquindio.unieventos.model.vo.*;
+import co.edu.uniquindio.unieventos.repositories.AccountRepo;
+import co.edu.uniquindio.unieventos.repositories.CouponRepo;
+import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.repositories.OrderRepo;
-import co.edu.uniquindio.unieventos.services.interfaces.CouponSevice;
-import co.edu.uniquindio.unieventos.services.interfaces.EventService;
-import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
-import co.edu.uniquindio.unieventos.services.interfaces.ShoppingCarService;
+import co.edu.uniquindio.unieventos.services.interfaces.*;
+import com.google.zxing.WriterException;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -27,29 +23,46 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+
+
+import java.util.Map;
 
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class OrderServiceImp implements OrderService {
     private final OrderRepo orderRepo;
-    private final CouponSevice couponService;
+    private final CouponService couponService;
     private final EventService eventService;
     private final ShoppingCarService shoppingCarService;
+    private final AccountRepo accountRepo;
+    private final EmailService emailService;
+    private final EventRepo eventRepo;
+    private final CouponRepo couponRepo;
 
 
-    public OrderServiceImp(OrderRepo orderRepo, CouponSevice couponService, EventService eventService, ShoppingCarService shoppingCarService) {
+    public OrderServiceImp(OrderRepo orderRepo, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, AccountRepo accountRepo, EmailService emailService, EventRepo eventRepo, CouponRepo couponRepo) {
         this.orderRepo = orderRepo;
         this.couponService = couponService;
         this.eventService = eventService;
         this.shoppingCarService = shoppingCarService;
+        this.accountRepo = accountRepo;
+        this.emailService = emailService;
+        this.eventRepo = eventRepo;
+        this.couponRepo = couponRepo;
     }
 
     @Override
@@ -92,12 +105,18 @@ public class OrderServiceImp implements OrderService {
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
         order.setCouponId(new ObjectId(createOrderDTO.couponId()));
         order.setGift(false);
-        //TODO validadar si está registrada
+        //TODO validar si está registrada
         if(createOrderDTO.isForFriend()){
+            if(accountRepo.findAccountByEmail(createOrderDTO.friendEmail()).isEmpty()){
+               throw new Exception("Your friend is not registered ");
+            }
             order.setGift(true);
             order.setFriendMail(createOrderDTO.friendEmail());
+
         }
+        Account account = accountRepo.findAccountById(order.getClientId().toString()).get();
         Order createOrder = orderRepo.save(order);
+        sendPurchaseSummary(account.getEmail(), order);
         return createOrder.getId();
     }
 
@@ -307,6 +326,76 @@ public class OrderServiceImp implements OrderService {
         orderPayment.setAuthorizationCode(payment.getAuthorizationCode());
         orderPayment.setTransactionValue(payment.getTransactionAmount().floatValue());
         return orderPayment;
+    }
+
+
+    @Override
+    public String sendPurchaseSummary(String email, Order order) throws Exception {
+        Account account = getAccountEmail(email);
+
+        // Generar código QR
+        String orderId = order.getId();
+        String tempDir = System.getProperty("java.io.tmpdir"); // Directorio temporal
+        String qrFilePath = tempDir + "/" + UUID.randomUUID() + ".png"; // Generar nombre único para evitar conflictos
+
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(orderId, BarcodeFormat.QR_CODE, 200, 200);
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", Paths.get(qrFilePath));
+
+        //TODO Send this code to the user (Account) email
+        String subject = "Ticket Purchase Summary";
+        String body = "Hello " + account.getUser().getName() + "!\n\n"
+                + "Thank you for your purchase. Below is a summary of your order:\n\n"
+                + "Order Number: " + order.getId() + "\n"
+                + "Purchase Date: " + order.getDate() + "\n";
+        if(order.getPayment()!=null) {
+            body +="Payment Method: " + order.getPayment().getPaymentType().toString().toLowerCase() + "\n"
+                    + "Payment Status: " + order.getPayment().getStatus() + "\n\n";
+        }
+
+        body += "Event Details:\n";
+        for (OrderDetail item : order.getItems()) {
+            Event event = eventRepo.findById(item.getEventId().toString()).get();
+            body += "---------------------------------\n"
+                    + "Event: " + event.getName() + "\n"
+                    + "Event Date: " + event.getDate() + "\n"
+                    + "Location: " + item.getLocationName() + "\n"
+                    + "Number of Tickets: " + item.getQuantity() + "\n"
+                    + "Total: " + (item.getPrice()) + "\n"
+                    + "---------------------------------\n";
+        }
+
+        body += "Total Paid: " + order.getTotal() + "\n\n";
+
+        if (order.getCouponId() != null) {
+            Coupon coupon = couponRepo.findById(order.getCouponId().toString()).get();
+            body += "Coupon used: " + coupon.getCode() + "\n"
+                    + "Discount applied: " + coupon.getDiscount() * 100 + "%" + "\n\n";
+        }
+        //TODO Add QR with id Order
+        body += "To access your tickets, scan the following QR code: " + "\n\n";
+        body += "<img src='cid:qrCodeImage'/>\n\n"; // Usar CID para incrustar la imagen
+
+        body += "We hope you enjoy the event!\n"
+                + "Sincerely,\n"
+                + "Unieventos Team";
+
+
+        // Enviar el correo
+        //emailService.sendEmailWithInlineImage(new EmailDTO(subject, body, account.getEmail(), qrFilePath));
+        // Eliminar archivo QR después de enviar el correo
+        new File(qrFilePath).delete();
+        return "The summary of your purchase has been sent to your email";
+
+    }
+
+
+    private Account getAccountEmail(String email) throws Exception {
+        Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
+        if (accountOptional.isEmpty()) {
+            throw new Exception("This email is not registered");
+        }
+        return accountOptional.get();
     }
 
 }

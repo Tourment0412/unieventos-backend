@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
+import co.edu.uniquindio.unieventos.model.documents.Order;
 import com.mercadopago.resources.preference.Preference;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public interface OrderService {
     OrderInfoDTO getInfoOrder(String orderId) throws Exception;
     List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
     List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO);
+    String sendPurchaseSummary(String email, Order order) throws Exception;
 
-    
     //Methods for payment gateway
     PaymentResponseDTO makePayment(String idOrder) throws Exception;
     void receiveNotificationFromMercadoPago(Map<String, Object> request);

@@ -134,7 +134,7 @@ db.orders.insertMany([
 // Colección shoppingCars
 db.shoppingCars.insertMany([
     {
-        _id: ObjectId("64f6d15801b1fc6c7c2037dd"),
+        _id: ObjectId("67019b1d63e5b8567aabf871"),
         clientId: ObjectId("64f6d15801b1fc6c7c2037d1"),
         items: [
             { eventId: ObjectId("64f6d15801b1fc6c7c2037d7"), quantity: 1 },
