@@ -1,15 +1,13 @@
 package co.edu.uniquindio.unieventos.controllers;
 
 
+import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoDTO;
+import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CreateCouponDTO;
-import co.edu.uniquindio.unieventos.dto.eventdtos.CreateEventDTO;
-import co.edu.uniquindio.unieventos.dto.eventdtos.EventFilterDTO;
-import co.edu.uniquindio.unieventos.dto.eventdtos.EventItemDTO;
-import co.edu.uniquindio.unieventos.dto.eventdtos.UpdateEventDTO;
+import co.edu.uniquindio.unieventos.dto.coupondtos.UpdateCouponDTO;
+import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
-import co.edu.uniquindio.unieventos.model.documents.Coupon;
-import co.edu.uniquindio.unieventos.model.documents.Event;
-import co.edu.uniquindio.unieventos.services.interfaces.CouponSevice;
+import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.ImagesService;
 import jakarta.validation.Valid;
@@ -26,7 +24,7 @@ import java.util.List;
 public class AdminController {
 
     private final EventService eventService;
-    private final CouponSevice couponSevice;
+    private final CouponService couponService;
     private final ImagesService imagesService;
 
     @PutMapping("/event/update")
@@ -51,19 +49,24 @@ public class AdminController {
 
     @PostMapping("/coupon/create")
     public ResponseEntity<MessageDTO<String>> createCoupon(@Valid @RequestBody CreateCouponDTO coupon) throws Exception {
-        couponSevice.createCoupon(coupon);
+        couponService.createCoupon(coupon);
         return ResponseEntity.ok(new MessageDTO<>(false, "Coupon created successfully"));
     }
 
-    //TODO ask if this GetEvent controller should be this one where I get the whole entity or just the info
+    @PutMapping("/coupon/update")
+    public ResponseEntity<MessageDTO<String>> updateCoupon(@Valid @RequestBody UpdateCouponDTO coupon) throws Exception{
+        couponService.updateCoupon(coupon);
+        return ResponseEntity.ok(new MessageDTO<>(false, "Coupon updated successfully"));
+    }
+
+
     @GetMapping("/event/get/{id}")
-    public ResponseEntity<MessageDTO<Event>> getEvent(@PathVariable String id) throws Exception {
-        Event event = eventService.getEvent(id);
+    public ResponseEntity<MessageDTO<EventInfoAdminDTO>> getEvent(@PathVariable String id) throws Exception {
+        EventInfoAdminDTO event = eventService.getInfoEventAdmin(id);
         return ResponseEntity.ok(new MessageDTO<>(false, event));
     }
 
-    //TODO Ask if this method doesn't have a exception explicitly thrown in the method, it will just return exception
-    // related with the mapping, the page or the query
+
     @GetMapping("/event/get-all/{page}")
     public ResponseEntity<MessageDTO<List<EventItemDTO>>> listEventsAdmin(@PathVariable int page) {
         List<EventItemDTO> events = eventService.listEventsAdmin(page);
@@ -73,12 +76,17 @@ public class AdminController {
 
     //TODO ask if this GetCoupon controller should be this one where I get the whole entity
     @GetMapping("/coupon/get/{id}")
-    public ResponseEntity<MessageDTO<Coupon>> getCouponById(@PathVariable String id) throws Exception {
-        Coupon coupon = couponSevice.getCouponById(id);
+    public ResponseEntity<MessageDTO<CouponInfoDTO>> getInfoCoupon(@PathVariable String id) throws Exception {
+        CouponInfoDTO coupon = couponService.getInfoCouponAdmin(id);
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
 
     //TODO I need a service to get all coupons for the admin
+    @GetMapping("/coupon/get-all/{page}")
+    public ResponseEntity<MessageDTO<List<CouponItemDTO>>> getAllCouponsAdmin(@PathVariable int page) throws Exception{
+        List<CouponItemDTO> coupons = couponService.getAllCouponsAdmin(page);
+        return ResponseEntity.ok(new MessageDTO<>(false, coupons));
+    }
 
 
     @DeleteMapping("/image/delete")
@@ -95,7 +103,7 @@ public class AdminController {
 
     @DeleteMapping("/coupon/delete/{id}")
     public ResponseEntity<MessageDTO<String>> deleteCoupon(@PathVariable String id) throws Exception{
-        couponSevice.deleteCoupon(id);
+        couponService.deleteCoupon(id);
         return ResponseEntity.ok().body(new MessageDTO<>(false, "Coupon was successfully deleted"));
     }
 
