@@ -1,8 +1,9 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
-import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
+
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.*;
+import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.model.vo.*;
 import co.edu.uniquindio.unieventos.repositories.AccountRepo;
@@ -10,7 +11,6 @@ import co.edu.uniquindio.unieventos.repositories.CouponRepo;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.repositories.OrderRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.*;
-import com.google.zxing.WriterException;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -23,19 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
 
 
 import java.util.Map;
@@ -103,7 +96,10 @@ public class OrderServiceImp implements OrderService {
         order.setDate(LocalDateTime.now());
         order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
-        order.setCouponId(new ObjectId(createOrderDTO.couponId()));
+        if(!(createOrderDTO.couponId()==null)){
+            order.setCouponId(new ObjectId(createOrderDTO.couponId()));
+        }
+
         order.setGift(false);
         //TODO validar si está registrada
         if(createOrderDTO.isForFriend()){
@@ -123,6 +119,9 @@ public class OrderServiceImp implements OrderService {
     private float calculateTotal(List<OrderDetail> items, String couponId) throws Exception {
         float total = 0;
         Coupon coupon = couponService.getCouponById(couponId);
+        if(coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)){
+            throw new Exception("Coupon is not available");
+        }
         for (OrderDetail orderDetail : items) {
             total += orderDetail.getPrice();
         }
@@ -337,10 +336,6 @@ public class OrderServiceImp implements OrderService {
         String orderId = order.getId();
         String tempDir = System.getProperty("java.io.tmpdir"); // Directorio temporal
         String qrFilePath = tempDir + "/" + UUID.randomUUID() + ".png"; // Generar nombre único para evitar conflictos
-
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(orderId, BarcodeFormat.QR_CODE, 200, 200);
-        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", Paths.get(qrFilePath));
 
         //TODO Send this code to the user (Account) email
         String subject = "Ticket Purchase Summary";
