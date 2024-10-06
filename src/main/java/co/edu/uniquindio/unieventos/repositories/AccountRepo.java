@@ -15,7 +15,7 @@ public interface AccountRepo extends MongoRepository<Account, String> {
     @Query("{'user': { $ne: null }, 'user.dni':  ?0}")
     Optional<Account> findAccountByDni(String dni);
 
-    @Query("{'id':  ?0}")
+    @Query("{'_id':  ?0}")
     Optional<Account> findAccountById(String id);
 
     //In this way simple queries like this one are going to be done without the query annotation
