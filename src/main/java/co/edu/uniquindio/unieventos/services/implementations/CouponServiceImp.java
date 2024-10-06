@@ -1,24 +1,25 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
 
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.CreateCouponDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.UpdateCouponDTO;
+import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
-import co.edu.uniquindio.unieventos.services.interfaces.CouponSevice;
+import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.util.utilitaryClass;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional()
-public class CouponServiceImp implements CouponSevice {
+@Transactional(rollbackFor = Exception.class)
+public class CouponServiceImp implements CouponService {
 
     private final CouponRepo couponRepo;
 
@@ -39,9 +40,9 @@ public class CouponServiceImp implements CouponSevice {
     }
 
     @Override
-    public CouponInfoDTO getInfoCoupon(String id) throws Exception {
+    public CouponInfoDTO getInfoCouponAdmin(String id) throws Exception {
         Coupon coupon = getCupon(id);
-        return new CouponInfoDTO (
+        return new CouponInfoDTO(
                 coupon.getId(),
                 coupon.getName(),
                 coupon.getType(),
@@ -57,7 +58,7 @@ public class CouponServiceImp implements CouponSevice {
         if (existCupon(coupon.name())) {
             throw new Exception("Ya existe un cupon con ese nombre");
         }
-        Coupon newCoupon=new Coupon();
+        Coupon newCoupon = new Coupon();
         newCoupon.setCode(utilitaryClass.generateCode(6));
         newCoupon.setStatus(CouponStatus.AVAILABLE);
         newCoupon.setName(coupon.name());
@@ -70,7 +71,7 @@ public class CouponServiceImp implements CouponSevice {
 
     @Override
     public String updateCoupon(UpdateCouponDTO coupon) throws Exception {
-        Coupon couponToUpdate=getCupon(coupon.id());
+        Coupon couponToUpdate = getCupon(coupon.id());
         couponToUpdate.setName(coupon.name());
         couponToUpdate.setExpirationDate(coupon.expirationDate());
         couponToUpdate.setType(coupon.type());
@@ -81,7 +82,7 @@ public class CouponServiceImp implements CouponSevice {
 
     @Override
     public String deleteCoupon(String id) throws Exception {
-        Coupon couponToDelete=getCupon(id);
+        Coupon couponToDelete = getCupon(id);
         couponToDelete.setStatus(CouponStatus.NOT_AVAILABLE);
         couponRepo.save(couponToDelete);
         return "Account deleted successfully";
@@ -89,7 +90,52 @@ public class CouponServiceImp implements CouponSevice {
 
     @Override
     public Coupon getCouponById(String id) throws Exception {
-        Optional<Coupon> coupon=couponRepo.findById(id);
+        Optional<Coupon> coupon = couponRepo.findById(id);
         return coupon.orElse(null);
     }
+
+    @Override
+    public List<CouponItemDTO> getAllCouponsAdmin(int page) throws Exception {
+        List<Coupon> coupons = couponRepo.findAll(PageRequest.of(page, 10)).getContent();
+        return coupons.stream().map(e -> new CouponItemDTO(
+                e.getId(),
+                e.getName(),
+                e.getType(),
+                e.getStatus(),
+                e.getExpirationDate(),
+                e.getDiscount()
+        )).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public CouponInfoClientDTO getCouponClient(String id) throws Exception {
+        Optional<Coupon> couponOpt = couponRepo.findCouponClient(id);
+        if (couponOpt.isEmpty()) {
+            throw new Exception("Coupon with this id does not exist or is not available");
+        }
+        Coupon coupon = couponOpt.get();
+        return new CouponInfoClientDTO(
+                coupon.getId(),
+                coupon.getName(),
+                coupon.getType(),
+                coupon.getCode(),
+                coupon.getExpirationDate(),
+                coupon.getDiscount()
+        );
+    }
+
+    @Override
+    public List<CouponItemClientDTO> getAllCouponsClient(int page) throws Exception {
+        List<Coupon> coupons = couponRepo.findAllCouponsClient(PageRequest.of(page, 10)).getContent();
+        return coupons.stream().map(e -> new CouponItemClientDTO(
+                e.getId(),
+                e.getName(),
+                e.getType(),
+                e.getExpirationDate(),
+                e.getDiscount()
+        )).collect(Collectors.toList());
+    }
+
+
 }

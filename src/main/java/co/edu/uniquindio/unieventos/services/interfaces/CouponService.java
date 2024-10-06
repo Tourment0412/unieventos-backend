@@ -3,9 +3,13 @@ package co.edu.uniquindio.unieventos.services.interfaces;
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 
-public interface CouponSevice {
+import java.util.List;
 
-    CouponInfoDTO getInfoCoupon(String id) throws Exception;
+public interface CouponService {
+
+    CouponInfoDTO getInfoCouponAdmin(String id) throws Exception;
+
+    CouponInfoClientDTO getCouponClient(String id) throws Exception;
 
     String createCoupon(CreateCouponDTO coupon) throws Exception;
 
@@ -14,5 +18,8 @@ public interface CouponSevice {
     String deleteCoupon(String id) throws Exception;
 
     Coupon getCouponById(String id) throws Exception;
+
+    List<CouponItemDTO> getAllCouponsAdmin(int page) throws Exception;
+    List<CouponItemClientDTO> getAllCouponsClient(int page) throws Exception;
 
 }
