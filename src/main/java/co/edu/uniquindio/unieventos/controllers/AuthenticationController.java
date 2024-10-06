@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final AccountService accountService;
 
     @PostMapping("/login")
-    public ResponseEntity<MessageDTO<TokenDTO>> iniciarSesion(@Valid @RequestBody LoginDTO
+    public ResponseEntity<MessageDTO<TokenDTO>> login(@Valid @RequestBody LoginDTO
                                                                       loginDTO) throws Exception{
         TokenDTO token = accountService.login(loginDTO);
         return ResponseEntity.ok(new MessageDTO<>(false, token));
