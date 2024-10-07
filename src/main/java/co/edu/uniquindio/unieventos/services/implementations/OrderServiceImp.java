@@ -92,7 +92,7 @@ public class OrderServiceImp implements OrderService {
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
         Order createOrder = orderRepo.save(order);
-        (account.getEmail(), order);
+        sendPurchaseSummary(account.getEmail(), order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
     }
