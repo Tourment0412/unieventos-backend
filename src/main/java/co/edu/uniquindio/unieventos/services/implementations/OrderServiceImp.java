@@ -17,13 +17,9 @@ import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,25 +31,22 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class OrderServiceImp implements OrderService {
-    private final OrderRepo orderRepo;
     private final CouponService couponService;
     private final EventService eventService;
     private final ShoppingCarService shoppingCarService;
-    private final AccountRepo accountRepo;
     private final EmailService emailService;
-    private final EventRepo eventRepo;
-    private final CouponRepo couponRepo;
+    private final AccountService accountService;
+    private final OrderRepo orderRepo;
 
 
-    public OrderServiceImp(OrderRepo orderRepo, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, AccountRepo accountRepo, EmailService emailService, EventRepo eventRepo, CouponRepo couponRepo) {
-        this.orderRepo = orderRepo;
+    public OrderServiceImp(AccountService accountService, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, EmailService emailService, OrderRepo orderRepo) {
+        this.accountService = accountService;
         this.couponService = couponService;
         this.eventService = eventService;
         this.shoppingCarService = shoppingCarService;
-        this.accountRepo = accountRepo;
         this.emailService = emailService;
-        this.eventRepo = eventRepo;
-        this.couponRepo = couponRepo;
+
+        this.orderRepo = orderRepo;
     }
 
     @Override
@@ -62,34 +55,27 @@ public class OrderServiceImp implements OrderService {
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
         List<OrderDetail> items = getOrderDetails(shoppingCar);
 
-        //TODO code for gateway
-        //TODO Payment
         order.setItems(items);
         order.setDate(LocalDateTime.now());
 
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
-        if(!(createOrderDTO.couponId()==null || createOrderDTO.couponId().isEmpty())){
-            order.setCouponId(new ObjectId(createOrderDTO.couponId()));
-            order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
+        if(!(createOrderDTO.counponCode()==null || createOrderDTO.counponCode().isEmpty())){
+            Coupon coupon = couponService.getCouponByCode(createOrderDTO.counponCode());
+            order.setCouponId(new ObjectId(coupon.getId()));
+            order.setTotal(calculateTotal(items, coupon.getId()));
         }else {
             order.setTotal(calculateTotal(items));
         }
         order.setGift(false);
 
-        //TODO validar si está registrada
         if(createOrderDTO.isForFriend()){
-            if(accountRepo.findAccountByEmail(createOrderDTO.friendEmail()).isEmpty()){
-               throw new Exception("Your friend is not registered ");
-            }
+            accountService.findAccountByEmail(createOrderDTO.friendEmail());
             order.setGift(true);
             order.setFriendMail(createOrderDTO.friendEmail());
 
         }
-        Optional<Account> optionalClient = accountRepo.findAccountById(order.getClientId().toString());
-        if(optionalClient.isEmpty()){
-            throw new Exception("Your client is not registered ");
-        }
-        Account account = optionalClient.get();
+
+        Account account = accountService.getAccount(createOrderDTO.clientId());
         Order createOrder = orderRepo.save(order);
         sendPurchaseSummary(account.getEmail(), order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
@@ -117,7 +103,6 @@ public class OrderServiceImp implements OrderService {
                     items.add(orderDetail);
 
                 }
-
 
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -168,7 +153,9 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public OrderInfoDTO getInfoOrder(String orderId) throws Exception {
-        Order order = getOrder(orderId);
+        Order order = getOrder(orderId); // Método que obtiene la orden
+
+        String couponId = (order.getCouponId() != null) ? order.getCouponId().toString() : null;
 
         return new OrderInfoDTO(
                 order.getClientId().toString(),
@@ -180,13 +167,13 @@ public class OrderServiceImp implements OrderService {
                 order.getPayment().getTransactionValue(),
                 order.getId(),
                 order.getTotal(),
-                order.getCouponId().toString()
+                couponId
         );
     }
 
 
     @Override
-    public List<OrderItemDTO> listOrdersClient(String idClient) throws Exception {
+    public List<OrderItemDTO> listOrdersClient(String idClient){
         ObjectId clientId = new ObjectId(idClient);
 
         List<Order> orders = orderRepo.findOrdersByClientId(clientId);
@@ -345,7 +332,7 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public String sendPurchaseSummary(String email, Order order) throws Exception {
-        Account account = getAccountEmail(email);
+        Account account = accountService.findAccountByEmail(email);
 
         // Generar código QR
         String orderId = order.getId();
@@ -366,7 +353,7 @@ public class OrderServiceImp implements OrderService {
         body += "Event Details:\n";
         for (OrderDetail item : order.getItems()) {
 
-            Event event = eventRepo.findById(item.getEventId().toString()).get();
+            Event event = eventService.getEvent(item.getEventId().toString());
             body += "---------------------------------\n"
                     + "Event: " + event.getName() + "\n"
                     + "Event Date: " + event.getDate() + "\n"
@@ -379,90 +366,34 @@ public class OrderServiceImp implements OrderService {
         body += "Total Paid: " + order.getTotal() + "\n\n";
 
         if (order.getCouponId() != null) {
-            Coupon coupon = couponRepo.findById(order.getCouponId().toString()).get();
+            Coupon coupon = couponService.getCouponById(order.getCouponId().toString());
             body += "Coupon used: " + coupon.getCode() + "\n"
                     + "Discount applied: " + coupon.getDiscount() * 100 + "%" + "\n\n";
         }
         //TODO Add QR with id Order
-        body += "To access your tickets, scan the following QR code: " + "\n\n";
+        body += """
+                To access your tickets, scan the following QR code:\s
+                
+                """;
         body += "<img src='cid:qrCodeImage'/>\n\n"; // Usar CID para incrustar la imagen
 
-        body += "We hope you enjoy the event!\n"
-                + "Sincerely,\n"
-                + "Unieventos Team";
+        body += """
+                We hope you enjoy the event!
+                Sincerely,
+                Unieventos Team""";
 
 
         // Enviar el correo
         //emailService.sendEmailWithInlineImage(new EmailDTO(subject, body, account.getEmail(), qrFilePath));
         // Eliminar archivo QR después de enviar el correo
-        new File(qrFilePath).delete();
+        //new File(qrFilePath).delete();
         return "The summary of your purchase has been sent to your email";
 
     }
 
 
-    private Account getAccountEmail(String email) throws Exception {
-        Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
-        if (accountOptional.isEmpty()) {
-            throw new Exception("This email is not registered");
-        }
-        return accountOptional.get();
-    }
 
 
-    @Override
-    public EventReportDTO generateEventReport(String eventId) {
-        // 1. Obtener el evento
-        Event event = eventRepo.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
-
-        // 2. Obtener todas las órdenes relacionadas con el evento
-        List<Order> orders = orderRepo.findByEventId(new ObjectId(eventId));
-
-        // 3. Inicializar variables para estadísticas
-        Map<String, Integer> soldByLocation = new HashMap<>();
-        Map<String, Double> percentageSoldByLocation = new HashMap<>();
-        BigDecimal totalSales = BigDecimal.ZERO;
-        BigDecimal totalTicketsAvailable = BigDecimal.ZERO;
-
-        // 4. Calcular estadísticas por ubicación
-        for (Location location : event.getLocations()) {
-            int ticketsSoldForLocation = 0;
-
-            for (Order order : orders) {
-                for (OrderDetail detail : order.getItems()) {
-                    if (detail.getEventId().toHexString().equals(eventId) &&
-                            detail.getLocationName().equalsIgnoreCase(location.getName())) {
-                        ticketsSoldForLocation += detail.getQuantity();
-                        BigDecimal saleAmount = BigDecimal.valueOf(detail.getPrice())
-                                .multiply(BigDecimal.valueOf(detail.getQuantity()));
-                        totalSales = totalSales.add(saleAmount);
-                    }
-                }
-            }
-
-            // Agregar el número de boletos vendidos por ubicación
-            soldByLocation.put(location.getName(), ticketsSoldForLocation);
-
-            // Calcular el porcentaje vendido por ubicación
-            double percentageSold = (ticketsSoldForLocation * 100.0) / location.getMaxCapacity();
-            percentageSoldByLocation.put(location.getName(), percentageSold);
-
-            // Sumar el total de boletos disponibles para el evento
-            totalTicketsAvailable = totalTicketsAvailable.add(BigDecimal.valueOf(location.getMaxCapacity()));
-        }
-
-        // 5. Crear el DTO con los datos calculados
-        return new EventReportDTO(
-                event.getId(),
-                event.getName(),
-                event.getDate(),
-                soldByLocation,
-                percentageSoldByLocation,
-                totalSales,
-                totalTicketsAvailable
-        );
-    }
 
 
 

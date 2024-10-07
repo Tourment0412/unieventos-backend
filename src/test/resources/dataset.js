@@ -35,7 +35,7 @@ db.coupons.insertMany([
         name: "Discount 10%",
         code: "DISC10",
         CouponType: "percentage",
-        discount: 10,
+        discount: 0.1,
         expirationDate: ISODate("2024-12-31T23:59:59Z"),
         status: "active"
     },
@@ -44,7 +44,7 @@ db.coupons.insertMany([
         name: "Flat 5000",
         code: "FLAT5000",
         CouponType: "flat",
-        discount: 5000,
+        discount: 0.5,
         expirationDate: ISODate("2023-12-31T23:59:59Z"),
         status: "expired"
     },
@@ -53,7 +53,7 @@ db.coupons.insertMany([
         name: "Black Friday",
         code: "BF2024",
         CouponType: "percentage",
-        discount: 50,
+        discount: 0.75,
         expirationDate: ISODate("2024-11-30T23:59:59Z"),
         status: "active"
     }

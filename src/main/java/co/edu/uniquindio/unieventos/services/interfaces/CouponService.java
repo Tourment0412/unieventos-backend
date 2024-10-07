@@ -22,4 +22,5 @@ public interface CouponService {
     List<CouponItemDTO> getAllCouponsAdmin(int page) throws Exception;
     List<CouponItemClientDTO> getAllCouponsClient(int page) throws Exception;
 
+    Coupon getCouponByCode(String s) throws Exception;
 }

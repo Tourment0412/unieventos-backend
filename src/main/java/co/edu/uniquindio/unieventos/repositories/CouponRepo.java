@@ -21,13 +21,13 @@ public interface CouponRepo extends MongoRepository<Coupon, String> {
     @Query(" {expirationDate: { $gt: new Date() }}")
     Optional<Coupon> getAvailableMultipleCupons();
 
-    @Query("{name: ?0}")
+    @Query("{'name': ?0}")
     Optional<Coupon> findByName(String name);
 
     @Query(" {expirationDate: { $gt: new Date() }}")
     Optional<Coupon> getExpiredCupons();
 
-    @Query(" {name: ?0,type: ?1}")
+    @Query(" {'name': ?0,'type': ?1}")
     Optional<Coupon> findByNameAndType(String name, CouponType type);
 
     @Query(" $or [{name: ?0},{discount: ?1},{expirationDate: ?2},{type: ?3}]")
@@ -40,5 +40,6 @@ public interface CouponRepo extends MongoRepository<Coupon, String> {
     @Query("{ 'status': 'AVAILABLE', 'expirationDate': { $gt: new Date() } }")
     Page<Coupon> findAllCouponsClient(Pageable pageable);
 
-
+    @Query("{'code': ?0}")
+    Optional<Coupon> findByCode(String code);
 }

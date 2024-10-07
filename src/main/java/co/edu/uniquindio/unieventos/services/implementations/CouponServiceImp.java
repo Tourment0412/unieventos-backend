@@ -4,15 +4,12 @@ package co.edu.uniquindio.unieventos.services.implementations;
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
-import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.util.utilitaryClass;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,11 +88,14 @@ public class CouponServiceImp implements CouponService {
     @Override
     public Coupon getCouponById(String id) throws Exception {
         Optional<Coupon> coupon = couponRepo.findById(id);
-        return coupon.orElse(null);
+        if (coupon.isEmpty()) {
+            throw new Exception("Coupon with this id does not exist");
+        }
+        return coupon.get();
     }
 
     @Override
-    public List<CouponItemDTO> getAllCouponsAdmin(int page) throws Exception {
+    public List<CouponItemDTO> getAllCouponsAdmin(int page){
         List<Coupon> coupons = couponRepo.findAll(PageRequest.of(page, 10)).getContent();
         return coupons.stream().map(e -> new CouponItemDTO(
                 e.getId(),
@@ -126,7 +126,7 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public List<CouponItemClientDTO> getAllCouponsClient(int page) throws Exception {
+    public List<CouponItemClientDTO> getAllCouponsClient(int page){
         List<Coupon> coupons = couponRepo.findAllCouponsClient(PageRequest.of(page, 10)).getContent();
         return coupons.stream().map(e -> new CouponItemClientDTO(
                 e.getId(),
@@ -135,6 +135,15 @@ public class CouponServiceImp implements CouponService {
                 e.getExpirationDate(),
                 e.getDiscount()
         )).collect(Collectors.toList());
+    }
+
+    @Override
+    public Coupon getCouponByCode(String code) throws Exception {
+        Optional<Coupon> coupon = couponRepo.findByCode(code);
+        if (coupon.isEmpty()){
+            throw new Exception("Coupon Code Not Registered");
+        }
+        return coupon.get();
     }
 
 

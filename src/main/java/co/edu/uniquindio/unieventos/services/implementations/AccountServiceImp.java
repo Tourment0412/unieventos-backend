@@ -28,7 +28,7 @@ public class AccountServiceImp implements AccountService {
     private final EmailService emailService;
     private final JWTUtils jwtUtils;
 
-    public AccountServiceImp(AccountRepo accountRepo,EmailService emailService, JWTUtils jwtUtils) {
+    public AccountServiceImp(AccountRepo accountRepo, EmailService emailService, JWTUtils jwtUtils) {
 
         this.accountRepo = accountRepo;
         this.emailService = emailService;
@@ -49,7 +49,7 @@ public class AccountServiceImp implements AccountService {
         Account newAccount = new Account();
         newAccount.setEmail(account.email());
 
-        String encryptedPassword=encryptPassword(account.password());
+        String encryptedPassword = encryptPassword(account.password());
 
         newAccount.setPassword(encryptedPassword);
         //The goal of this register is to be for a client (Admins directly registered on db)
@@ -64,7 +64,7 @@ public class AccountServiceImp implements AccountService {
                 .phoneNumber(account.phoneNumber())
                 .adress(account.phoneNumber())
                 .build());
-        String validationCode= generateValidationCode();
+        String validationCode = generateValidationCode();
         newAccount.setRegistrationValidationCode(new ValidationCode(LocalDateTime.now(), validationCode));
 
         //TODO Method for mail sending for activation on account
@@ -72,11 +72,10 @@ public class AccountServiceImp implements AccountService {
         String body = "Your activation code is " + validationCode + " you have 15 minutes to do the activation " +
                 "of your Unieventos account.";
 
-        emailService.sendEmail(new EmailDTO(subject,body,account.email()));
+        emailService.sendEmail(new EmailDTO(subject, body, account.email()));
         Account accountCreated = accountRepo.save(newAccount);
         return accountCreated.getUser().getDni();
     }
-
 
 
     private boolean existsEmail(String email) {
@@ -123,7 +122,8 @@ public class AccountServiceImp implements AccountService {
         return "Account deleted successfully";
     }
 
-    private Account getAccount(String id) throws Exception {
+    @Override
+    public Account getAccount(String id) throws Exception {
         Optional<Account> accountOptional = accountRepo.findAccountById(id);
         if (accountOptional.isEmpty()) {
             throw new Exception("Account with this id does not exist");
@@ -150,12 +150,12 @@ public class AccountServiceImp implements AccountService {
         Account account = getAccountEmail(email);
         String recoverCode = generateValidationCode();
         //TODO Send this code to the user (Account) email
-        String subject= "Recover Password Code";
-        String body= "Hey! you have requested the recover of your password code for your Unieventos account\nThis " +
-                "is your recover password code: "+ recoverCode +"\nThis code lasts 15 minutes.";
+        String subject = "Recover Password Code";
+        String body = "Hey! you have requested the recover of your password code for your Unieventos account\nThis " +
+                "is your recover password code: " + recoverCode + "\nThis code lasts 15 minutes.";
         account.setPasswordValidationCode(new ValidationCode(LocalDateTime.now(), recoverCode));
         accountRepo.save(account);
-        emailService.sendEmail(new EmailDTO(subject,body,account.getEmail()));
+        emailService.sendEmail(new EmailDTO(subject, body, account.getEmail()));
         return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
     }
 
@@ -194,18 +194,18 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public TokenDTO login(LoginDTO loginDTO) throws Exception {
-        Account account= getAccountEmail(loginDTO.email());
-        if(account.getStatus()==AccountStatus.DELETED){
+        Account account = getAccountEmail(loginDTO.email());
+        if (account.getStatus() == AccountStatus.DELETED) {
             throw new Exception("Account with this email does not exist");
         }
-        if(account.getStatus()==AccountStatus.INACTIVE){
+        if (account.getStatus() == AccountStatus.INACTIVE) {
             throw new Exception("Account with this email is not active");
         }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        if(!passwordEncoder.matches(loginDTO.password(), account.getPassword())) {
+        if (!passwordEncoder.matches(loginDTO.password(), account.getPassword())) {
             throw new Exception("Invalid password");
         }
-        Map<String,Object> map = buildClaims(account);
+        Map<String, Object> map = buildClaims(account);
         return new TokenDTO(jwtUtils.generarToken(account.getEmail(), map));
     }
 
@@ -224,38 +224,51 @@ public class AccountServiceImp implements AccountService {
         Account accountObtained = getAccountEmail(activateAccountDTO.email());
         ValidationCode registrationValidationCode = accountObtained.getRegistrationValidationCode();
 
-        if(registrationValidationCode != null) {
-            if(registrationValidationCode.getCode().equals(activateAccountDTO.registrationValidationCode())){
-                if(registrationValidationCode.getCreationDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
+        if (registrationValidationCode != null) {
+            if (registrationValidationCode.getCode().equals(activateAccountDTO.registrationValidationCode())) {
+                if (registrationValidationCode.getCreationDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
                     accountObtained.setStatus(AccountStatus.ACTIVE);
                     accountRepo.save(accountObtained);
 
-                }else {
+                } else {
                     throw new Exception("Registration validation code has expired");
                 }
-            }else {
+            } else {
                 throw new Exception("This registration validation code is incorrect");
             }
         }
         return accountObtained.getId();
     }
+
     @Override
     public String reassignValidationRegistrationCode(String email) throws Exception {
         Account accountObtained = getAccountEmail(email);
         ValidationCode reassignValidationCode = new ValidationCode(LocalDateTime.now(), generateValidationCode());
         accountObtained.setRegistrationValidationCode(reassignValidationCode);
         String subject = "Hey! this is your NEW activation code for your Unieventos account";
-        String body = "Your activation code is " + reassignValidationCode.getCode()+ " you have 15 minutes to do the activation " +
+        String body = "Your activation code is " + reassignValidationCode.getCode() + " you have 15 minutes to do the activation " +
                 "of your Unieventos account.";
-        emailService.sendEmail(new EmailDTO(subject,body,accountObtained.getEmail()));
+        emailService.sendEmail(new EmailDTO(subject, body, accountObtained.getEmail()));
         accountRepo.save(accountObtained);
 
         return accountObtained.getId();
     }
 
-    private String encryptPassword(String password){
+    @Override
+    public Account findAccountByEmail(String email) throws Exception {
+        Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
+        if (accountOptional.isEmpty()) {
+            throw new Exception("Account with this email does not exist");
+        }
+
+        return accountOptional.get();
+
+    }
+
+
+    private String encryptPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return passwordEncoder.encode( password );
+        return passwordEncoder.encode(password);
     }
 
 }

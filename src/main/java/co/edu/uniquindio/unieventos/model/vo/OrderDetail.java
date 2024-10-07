@@ -9,8 +9,6 @@ import org.bson.types.ObjectId;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class OrderDetail {
-    @EqualsAndHashCode.Include
-    private String id;
 
     private ObjectId eventId;
     private float price;
@@ -18,8 +16,7 @@ public class OrderDetail {
     private int quantity;
 
     @Builder
-    public OrderDetail(String id, ObjectId idEvent, float price, String locationName, int quantity) {
-        this.id = id;
+    public OrderDetail(ObjectId idEvent, float price, String locationName, int quantity) {
         this.eventId = idEvent;
         this.price = price;
         this.locationName = locationName;

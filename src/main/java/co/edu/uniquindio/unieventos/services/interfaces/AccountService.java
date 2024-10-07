@@ -2,6 +2,11 @@ package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.accountdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.TokenDTO;
+import co.edu.uniquindio.unieventos.model.documents.Account;
+import jakarta.validation.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+
+import java.util.Map;
 
 public interface AccountService {
 
@@ -24,5 +29,7 @@ public interface AccountService {
 
     String reassignValidationRegistrationCode(String email) throws Exception;
 
+    Account findAccountByEmail(String email) throws Exception;
 
+    Account getAccount(String email) throws Exception;
 }
