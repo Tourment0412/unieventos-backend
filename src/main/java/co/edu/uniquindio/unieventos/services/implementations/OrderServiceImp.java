@@ -43,10 +43,9 @@ public class OrderServiceImp implements OrderService {
     private final EmailService emailService;
     private final EventRepo eventRepo;
     private final CouponRepo couponRepo;
-    private final ShoppingCarRepo shoppingCarRepo;
 
 
-    public OrderServiceImp(OrderRepo orderRepo, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, AccountRepo accountRepo, EmailService emailService, EventRepo eventRepo, CouponRepo couponRepo, ShoppingCarRepo shoppingCarRepo) {
+    public OrderServiceImp(OrderRepo orderRepo, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, AccountRepo accountRepo, EmailService emailService, EventRepo eventRepo, CouponRepo couponRepo) {
         this.orderRepo = orderRepo;
         this.couponService = couponService;
         this.eventService = eventService;
@@ -55,7 +54,6 @@ public class OrderServiceImp implements OrderService {
         this.emailService = emailService;
         this.eventRepo = eventRepo;
         this.couponRepo = couponRepo;
-        this.shoppingCarRepo = shoppingCarRepo;
     }
 
     @Override
@@ -94,7 +92,7 @@ public class OrderServiceImp implements OrderService {
         Account account = optionalClient.get();
         Order createOrder = orderRepo.save(order);
         sendPurchaseSummary(account.getEmail(), order);
-        shoppingCarRepo.delete(shoppingCar);
+        shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
     }
 
