@@ -12,8 +12,8 @@ public interface OrderService {
     String deleteOrder(String orderId) throws Exception;
     OrderInfoDTO getInfoOrder(String orderId) throws Exception;
     List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
-    List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO);
     String sendPurchaseSummary(String email, Order order) throws Exception;
+    List<InfoReportDTO> generateSalesReport();
 
     //Methods for payment gateway
     PaymentResponseDTO makePayment(String idOrder) throws Exception;

@@ -20,6 +20,7 @@ import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -192,10 +193,6 @@ public class OrderServiceImp implements OrderService {
         ).collect(Collectors.toList());
     }
 
-    @Override
-    public List<OrderItemDTO> filterOrders(OrderFilterDTO filterOrderDTO) {
-        return List.of();
-    }
 
     @Override
     public PaymentResponseDTO makePayment(String idOrden) throws Exception {
@@ -392,5 +389,12 @@ public class OrderServiceImp implements OrderService {
         }
         return accountOptional.get();
     }
+
+    @Override
+    public List<InfoReportDTO> generateSalesReport() {
+        return orderRepo.generateSalesReport();
+    }
+
+
 
 }

@@ -99,12 +99,6 @@ public class ClientController {
         return ResponseEntity.ok(new MessageDTO<>(false, orderInfo));
     }
 
-    @GetMapping("/order/filter-orders")
-    public ResponseEntity<MessageDTO<List<OrderItemDTO>>> filterOrders(@Valid @RequestBody OrderFilterDTO filterOrderDTO){
-        List<OrderItemDTO> orders = orderService.filterOrders(filterOrderDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, orders));
-    }
-
 
     //Coupon methods for the Clients (Here is going to be our EXTRA FUNCTIONALITY
 
