@@ -45,7 +45,11 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
         shoppingCar.setItems(new ArrayList<>());
         return shoppingCarRepo.save(shoppingCar).getId();
     }
-
+    @Override
+    public void deleteShoppingCar(String idUser) throws Exception{
+        ShoppingCar shoppingCar= getShoppingCar(idUser);
+        shoppingCarRepo.delete(shoppingCar);
+    }
     @Override
     public String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception {
         ShoppingCar shoppingCar = getShoppingCar(addShoppingCarDetailDTO.idUser());

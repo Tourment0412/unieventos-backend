@@ -17,4 +17,5 @@ public interface ShoppingCarService {
     //TODO Ask if maybe a edit option would be good or something.
     void editCarDetail (EditCarDetailDTO editCarDetailDTO) throws Exception;
     ShoppingCar getShoppingCar(String userId) throws Exception;
+    void deleteShoppingCar(String idUser) throws Exception;
 }
