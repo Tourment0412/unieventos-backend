@@ -389,11 +389,61 @@ public class OrderServiceImp implements OrderService {
         }
         return accountOptional.get();
     }
+/*
+    public EventReportDTO generateEventReport(String eventId) {
+        // 1. Obtener el evento
+        Event event = eventRepo.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
 
-    @Override
-    public List<InfoReportDTO> generateSalesReport() {
-        return orderRepo.generateSalesReport();
+        // 2. Inicializar el DTO
+        EventReportDTO reportDTO = new EventReportDTO(
+                event.getId().
+        );
+        reportDTO.setEventId(event.getId());
+        reportDTO.setEventName(event.getName());
+        reportDTO.setEventDate(event.getDate());
+
+        // 3. Obtener todas las órdenes relacionadas con el evento
+        List<Order> orders = orderRepository.findByEventId(new ObjectId(eventId));
+
+        // 4. Calcular estadísticas
+        Map<String, Integer> soldByLocation = new HashMap<>();
+        Map<String, Double> percentageSoldByLocation = new HashMap<>();
+        float totalSales = 0;
+        int totalTicketsAvailable = 0;
+
+        for (Location location : event.getLocations()) {
+            int ticketsSoldForLocation = 0;
+            for (Order order : orders) {
+                for (OrderDetail detail : order.getItems()) {
+                    if (detail.getEventId().toHexString().equals(eventId) &&
+                            detail.getLocationName().equalsIgnoreCase(location.getName())) {
+                        ticketsSoldForLocation += detail.getQuantity();
+                        totalSales += detail.getPrice() * detail.getQuantity();
+                    }
+                }
+            }
+
+            soldByLocation.put(location.getName(), ticketsSoldForLocation);
+
+            // Calcular el porcentaje vendido
+            double percentageSold = (ticketsSoldForLocation * 100.0) / location.getMaxCapacity();
+            percentageSoldByLocation.put(location.getName(), percentageSold);
+
+            // Sumar el total de boletos disponibles para el evento
+            totalTicketsAvailable += location.getMaxCapacity();
+        }
+
+        // 5. Agregar los resultados al DTO
+        reportDTO.setSoldByLocation(soldByLocation);
+        reportDTO.setPercentageSoldByLocation(percentageSoldByLocation);
+        reportDTO.setTotalSales(totalSales);
+        reportDTO.setTotalTickets(totalTicketsAvailable);
+
+        return reportDTO;
     }
+
+ */
 
 
 
