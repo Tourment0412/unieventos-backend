@@ -177,7 +177,7 @@ public class AccountServiceImp implements AccountService {
         ValidationCode passwordValidationCode = account.getPasswordValidationCode();
         if (passwordValidationCode != null) {
             if (passwordValidationCode.getCode().equals(changePasswordDTO.verificationCode())) {
-                if (passwordValidationCode.getCreationDate().plusMinutes(15).isBefore(LocalDateTime.now())) {
+                if (passwordValidationCode.getCreationDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
                     account.setPassword(encryptPassword(changePasswordDTO.newPassword()));
                     accountRepo.save(account);
                 } else {
@@ -226,7 +226,7 @@ public class AccountServiceImp implements AccountService {
 
         if(registrationValidationCode != null) {
             if(registrationValidationCode.getCode().equals(activateAccountDTO.registrationValidationCode())){
-                if(registrationValidationCode.getCreationDate().plusMinutes(15).isBefore(LocalDateTime.now())) {
+                if(registrationValidationCode.getCreationDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
                     accountObtained.setStatus(AccountStatus.ACTIVE);
                     accountRepo.save(accountObtained);
 
@@ -244,6 +244,10 @@ public class AccountServiceImp implements AccountService {
         Account accountObtained = getAccountEmail(email);
         ValidationCode reassignValidationCode = new ValidationCode(LocalDateTime.now(), generateValidationCode());
         accountObtained.setRegistrationValidationCode(reassignValidationCode);
+        String subject = "Hey! this is your NEW activation code for your Unieventos account";
+        String body = "Your activation code is " + reassignValidationCode.getCode()+ " you have 15 minutes to do the activation " +
+                "of your Unieventos account.";
+        emailService.sendEmail(new EmailDTO(subject,body,accountObtained.getEmail()));
         accountRepo.save(accountObtained);
 
         return accountObtained.getId();
