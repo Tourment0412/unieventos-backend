@@ -90,7 +90,7 @@ public class OrderServiceImp implements OrderService {
         }
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
-        sendPurchaseSummary(account.getEmail(), order);
+        //sendPurchaseSummary(account.getEmail(), order);
         Order createOrder = orderRepo.save(order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
@@ -106,7 +106,7 @@ public class OrderServiceImp implements OrderService {
                 Location location = event.findLocationByName(carDetail.getLocationName());
                 if (!location.isCapacityAvaible(carDetail.getAmount())) {
                     throw new Exception("Max capacity exceeded");
-                } else if (event.getDate().minusDays(2).isBefore(LocalDateTime.now())) {
+                } else if (event.getDate().minusDays(2).isBefore(LocalDateTime.now())) { //Se tendria que añadir un or para que la fecha sea igual
                     throw new Exception("Date is before current date");
                 } else {
                     OrderDetail orderDetail = new OrderDetail();
@@ -211,7 +211,7 @@ public class OrderServiceImp implements OrderService {
         return orders.stream().map(order -> new OrderItemDTO(
                         order.getClientId() != null ? order.getClientId().toString() : null,
                         order.getDate(),
-                        order.getItems(),
+                        mapOrderDetails(order.getItems()),
                         order.getPayment() != null ? order.getPayment().getPaymentType() : null,
                         order.getPayment() != null ? order.getPayment().getStatus() : null,
                         order.getPayment() != null ? order.getPayment().getDate() : null,
@@ -223,6 +223,16 @@ public class OrderServiceImp implements OrderService {
         ).collect(Collectors.toList());
     }
 
+    private List<OrderDetailDTO> mapOrderDetails(List<OrderDetail> items) {
+        return items.stream().map(e-> new OrderDetailDTO(
+                e.getEventId().toString(),
+                e.getPrice(),
+                e.getLocationName(),
+                e.getQuantity()
+
+
+        )).collect(Collectors.toList());
+    }
 
     @Override
     public PaymentResponseDTO makePayment(String idOrden) throws Exception {
@@ -354,7 +364,7 @@ public class OrderServiceImp implements OrderService {
         return orderPayment;
     }
 
-
+/*
     @Override
     public String sendPurchaseSummary(String email, Order order) throws Exception {
         Account account = accountService.getAccountEmail(email);
@@ -411,7 +421,7 @@ public class OrderServiceImp implements OrderService {
 
         return "The summary of your purchase has been sent to your email";
 
-    }
+    }*/
 
 
 

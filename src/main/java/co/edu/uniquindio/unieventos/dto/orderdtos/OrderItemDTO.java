@@ -14,7 +14,7 @@ public record OrderItemDTO(
         LocalDateTime orderDate,
 
         @NotEmpty(message = "Order items cannot be empty")
-        List<OrderDetail> items,
+        List<OrderDetailDTO> items,
 
         @NotBlank(message = "Payment type cannot be empty")
         String paymentType,

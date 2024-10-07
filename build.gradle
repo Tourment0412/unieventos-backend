@@ -33,11 +33,6 @@ repositories {
 
 
 dependencies {
-    //QR Dependencies
-    implementation 'com.google.zxing:core:3.4.1'
-    implementation 'com.google.zxing:javase:3.4.1'
-    // Asegúrate de que tienes la dependencia de SimpleJavaMail
-    implementation 'org.simplejavamail:simple-java-mail:7.5.0'
 
     //Dependencies for payment gateway
     implementation 'com.mercadopago:sdk-java:2.1.27'
