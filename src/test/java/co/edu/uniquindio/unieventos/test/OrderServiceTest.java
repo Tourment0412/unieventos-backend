@@ -49,7 +49,7 @@ public class OrderServiceTest {
     private PreferenceClient preferenceClient;
 
     private String eventId="67019b1d63e5b8567aabf871";
-    private String clientId="67019b1d63e5b8567aabf871";
+    private String clientId="66faf8347e0c1e7206761d25";
     private String couponId="66fafd1310b4027d916c95dd";
 
     @BeforeEach

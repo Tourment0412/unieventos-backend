@@ -52,7 +52,7 @@ public class ShoppingCarServiceTest {
     @Test
     public void testCreateShoppingCar() throws Exception {
         // Arrange
-        String userId = "67019b1d63e5b8567aabf871"; // ID de usuario válido
+        String userId = "66faf8347e0c1e7206761d25"; // ID de usuario válido
         ShoppingCar existingShoppingCar = shoppingCarRepo.findByUserId(new ObjectId(userId)).orElse(null);
 
         // Si ya existe un carrito para este usuario, se debe eliminar para asegurar que no haya conflicto en el test
@@ -81,7 +81,7 @@ public class ShoppingCarServiceTest {
     @Test
     public void testAddShoppingCarDetail() throws Exception {
         // Arrange
-        String userId = "67019b1d63e5b8567aabf871"; // ID del usuario
+        String userId = "66faf8347e0c1e7206761d25"; // ID del usuario
         String eventId = "66f9e4d542ac3e6f6a3d7672"; // ID del evento
 
         // DTO para agregar detalles al carrito

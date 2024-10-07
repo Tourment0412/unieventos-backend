@@ -9,7 +9,6 @@ import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.model.vo.*;
 import co.edu.uniquindio.unieventos.repositories.*;
 import co.edu.uniquindio.unieventos.services.interfaces.*;
-
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -23,14 +22,16 @@ import org.simplejavamail.api.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
+import java.net.URL;
+import java.io.InputStream;
+import java.io.IOException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.UUID;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
@@ -90,8 +91,8 @@ public class OrderServiceImp implements OrderService {
         }
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
-        //sendPurchaseSummary(account.getEmail(), order);
         Order createOrder = orderRepo.save(order);
+        (account.getEmail(), order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
     }
@@ -240,16 +241,11 @@ public class OrderServiceImp implements OrderService {
         Order saveOrder = getOrder(idOrden);
         List<PreferenceItemRequest> itemsGateway = new ArrayList<>();
 
-
         // Recorrer los items de la orden y crea los ítems de la pasarela
         for (OrderDetail item : saveOrder.getItems()) {
-
-
             // Obtener el evento y la localidad del ítem
             Event event = eventService.getEvent(item.getEventId().toString());
             Location location = event.findLocationByName(item.getLocationName());
-
-
             // Crear el item de la pasarela
             PreferenceItemRequest itemRequest =
                     PreferenceItemRequest.builder()
@@ -261,11 +257,8 @@ public class OrderServiceImp implements OrderService {
                             .currencyId("COP")
                             .unitPrice(BigDecimal.valueOf(location.getPrice()))
                             .build();
-
-
             itemsGateway.add(itemRequest);
         }
-
 
         //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
         MercadoPagoConfig.setAccessToken("APP_USR-8178646482281064-100513-248819fc76ea7f7577f902e927eaefb7-2014458486");
@@ -310,32 +303,23 @@ public class OrderServiceImp implements OrderService {
     @Override
     public void receiveNotificationFromMercadoPago(Map<String, Object> request) {
         try {
-
-
             // Obtener el tipo de notificación
             Object tipo = request.get("type");
 
-
             // Si la notificación es de un pago entonces obtener el pago y la orden asociada
             if ("payment".equals(tipo)) {
-
-
                 // Capturamos el JSON que viene en el request y lo convertimos a un String
                 String input = request.get("data").toString();
 
-
                 // Extraemos los números de la cadena, es decir, el id del pago
                 String idPago = input.replaceAll("\\D+", "");
-
 
                 // Se crea el cliente de MercadoPago y se obtiene el pago con el id
                 PaymentClient client = new PaymentClient();
                 com.mercadopago.resources.payment.Payment payment = client.get(Long.parseLong(idPago));
 
-
                 // Obtener el id de la orden asociada al pago que viene en los metadatos
                 String idOrden = payment.getMetadata().get("id_orden").toString();
-
 
                 // Se obtiene la orden guardada en la base de datos y se le asigna el pago
                 Order order = getOrder(idOrden);
@@ -343,8 +327,6 @@ public class OrderServiceImp implements OrderService {
                 order.setPayment(orderPayment);
                 orderRepo.save(order);
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -364,64 +346,63 @@ public class OrderServiceImp implements OrderService {
         return orderPayment;
     }
 
-/*
     @Override
     public String sendPurchaseSummary(String email, Order order) throws Exception {
         Account account = accountService.getAccountEmail(email);
 
-        // Generar código QR en
-        // Generar código QR con el ID de la orden
+        // Generar el código QR en base64
+        String qrCodeUrl = "https://quickchart.io/qr?text=" + order.getId() + "&size=300";
+        byte[] qrCodeImage = emailService.downloadImage(qrCodeUrl);
 
-
-        //TODO Send this code to the user (Account) email
+        // Crear el cuerpo del correo en formato HTML
         String subject = "Ticket Purchase Summary";
-        String body = "Hello " + account.getUser().getName() + "!\n\n"
-                + "Thank you for your purchase. Below is a summary of your order:\n\n"
-                + "Order Number: " + order.getId() + "\n"
-                + "Purchase Date: " + order.getDate() + "\n";
-        if(order.getPayment()!=null) {
-            body +="Payment Method: " + order.getPayment().getPaymentType().toString().toLowerCase() + "\n"
-                    + "Payment Status: " + order.getPayment().getStatus() + "\n\n";
+        StringBuilder body = new StringBuilder();
+
+        body.append("<html><body>");
+        body.append("<h1>Hello ").append(account.getUser().getName()).append("!</h1>");
+        body.append("<p>Thank you for your purchase. Below is a summary of your order:</p>");
+
+        body.append("<h3>Order Summary:</h3>");
+        body.append("<p>Order Number: ").append(order.getId()).append("<br>") //El correo se está enviando antes de crear la orden por lo q
+                .append("Purchase Date: ").append(order.getDate()).append("</p>");
+
+        if(order.getPayment() != null) {
+            body.append("<p>Payment Method: ").append(order.getPayment().getPaymentType().toLowerCase()).append("<br>")
+                    .append("Payment Status: ").append(order.getPayment().getStatus()).append("</p>");
         }
 
-        body += "Event Details:\n";
+        body.append("<h3>Event Details:</h3>");
         for (OrderDetail item : order.getItems()) {
-
             Event event = eventService.getEvent(item.getEventId().toString());
-            body += "---------------------------------\n"
-                    + "Event: " + event.getName() + "\n"
-                    + "Event Date: " + event.getDate() + "\n"
-                    + "Location: " + item.getLocationName() + "\n"
-                    + "Number of Tickets: " + item.getQuantity() + "\n"
-                    + "Total: " + (item.getPrice()) + "\n"
-                    + "---------------------------------\n";
+            body.append("<p>---------------------------------<br>")
+                    .append("Event: ").append(event.getName()).append("<br>")
+                    .append("Event Date: ").append(event.getDate()).append("<br>")
+                    .append("Location: ").append(item.getLocationName()).append("<br>")
+                    .append("Number of Tickets: ").append(item.getQuantity()).append("<br>")
+                    .append("Total: ").append(item.getPrice()).append("<br>")
+                    .append("---------------------------------</p>");
         }
 
-        body += "Total Paid: " + order.getTotal() + "\n\n";
+        body.append("<p>Total Paid: ").append(order.getTotal()).append("</p>");
 
         if (order.getCouponId() != null) {
             Coupon coupon = couponService.getCouponById(order.getCouponId().toString());
-            body += "Coupon used: " + coupon.getCode() + "\n"
-                    + "Discount applied: " + coupon.getDiscount() * 100 + "%" + "\n\n";
+            body.append("<p>Coupon used: ").append(coupon.getCode()).append("<br>")
+                    .append("Discount applied: ").append(coupon.getDiscount() * 100).append("%</p>");
         }
-        //TODO Add QR with id Order
-        body += """
-                To access your tickets, scan the following QR code:\s
-                
-                """;
-        body += "<img src='cid:qrCodeImage'/>\n\n"; // Usar CID para incrustar la imagen
 
-        body += """
-                We hope you enjoy the event!
-                Sincerely,
-                Unieventos Team""";
+        body.append("<p>To access your tickets, scan the following QR code:</p>");
+        body.append("<img src='cid:qrCodeImage'/>");
+        body.append("<br><p>We hope you enjoy the event!<br>Sincerely,<br>Unieventos Team</p>");
+        body.append("</body></html>");
 
-
-        emailService.sendEmail(new EmailDTO(subject, body, email));
+        // Enviar el correo con la imagen embebida
+        emailService.sendEmailHtmlWithAttachment(new EmailDTO(subject, body.toString(), email), qrCodeImage, "qrCodeImage");
 
         return "The summary of your purchase has been sent to your email";
+    }
 
-    }*/
+
 
 
 
