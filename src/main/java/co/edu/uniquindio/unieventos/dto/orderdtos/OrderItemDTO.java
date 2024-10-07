@@ -34,7 +34,7 @@ public record OrderItemDTO(
         @DecimalMin(value = "0.0", inclusive = false, message = "Total must be greater than 0")
         float total,
 
-        String couponCode
+        String couponId
 
 ) {
 }

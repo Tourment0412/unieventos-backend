@@ -9,7 +9,7 @@ import java.util.Map;
 public interface OrderService {
     String createOrder(CreateOrderDTO createOrderDTO) throws Exception;
     String deleteOrder(String orderId) throws Exception;
-    OrderInfoDTO getInfoOrder(String orderId) throws Exception;
+    OrderItemDTO getInfoOrder(String orderId) throws Exception;
     List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
     String sendPurchaseSummary(String email, Order order) throws Exception;
     Order getOrder(String s) throws Exception;

@@ -94,8 +94,8 @@ public class ClientController {
     }
 
     @GetMapping("/order/get-info/{orderId}")
-    public ResponseEntity<MessageDTO<OrderInfoDTO>> getInfoOrder(@PathVariable String orderId) throws Exception{
-        OrderInfoDTO orderInfo = orderService.getInfoOrder(orderId);
+    public ResponseEntity<MessageDTO<OrderItemDTO>> getInfoOrder(@PathVariable String orderId) throws Exception{
+        OrderItemDTO orderInfo = orderService.getInfoOrder(orderId);
         return ResponseEntity.ok(new MessageDTO<>(false, orderInfo));
     }
 

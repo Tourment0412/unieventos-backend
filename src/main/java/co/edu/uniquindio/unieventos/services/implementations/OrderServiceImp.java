@@ -22,6 +22,7 @@ import org.simplejavamail.api.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.net.URL;
 import java.io.InputStream;
 import java.io.IOException;
@@ -74,16 +75,16 @@ public class OrderServiceImp implements OrderService {
         order.setDate(LocalDateTime.now());
 
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
-        if(!(createOrderDTO.counponCode()==null || createOrderDTO.counponCode().isEmpty())){
+        if (!(createOrderDTO.counponCode() == null || createOrderDTO.counponCode().isEmpty())) {
             Coupon coupon = couponService.getCouponByCode(createOrderDTO.counponCode());
             order.setTotal(calculateTotal(items, coupon.getId(), createOrderDTO.clientId()));
             order.setCouponId(new ObjectId(coupon.getId()));
-        }else {
+        } else {
             order.setTotal(calculateTotal(items));
         }
         order.setGift(false);
 
-        if(createOrderDTO.isForFriend()){
+        if (createOrderDTO.isForFriend()) {
             accountService.getAccountEmail(createOrderDTO.friendEmail());
             order.setGift(true);
             order.setFriendMail(createOrderDTO.friendEmail());
@@ -138,7 +139,7 @@ public class OrderServiceImp implements OrderService {
     private float calculateTotal(List<OrderDetail> items, String couponId, String idClient) throws Exception {
         float total = 0;
         Coupon coupon = couponService.getCouponById(couponId);
-        if(coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)){
+        if (coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)) {
             throw new Exception("Coupon is not available");
         }
         for (OrderDetail orderDetail : items) {
@@ -147,7 +148,7 @@ public class OrderServiceImp implements OrderService {
         if (coupon.getType().equals(CouponType.UNIQUE)) {
             couponService.deleteCoupon(couponId);
         } else if (coupon.getType().equals(CouponType.MULTIPLE)) {
-            List<Order> ordersClient=getOrdersByIdCliente(idClient);
+            List<Order> ordersClient = getOrdersByIdCliente(idClient);
             for (Order order : ordersClient) {
                 if (coupon.getId().equals(order.getCouponId().toString())) {
                     throw new Exception("Coupon is already in use by this client");
@@ -178,28 +179,29 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public OrderInfoDTO getInfoOrder(String orderId) throws Exception {
+    public OrderItemDTO getInfoOrder(String orderId) throws Exception {
         Order order = getOrder(orderId); // Método que obtiene la orden
 
-        String couponId = (order.getCouponId() != null) ? order.getCouponId().toString() : null;
+        return mapToOrderItemDTO(order);
+    }
 
-        return new OrderInfoDTO(
-                order.getClientId().toString(),
+    private OrderItemDTO mapToOrderItemDTO(Order order) {
+        return new OrderItemDTO(
+                order.getClientId() != null ? order.getClientId().toString() : null,
                 order.getDate(),
-                order.getItems(),
-                order.getPayment().getPaymentType(),
-                order.getPayment().getStatus(),
-                order.getPayment().getDate(),
-                order.getPayment().getTransactionValue(),
+                mapOrderDetails(order.getItems()),
+                order.getPayment() != null ? order.getPayment().getPaymentType() : null,
+                order.getPayment() != null ? order.getPayment().getStatus() : null,
+                order.getPayment() != null ? order.getPayment().getDate() : null,
+                order.getPayment() != null ? order.getPayment().getTransactionValue() : 0f,
                 order.getId(),
                 order.getTotal(),
-                couponId
-        );
+                order.getCouponId() != null ? order.getCouponId().toString() : null);
     }
 
 
     @Override
-    public List<OrderItemDTO> listOrdersClient(String idClient){
+    public List<OrderItemDTO> listOrdersClient(String idClient) {
         ObjectId clientId = new ObjectId(idClient);
 
         List<Order> orders = orderRepo.findOrdersByClientId(clientId);
@@ -209,23 +211,12 @@ public class OrderServiceImp implements OrderService {
 
     @NotNull
     private List<OrderItemDTO> getOrderItemDTOS(List<Order> orders) {
-        return orders.stream().map(order -> new OrderItemDTO(
-                        order.getClientId() != null ? order.getClientId().toString() : null,
-                        order.getDate(),
-                        mapOrderDetails(order.getItems()),
-                        order.getPayment() != null ? order.getPayment().getPaymentType() : null,
-                        order.getPayment() != null ? order.getPayment().getStatus() : null,
-                        order.getPayment() != null ? order.getPayment().getDate() : null,
-                        order.getPayment() != null ? order.getPayment().getTransactionValue() : 0f,
-                        order.getId(),
-                        order.getTotal(),
-                        order.getCouponId() != null ? order.getCouponId().toString() : null
-                )
+        return orders.stream().map(this::mapToOrderItemDTO
         ).collect(Collectors.toList());
     }
 
     private List<OrderDetailDTO> mapOrderDetails(List<OrderDetail> items) {
-        return items.stream().map(e-> new OrderDetailDTO(
+        return items.stream().map(e -> new OrderDetailDTO(
                 e.getEventId().toString(),
                 e.getPrice(),
                 e.getLocationName(),
@@ -366,7 +357,7 @@ public class OrderServiceImp implements OrderService {
         body.append("<p>Order Number: ").append(order.getId()).append("<br>") //El correo se está enviando antes de crear la orden por lo q
                 .append("Purchase Date: ").append(order.getDate()).append("</p>");
 
-        if(order.getPayment() != null) {
+        if (order.getPayment() != null) {
             body.append("<p>Payment Method: ").append(order.getPayment().getPaymentType().toLowerCase()).append("<br>")
                     .append("Payment Status: ").append(order.getPayment().getStatus()).append("</p>");
         }
@@ -401,16 +392,6 @@ public class OrderServiceImp implements OrderService {
 
         return "The summary of your purchase has been sent to your email";
     }
-
-
-
-
-
-
-
-
-
-
 
 
 }
