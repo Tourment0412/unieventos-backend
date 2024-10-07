@@ -95,12 +95,14 @@ public class OrderServiceImp implements OrderService {
         //TODO Payment
         order.setItems(items);
         order.setDate(LocalDateTime.now());
-        order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
+
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
         if(!(createOrderDTO.couponId()==null)){
             order.setCouponId(new ObjectId(createOrderDTO.couponId()));
+            order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
+        }else {
+            order.setTotal(calculateTotal(items));
         }
-
         order.setGift(false);
         //TODO validar si está registrada
         if(createOrderDTO.isForFriend()){
@@ -115,6 +117,14 @@ public class OrderServiceImp implements OrderService {
         Order createOrder = orderRepo.save(order);
         sendPurchaseSummary(account.getEmail(), order);
         return createOrder.getId();
+    }
+
+    private float calculateTotal(List<OrderDetail> items) {
+        float total = 0;
+        for (OrderDetail orderDetail : items) {
+            total += orderDetail.getPrice();
+        }
+        return total;
     }
 
     private float calculateTotal(List<OrderDetail> items, String couponId) throws Exception {
@@ -389,61 +399,61 @@ public class OrderServiceImp implements OrderService {
         }
         return accountOptional.get();
     }
-/*
+
+    @Override
     public EventReportDTO generateEventReport(String eventId) {
         // 1. Obtener el evento
         Event event = eventRepo.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        // 2. Inicializar el DTO
-        EventReportDTO reportDTO = new EventReportDTO(
-                event.getId().
-        );
-        reportDTO.setEventId(event.getId());
-        reportDTO.setEventName(event.getName());
-        reportDTO.setEventDate(event.getDate());
+        // 2. Obtener todas las órdenes relacionadas con el evento
+        List<Order> orders = orderRepo.findByEventId(new ObjectId(eventId));
 
-        // 3. Obtener todas las órdenes relacionadas con el evento
-        List<Order> orders = orderRepository.findByEventId(new ObjectId(eventId));
-
-        // 4. Calcular estadísticas
+        // 3. Inicializar variables para estadísticas
         Map<String, Integer> soldByLocation = new HashMap<>();
         Map<String, Double> percentageSoldByLocation = new HashMap<>();
-        float totalSales = 0;
-        int totalTicketsAvailable = 0;
+        BigDecimal totalSales = BigDecimal.ZERO;
+        BigDecimal totalTicketsAvailable = BigDecimal.ZERO;
 
+        // 4. Calcular estadísticas por ubicación
         for (Location location : event.getLocations()) {
             int ticketsSoldForLocation = 0;
+
             for (Order order : orders) {
                 for (OrderDetail detail : order.getItems()) {
                     if (detail.getEventId().toHexString().equals(eventId) &&
                             detail.getLocationName().equalsIgnoreCase(location.getName())) {
                         ticketsSoldForLocation += detail.getQuantity();
-                        totalSales += detail.getPrice() * detail.getQuantity();
+                        BigDecimal saleAmount = BigDecimal.valueOf(detail.getPrice())
+                                .multiply(BigDecimal.valueOf(detail.getQuantity()));
+                        totalSales = totalSales.add(saleAmount);
                     }
                 }
             }
 
+            // Agregar el número de boletos vendidos por ubicación
             soldByLocation.put(location.getName(), ticketsSoldForLocation);
 
-            // Calcular el porcentaje vendido
+            // Calcular el porcentaje vendido por ubicación
             double percentageSold = (ticketsSoldForLocation * 100.0) / location.getMaxCapacity();
             percentageSoldByLocation.put(location.getName(), percentageSold);
 
             // Sumar el total de boletos disponibles para el evento
-            totalTicketsAvailable += location.getMaxCapacity();
+            totalTicketsAvailable = totalTicketsAvailable.add(BigDecimal.valueOf(location.getMaxCapacity()));
         }
 
-        // 5. Agregar los resultados al DTO
-        reportDTO.setSoldByLocation(soldByLocation);
-        reportDTO.setPercentageSoldByLocation(percentageSoldByLocation);
-        reportDTO.setTotalSales(totalSales);
-        reportDTO.setTotalTickets(totalTicketsAvailable);
-
-        return reportDTO;
+        // 5. Crear el DTO con los datos calculados
+        return new EventReportDTO(
+                event.getId(),
+                event.getName(),
+                event.getDate(),
+                soldByLocation,
+                percentageSoldByLocation,
+                totalSales,
+                totalTicketsAvailable
+        );
     }
 
- */
 
 
 
