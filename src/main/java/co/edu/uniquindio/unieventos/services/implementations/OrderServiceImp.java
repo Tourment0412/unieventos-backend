@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
 
+import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
 import co.edu.uniquindio.unieventos.model.documents.*;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
@@ -8,6 +9,7 @@ import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.model.vo.*;
 import co.edu.uniquindio.unieventos.repositories.*;
 import co.edu.uniquindio.unieventos.services.interfaces.*;
+
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -17,8 +19,20 @@ import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.simplejavamail.api.email.Email;
+import org.simplejavamail.email.EmailBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.UUID;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -76,8 +90,8 @@ public class OrderServiceImp implements OrderService {
         }
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
-        Order createOrder = orderRepo.save(order);
         sendPurchaseSummary(account.getEmail(), order);
+        Order createOrder = orderRepo.save(order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
     }
@@ -146,8 +160,8 @@ public class OrderServiceImp implements OrderService {
         return orderRepo.findOrdersByClientId(new ObjectId(idClient));
     }
 
-
-    private Order getOrder(String s) throws Exception {
+    @Override
+    public Order getOrder(String s) throws Exception {
         Optional<Order> orderOptional = orderRepo.findById(s);
         if (orderOptional.isEmpty()) {
             throw new Exception("The Order with the id: " + s + " does not exist");
@@ -346,6 +360,7 @@ public class OrderServiceImp implements OrderService {
         Account account = accountService.getAccountEmail(email);
 
         // Generar código QR en
+        // Generar código QR con el ID de la orden
 
 
         //TODO Send this code to the user (Account) email
@@ -392,9 +407,13 @@ public class OrderServiceImp implements OrderService {
                 Unieventos Team""";
 
 
+        emailService.sendEmail(new EmailDTO(subject, body, email));
+
         return "The summary of your purchase has been sent to your email";
 
     }
+
+
 
 
 

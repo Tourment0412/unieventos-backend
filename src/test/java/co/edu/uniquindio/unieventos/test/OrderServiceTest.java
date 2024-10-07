@@ -50,7 +50,7 @@ public class OrderServiceTest {
 
     private String eventId="67019b1d63e5b8567aabf871";
     private String clientId="67019b1d63e5b8567aabf871";
-    private String couponId="66fafd1310b4027d916c95dc";
+    private String couponId="66fafd1310b4027d916c95dd";
 
     @BeforeEach
     void setUp() {
@@ -64,7 +64,7 @@ public class OrderServiceTest {
                 false,
                 "",
                 clientId,
-                couponId
+                "MULTI5"
                 );
 
         // Crear un DTO de cupón con los datos requeridos
@@ -197,7 +197,13 @@ public class OrderServiceTest {
 
  */
 
+    @Test
+    void testSendSummaryPurchase() throws Exception {
+        Order order = orderService.getOrder("66fafe651fc0e1480e7822af");
+        String message = orderService.sendPurchaseSummary("miraortega2020@gmail.com", order);
 
+
+    }
 
 }
 
