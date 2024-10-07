@@ -6,10 +6,7 @@ import co.edu.uniquindio.unieventos.model.documents.*;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.model.vo.*;
-import co.edu.uniquindio.unieventos.repositories.AccountRepo;
-import co.edu.uniquindio.unieventos.repositories.CouponRepo;
-import co.edu.uniquindio.unieventos.repositories.EventRepo;
-import co.edu.uniquindio.unieventos.repositories.OrderRepo;
+import co.edu.uniquindio.unieventos.repositories.*;
 import co.edu.uniquindio.unieventos.services.interfaces.*;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
@@ -46,9 +43,10 @@ public class OrderServiceImp implements OrderService {
     private final EmailService emailService;
     private final EventRepo eventRepo;
     private final CouponRepo couponRepo;
+    private final ShoppingCarRepo shoppingCarRepo;
 
 
-    public OrderServiceImp(OrderRepo orderRepo, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, AccountRepo accountRepo, EmailService emailService, EventRepo eventRepo, CouponRepo couponRepo) {
+    public OrderServiceImp(OrderRepo orderRepo, CouponService couponService, EventService eventService, ShoppingCarService shoppingCarService, AccountRepo accountRepo, EmailService emailService, EventRepo eventRepo, CouponRepo couponRepo, ShoppingCarRepo shoppingCarRepo) {
         this.orderRepo = orderRepo;
         this.couponService = couponService;
         this.eventService = eventService;
@@ -57,6 +55,7 @@ public class OrderServiceImp implements OrderService {
         this.emailService = emailService;
         this.eventRepo = eventRepo;
         this.couponRepo = couponRepo;
+        this.shoppingCarRepo = shoppingCarRepo;
     }
 
     @Override
@@ -95,6 +94,7 @@ public class OrderServiceImp implements OrderService {
         Account account = optionalClient.get();
         Order createOrder = orderRepo.save(order);
         sendPurchaseSummary(account.getEmail(), order);
+        shoppingCarRepo.delete(shoppingCar);
         return createOrder.getId();
     }
 
@@ -367,6 +367,7 @@ public class OrderServiceImp implements OrderService {
 
         body += "Event Details:\n";
         for (OrderDetail item : order.getItems()) {
+
             Event event = eventRepo.findById(item.getEventId().toString()).get();
             body += "---------------------------------\n"
                     + "Event: " + event.getName() + "\n"
