@@ -106,7 +106,8 @@ public class AccountServiceImp implements AccountService {
         accountToUpdate.getUser().setName(account.name());
         accountToUpdate.getUser().setAddress(account.address());
         accountToUpdate.getUser().setPhoneNumber(account.phoneNumber());
-        accountToUpdate.setPassword(account.password());
+        String encryptedPassword = encryptPassword(account.password());
+        accountToUpdate.setPassword(encryptedPassword);
 
         accountRepo.save(accountToUpdate);
 
