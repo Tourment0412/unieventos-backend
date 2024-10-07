@@ -112,7 +112,7 @@ public class AdminController {
         return ResponseEntity.ok().body(new MessageDTO<>(false, "Coupon was successfully deleted"));
     }
 
-    @GetMapping("/event/filter-events")
+    @PostMapping("/event/filter-events")
     public ResponseEntity<MessageDTO<List<EventItemDTO>>> filterEventsAdmin(@Valid @RequestBody EventFilterDTO eventFilterDTO){
         List<EventItemDTO> eventsFiltered= eventService.filterEventsAdmin(eventFilterDTO);
         return ResponseEntity.ok(new MessageDTO<>(false, eventsFiltered));
