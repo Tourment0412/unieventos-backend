@@ -63,6 +63,42 @@ public class OrderServiceImp implements OrderService {
     public String createOrder(CreateOrderDTO createOrderDTO) throws Exception {
         Order order = new Order();
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
+        List<OrderDetail> items = getOrderDetails(shoppingCar);
+
+        //TODO code for gateway
+        //TODO Payment
+        order.setItems(items);
+        order.setDate(LocalDateTime.now());
+
+        order.setClientId(new ObjectId(createOrderDTO.clientId()));
+        if(!(createOrderDTO.couponId()==null || createOrderDTO.couponId().isEmpty())){
+            order.setCouponId(new ObjectId(createOrderDTO.couponId()));
+            order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
+        }else {
+            order.setTotal(calculateTotal(items));
+        }
+        order.setGift(false);
+
+        //TODO validar si está registrada
+        if(createOrderDTO.isForFriend()){
+            if(accountRepo.findAccountByEmail(createOrderDTO.friendEmail()).isEmpty()){
+               throw new Exception("Your friend is not registered ");
+            }
+            order.setGift(true);
+            order.setFriendMail(createOrderDTO.friendEmail());
+
+        }
+        Optional<Account> optionalClient = accountRepo.findAccountById(order.getClientId().toString());
+        if(optionalClient.isEmpty()){
+            throw new Exception("Your client is not registered ");
+        }
+        Account account = optionalClient.get();
+        Order createOrder = orderRepo.save(order);
+        sendPurchaseSummary(account.getEmail(), order);
+        return createOrder.getId();
+    }
+
+    private @NotNull List<OrderDetail> getOrderDetails(ShoppingCar shoppingCar) {
         List<OrderDetail> items = new ArrayList<>();
         List<CarDetail> details = shoppingCar.getItems();
         details.forEach(carDetail -> {
@@ -90,33 +126,7 @@ public class OrderServiceImp implements OrderService {
             }
 
         });
-
-        //TODO code for gateway
-        //TODO Payment
-        order.setItems(items);
-        order.setDate(LocalDateTime.now());
-
-        order.setClientId(new ObjectId(createOrderDTO.clientId()));
-        if(!(createOrderDTO.couponId()==null)){
-            order.setCouponId(new ObjectId(createOrderDTO.couponId()));
-            order.setTotal(calculateTotal(items, createOrderDTO.couponId()));
-        }else {
-            order.setTotal(calculateTotal(items));
-        }
-        order.setGift(false);
-        //TODO validar si está registrada
-        if(createOrderDTO.isForFriend()){
-            if(accountRepo.findAccountByEmail(createOrderDTO.friendEmail()).isEmpty()){
-               throw new Exception("Your friend is not registered ");
-            }
-            order.setGift(true);
-            order.setFriendMail(createOrderDTO.friendEmail());
-
-        }
-        Account account = accountRepo.findAccountById(order.getClientId().toString()).get();
-        Order createOrder = orderRepo.save(order);
-        sendPurchaseSummary(account.getEmail(), order);
-        return createOrder.getId();
+        return items;
     }
 
     private float calculateTotal(List<OrderDetail> items) {
@@ -399,6 +409,7 @@ public class OrderServiceImp implements OrderService {
         }
         return accountOptional.get();
     }
+
 
     @Override
     public EventReportDTO generateEventReport(String eventId) {

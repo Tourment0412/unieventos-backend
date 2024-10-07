@@ -22,4 +22,10 @@ public interface OrderRepo extends MongoRepository<Order, String> {
 
     @Query("{ 'clientId': ?0 }")
     List<Order> findOrdersByClientId(ObjectId clientId);
+
+    @Query("{ 'items.eventId': ?0 }")
+    List<Order> findByItemsEventId(ObjectId eventId);
+
+    @Query("{ 'items.eventId': ?0 }")
+    List<Order> findByEventId(ObjectId eventId);
 }

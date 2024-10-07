@@ -34,14 +34,17 @@ public class Order {
 
     @Builder
     //I think it is better to have the objectID parametters as strings and cast them on ObjectId inside the builder
-    public Order(List<OrderDetail> items, String gatewayCode, LocalDateTime orderDate, float total,
-                 ObjectId clientId, ObjectId couponId, Payment payment) {
+    public Order(List<OrderDetail> items, String gatewayCode, LocalDateTime date, float total,
+                 ObjectId clientId, ObjectId couponId, Payment payment, boolean isGift, String friendMail) {
         this.items = items;
         this.gatewayCode = gatewayCode;
-        this.date = orderDate;
+        this.date = date;
         this.total = total;
         this.clientId = clientId;
         this.couponId = couponId;
         this.payment = payment;
+        this.isGift = isGift;
+        this.friendMail = friendMail;
+
     }
 }
