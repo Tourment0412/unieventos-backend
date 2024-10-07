@@ -29,7 +29,7 @@ public interface AccountService {
 
     String reassignValidationRegistrationCode(String email) throws Exception;
 
-    Account findAccountByEmail(String email) throws Exception;
+    Account getAccountEmail(String email) throws Exception;
 
     Account getAccount(String email) throws Exception;
 }

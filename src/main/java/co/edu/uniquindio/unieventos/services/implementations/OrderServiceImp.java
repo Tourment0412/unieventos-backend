@@ -69,7 +69,7 @@ public class OrderServiceImp implements OrderService {
         order.setGift(false);
 
         if(createOrderDTO.isForFriend()){
-            accountService.findAccountByEmail(createOrderDTO.friendEmail());
+            accountService.getAccountEmail(createOrderDTO.friendEmail());
             order.setGift(true);
             order.setFriendMail(createOrderDTO.friendEmail());
 
@@ -332,7 +332,7 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public String sendPurchaseSummary(String email, Order order) throws Exception {
-        Account account = accountService.findAccountByEmail(email);
+        Account account = accountService.getAccountEmail(email);
 
         // Generar código QR
         String orderId = order.getId();

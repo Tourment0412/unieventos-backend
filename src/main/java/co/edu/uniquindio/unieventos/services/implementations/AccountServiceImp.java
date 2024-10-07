@@ -159,7 +159,8 @@ public class AccountServiceImp implements AccountService {
         return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
     }
 
-    private Account getAccountEmail(String email) throws Exception {
+    @Override
+    public Account getAccountEmail(String email) throws Exception {
         Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
         if (accountOptional.isEmpty()) {
             throw new Exception("This email is not registered");
@@ -254,16 +255,6 @@ public class AccountServiceImp implements AccountService {
         return accountObtained.getId();
     }
 
-    @Override
-    public Account findAccountByEmail(String email) throws Exception {
-        Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
-        if (accountOptional.isEmpty()) {
-            throw new Exception("Account with this email does not exist");
-        }
-
-        return accountOptional.get();
-
-    }
 
 
     private String encryptPassword(String password) {
