@@ -61,8 +61,8 @@ public class OrderServiceImp implements OrderService {
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
         if(!(createOrderDTO.counponCode()==null || createOrderDTO.counponCode().isEmpty())){
             Coupon coupon = couponService.getCouponByCode(createOrderDTO.counponCode());
+            order.setTotal(calculateTotal(items, coupon.getId(), createOrderDTO.clientId()));
             order.setCouponId(new ObjectId(coupon.getId()));
-            order.setTotal(calculateTotal(items, coupon.getId()));
         }else {
             order.setTotal(calculateTotal(items));
         }
@@ -72,7 +72,7 @@ public class OrderServiceImp implements OrderService {
             accountService.getAccountEmail(createOrderDTO.friendEmail());
             order.setGift(true);
             order.setFriendMail(createOrderDTO.friendEmail());
-
+            //TODO enviar entrada a ammigo
         }
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
@@ -120,7 +120,7 @@ public class OrderServiceImp implements OrderService {
         return total;
     }
 
-    private float calculateTotal(List<OrderDetail> items, String couponId) throws Exception {
+    private float calculateTotal(List<OrderDetail> items, String couponId, String idClient) throws Exception {
         float total = 0;
         Coupon coupon = couponService.getCouponById(couponId);
         if(coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)){
@@ -131,8 +131,19 @@ public class OrderServiceImp implements OrderService {
         }
         if (coupon.getType().equals(CouponType.UNIQUE)) {
             couponService.deleteCoupon(couponId);
+        } else if (coupon.getType().equals(CouponType.MULTIPLE)) {
+            List<Order> ordersClient=getOrdersByIdCliente(idClient);
+            for (Order order : ordersClient) {
+                if (coupon.getId().equals(order.getCouponId().toString())) {
+                    throw new Exception("Coupon is already in use by this client");
+                }
+            }
         }
         return total - (total * coupon.getDiscount());
+    }
+
+    private List<Order> getOrdersByIdCliente(String idClient) {
+        return orderRepo.findOrdersByClientId(new ObjectId(idClient));
     }
 
 
@@ -334,10 +345,8 @@ public class OrderServiceImp implements OrderService {
     public String sendPurchaseSummary(String email, Order order) throws Exception {
         Account account = accountService.getAccountEmail(email);
 
-        // Generar código QR
-        String orderId = order.getId();
-        String tempDir = System.getProperty("java.io.tmpdir"); // Directorio temporal
-        String qrFilePath = tempDir + "/" + UUID.randomUUID() + ".png"; // Generar nombre único para evitar conflictos
+        // Generar código QR en
+
 
         //TODO Send this code to the user (Account) email
         String subject = "Ticket Purchase Summary";
@@ -383,10 +392,6 @@ public class OrderServiceImp implements OrderService {
                 Unieventos Team""";
 
 
-        // Enviar el correo
-        //emailService.sendEmailWithInlineImage(new EmailDTO(subject, body, account.getEmail(), qrFilePath));
-        // Eliminar archivo QR después de enviar el correo
-        //new File(qrFilePath).delete();
         return "The summary of your purchase has been sent to your email";
 
     }
