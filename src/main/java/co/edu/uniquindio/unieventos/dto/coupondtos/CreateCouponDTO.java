@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public record CreateCouponDTO(
         @Min(value = 0, message = "Discount must be at least 0%")
-        @Max(value = 100, message = "Discount must be at most 100%")
+        @Max(value = 1, message = "Discount must be at most 100%")
         float discount,
 
         @Future(message = "Expiration date must be in the future")
