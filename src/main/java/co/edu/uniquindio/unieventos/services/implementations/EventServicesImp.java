@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
+import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import co.edu.uniquindio.unieventos.model.vo.Location;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -112,8 +115,9 @@ public class EventServicesImp implements EventService {
         );
 
     }
+
     @Override
-    public EventInfoDTO getInfoEventClient (String id) throws Exception {
+    public EventInfoDTO getInfoEventClient(String id) throws Exception {
         Optional<Event> eventGot = eventRepo.findEventByIdClient(id);
         if (eventGot.isEmpty()) {
             throw new Exception("Event with this id does not exist");
@@ -131,6 +135,7 @@ public class EventServicesImp implements EventService {
                 event.getLocations()
         );
     }
+
     @Override
     public List<EventItemDTO> listEventsAdmin(int page) {
         //For the admin, all events are going to be shown.
@@ -168,7 +173,7 @@ public class EventServicesImp implements EventService {
                 eventFilterDTO.eventType(),
                 eventFilterDTO.city() == null ? "" : eventFilterDTO.city(),
                 //The 10 is how many events i want for page
-                PageRequest.of(eventFilterDTO.page(),10)
+                PageRequest.of(eventFilterDTO.page(), 10)
         ).getContent();
         return eventsFiltered.stream()
                 .map(event -> new EventItemDTO(
@@ -189,12 +194,12 @@ public class EventServicesImp implements EventService {
         System.out.println(eventFilterDTO.eventType());
         System.out.println(eventFilterDTO.city());
 
-        List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(
+        List<Event> eventsFiltered = eventRepo.findEventsByFiltersAdmin(
                 eventFilterDTO.name(),
                 eventFilterDTO.eventType(),
                 eventFilterDTO.city(),
                 //The 10 is how many events i want for page
-                PageRequest.of(eventFilterDTO.page(),10)
+                PageRequest.of(eventFilterDTO.page(), 10)
         ).getContent();
         return eventsFiltered.stream().
                 map(event -> new EventItemDTO(
@@ -212,10 +217,45 @@ public class EventServicesImp implements EventService {
         Location location = event.findLocationByName(nameLocation);
         if (location == null) {
             throw new Exception("Location " + nameLocation + " does not exist");
-        } else if (location.getTicketsSold()+numLocations>location.getMaxCapacity()) {
+        } else if (location.getTicketsSold() + numLocations > location.getMaxCapacity()) {
             throw new Exception("Location " + nameLocation + " is too high");
         }
-        location.setTicketsSold(location.getTicketsSold()+numLocations);
+        location.setTicketsSold(location.getTicketsSold() + numLocations);
         eventRepo.save(event);
     }
+
+    @Override
+    public EventReportDTO createReport(String idEvent) {
+        Map<String, Double> percentageSoldByLocation = eventRepo.calculatePercentageSoldByLocation(idEvent);
+        Map<String, Integer> quantitySoldByLocation = eventRepo.calculateQuantitySoldByLocation(idEvent);
+        Map<String, Double> soldByLocation = eventRepo.calculateSoldByLocation(idEvent);
+        int totalTickets = 0;
+        double totalSales = 0.0;
+
+
+        if (soldByLocation != null) {
+            for (Double sales : soldByLocation.values()) {
+                totalSales += sales;
+            }
+        }
+
+        if (quantitySoldByLocation != null) {
+            for (Integer tickets : quantitySoldByLocation.values()) {
+                totalTickets += tickets;
+            }
+        }
+
+        if (soldByLocation == null) soldByLocation = new HashMap<>();
+        if (percentageSoldByLocation == null) percentageSoldByLocation = new HashMap<>();
+        if (quantitySoldByLocation == null) quantitySoldByLocation = new HashMap<>();
+
+        return new EventReportDTO(
+                soldByLocation,
+                percentageSoldByLocation,
+                quantitySoldByLocation,
+                totalSales,
+                totalTickets
+        );
+    }
+
 }

@@ -9,23 +9,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public record EventReportDTO(
-        @NotBlank(message = "Event ID cannot be empty")
-        String eventId,
-
-        String eventName,
-
-        LocalDateTime eventDate,
-
-        @NotNull(message = "Sold by location map cannot be null")
-        Map<String, Integer> soldByLocation, // Map with location name and sold quantity
+        Map<String, Double> soldByLocation, // Map with location name and sold quantity
 
         Map<String, Double> percentageSoldByLocation,
 
-        @NotNull(message = "Total sales cannot be null")
-        @Positive(message = "Total sales must be greater than zero")
-        BigDecimal totalSales, // Total earned from sales
+        Map<String, Integer> quantitySoldByLocation,
 
-        @NotNull(message = "Total tickets cannot be null")
-        @Positive(message = "Total tickets must be greater than zero")
-        BigDecimal totalTickets // Total available tickets for the event
+        double totalSales, // Total earned from sales
+
+        int totalTickets // Total available tickets for the event
 ) {}

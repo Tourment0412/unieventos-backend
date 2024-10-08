@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -62,14 +63,42 @@ public interface EventRepo extends MongoRepository<Event, String> {
             "] }")
     Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
     */
+
     @Query("{ $or: [ " +
-                  " { $and: [ { 'name': { $regex: ?0, $options: 'i' } }, { ?0: { $ne: \"\" } } ] }, " +
-                  " { $and: [ { 'type': ?1 }, { ?1: { $ne: \"\" } } ] }, " +  // Manejo de tipo de evento
-                  " { $and: [ { 'city': { $regex: ?2, $options: 'i' } }, { ?2: { $ne: \"\" } } ] } " +
-                  "] }")
+            " { $and: [ { 'name': { $regex: ?0, $options: 'i' } }, { ?0: { $ne: \"\" } } ] }, " +
+            " { $and: [ { 'type': ?1 }, { ?1: { $ne: \"\" } } ] }, " +  // Manejo de tipo de evento
+            " { $and: [ { 'city': { $regex: ?2, $options: 'i' } }, { ?2: { $ne: \"\" } } ] } " +
+            "] }")
     Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
 
 
+    @Aggregation(pipeline = {
+            "{ '$match': { '_id': ?0 } }",
+            "{ '$unwind': '$locations' }",
+            "{ '$project': { " +
+                    "   'locationName': '$locations.name', " +
+                    "   'percentageSold': { '$multiply': [ { '$divide': ['$locations.ticketsSold', '$locations.maxCapacity'] }, 100 ] }" +  // Calcula el porcentaje
+                    "} }"
+    })
+    Map<String, Double> calculatePercentageSoldByLocation(String eventId);
 
+    @Aggregation(pipeline = {
+            "{ '$match': { '_id': ?0 } }",
+            "{ '$unwind': '$locations' }",
+            "{ '$project': { " +
+                    "   'locationName': '$locations.name', " +
+                    "   'totalSold': { '$sum': { '$multiply': ['$locations.ticketsSold', '$locations.price'] } }" +
+                    "} }"
+    })
+    Map<String, Double> calculateSoldByLocation(String eventId);
 
+    @Aggregation(pipeline = {
+            "{ '$match': { '_id': ?0 } }",
+            "{ '$unwind': '$locations' }",
+            "{ '$project': { " +
+                    "   'locationName': '$locations.name', " +
+                    "   'quantitySold': { '$sum':  '$locations.ticketsSold'  }" +
+                    "} }"
+    })
+    Map<String, Integer> calculateQuantitySoldByLocation(String idEvent);
 }
