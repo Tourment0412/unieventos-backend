@@ -77,7 +77,7 @@ public interface EventRepo extends MongoRepository<Event, String> {
             "{ '$unwind': '$locations' }",
             "{ '$project': { " +
                     "   'locationName': '$locations.name', " +
-                    "   'percentageSold': { '$multiply': [ { '$divide': ['$locations.ticketsSold', '$locations.maxCapacity'] }, 100 ] }" +  // Calcula el porcentaje
+                    "   'percentageSold': { '$multiply': [ { '$divide': ['$locations.ticketsSold', '$locations.maxCapacity'] }, 100 ] }" +
                     "} }"
     })
     Map<String, Double> calculatePercentageSoldByLocation(String eventId);

@@ -8,10 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record OrderFilterDTO(
-        @NotBlank(message = "Event ID cannot be empty")
         String eventId,
-
-        @NotNull(message = "Order date cannot be null")
         LocalDateTime orderDate
 
 ) {

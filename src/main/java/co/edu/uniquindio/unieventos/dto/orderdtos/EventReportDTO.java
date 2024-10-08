@@ -10,12 +10,8 @@ import java.util.Map;
 
 public record EventReportDTO(
         Map<String, Double> soldByLocation, // Map with location name and sold quantity
-
         Map<String, Double> percentageSoldByLocation,
-
         Map<String, Integer> quantitySoldByLocation,
-
         double totalSales, // Total earned from sales
-
         int totalTickets // Total available tickets for the event
 ) {}
