@@ -42,15 +42,16 @@ public class GlobalExceptions {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageDTO<>(true, ex.getMessage()));
     }
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<MessageDTO<String>> handleDuplicateResource(DuplicateResourceException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageDTO<>(true, ex.getMessage()));
+    @ExceptionHandler(AccountNotActivatedException.class)
+    public ResponseEntity<MessageDTO<String>> handleInvalidPasswordException(InvalidPasswordException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO<>(true, ex.getMessage()));
     }
 
-    @ExceptionHandler(EmailSendingException.class)
-    public ResponseEntity<MessageDTO<String>> handleEmailSending(EmailSendingException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageDTO<>(true, ex.getMessage()));
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<MessageDTO<String>> handleDuplicateResource(DuplicateResourceException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO<>(true, ex.getMessage()));
     }
+
 
     @ExceptionHandler(EmptyShoppingCarException.class)
     public ResponseEntity<MessageDTO<String>> handleEmptyShoppingCar(EmptyShoppingCarException ex) {
@@ -60,11 +61,6 @@ public class GlobalExceptions {
     @ExceptionHandler(InsufficientCapacityException.class)
     public ResponseEntity<MessageDTO<String>> handleInsufficientCapacity(InsufficientCapacityException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO<>(true, ex.getMessage()));
-    }
-
-    @ExceptionHandler(InvalidTextStructureException.class)
-    public ResponseEntity<MessageDTO<String>> handleInvalidTextStructure(InvalidTextStructureException ex) {
-        return ResponseEntity.badRequest().body(new MessageDTO<>(true, ex.getMessage()));
     }
 
     @ExceptionHandler(OperationNotAllowedException.class)
@@ -79,7 +75,7 @@ public class GlobalExceptions {
 
     @ExceptionHandler(StorageException.class)
     public ResponseEntity<MessageDTO<String>> handleStorageException(StorageException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageDTO<>(true, ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO<>(true, ex.getMessage()));
     }
 
     @ExceptionHandler(ValidationCodeException.class)

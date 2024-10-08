@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
+import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 
@@ -19,5 +20,6 @@ public interface EventService {
     List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO);
     List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO);
     Event getEvent(String id) throws Exception;
-    public void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception;
+    void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception;
+    EventReportDTO createReport(String idEvent);
 }

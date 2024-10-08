@@ -2,6 +2,9 @@ package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
+import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import co.edu.uniquindio.unieventos.model.vo.Location;
@@ -32,7 +35,7 @@ public class EventServicesImp implements EventService {
     public String createEvent(CreateEventDTO createEventDTO) throws Exception {
 
         if (existEventActiveName(createEventDTO.name())) {
-            throw new Exception("An event with this name is already active");
+            throw new DuplicateResourceException("An event with this name is already active");
         }
         Event event = new Event();
 
@@ -83,7 +86,7 @@ public class EventServicesImp implements EventService {
     public Event getEvent(String id) throws Exception {
         Optional<Event> eventToUpdate = eventRepo.findById(id);
         if (eventToUpdate.isEmpty()) {
-            throw new Exception("Event with this id does not exist");
+            throw new ResourceNotFoundException("Event with this id does not exist");
         }
         return eventToUpdate.get();
     }
@@ -120,7 +123,7 @@ public class EventServicesImp implements EventService {
     public EventInfoDTO getInfoEventClient(String id) throws Exception {
         Optional<Event> eventGot = eventRepo.findEventByIdClient(id);
         if (eventGot.isEmpty()) {
-            throw new Exception("Event with this id does not exist");
+            throw new ResourceNotFoundException("Event with this id does not exist");
         }
         Event event = eventGot.get();
         return new EventInfoDTO(
@@ -216,9 +219,9 @@ public class EventServicesImp implements EventService {
         Event event = getEvent(idEvent);
         Location location = event.findLocationByName(nameLocation);
         if (location == null) {
-            throw new Exception("Location " + nameLocation + " does not exist");
+            throw new ResourceNotFoundException("Location " + nameLocation + " does not exist");
         } else if (location.getTicketsSold() + numLocations > location.getMaxCapacity()) {
-            throw new Exception("Location " + nameLocation + " is too high");
+            throw new InsufficientCapacityException("Location " + nameLocation + " is too high");
         }
         location.setTicketsSold(location.getTicketsSold() + numLocations);
         eventRepo.save(event);

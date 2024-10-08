@@ -2,6 +2,8 @@ package co.edu.uniquindio.unieventos.services.implementations;
 
 
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
+import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
@@ -31,7 +33,7 @@ public class CouponServiceImp implements CouponService {
     public Coupon getCupon(String id) throws Exception {
         Optional<Coupon> coupon = couponRepo.findById(id);
         if (coupon.isEmpty()) { // Cambié a negación para verificar si el cupón NO está presente
-            throw new Exception("Coupon with this id does not exist");
+            throw new ResourceNotFoundException("Coupon with this id does not exist");
         }
         return coupon.get();
     }
@@ -53,7 +55,7 @@ public class CouponServiceImp implements CouponService {
     @Override
     public String createCoupon(CreateCouponDTO coupon) throws Exception {
         if (existCupon(coupon.name())) {
-            throw new Exception("Ya existe un cupon con ese nombre");
+            throw new DuplicateResourceException("Ya existe un cupon con ese nombre");
         }
         Coupon newCoupon = new Coupon();
         newCoupon.setCode(utilitaryClass.generateCode(6));
@@ -89,7 +91,7 @@ public class CouponServiceImp implements CouponService {
     public Coupon getCouponById(String id) throws Exception {
         Optional<Coupon> coupon = couponRepo.findById(id);
         if (coupon.isEmpty()) {
-            throw new Exception("Coupon with this id does not exist");
+            throw new ResourceNotFoundException("Coupon with this id does not exist");
         }
         return coupon.get();
     }
@@ -112,7 +114,7 @@ public class CouponServiceImp implements CouponService {
     public CouponInfoClientDTO getCouponClient(String id) throws Exception {
         Optional<Coupon> couponOpt = couponRepo.findCouponClient(id);
         if (couponOpt.isEmpty()) {
-            throw new Exception("Coupon with this id does not exist or is not available");
+            throw new ResourceNotFoundException("Coupon with this id does not exist or is not available");
         }
         Coupon coupon = couponOpt.get();
         return new CouponInfoClientDTO(
@@ -141,7 +143,7 @@ public class CouponServiceImp implements CouponService {
     public Coupon getCouponByCode(String code) throws Exception {
         Optional<Coupon> coupon = couponRepo.findByCode(code);
         if (coupon.isEmpty()){
-            throw new Exception("Coupon Code Not Registered");
+            throw new ResourceNotFoundException("Coupon Code Not Registered");
         }
         return coupon.get();
     }

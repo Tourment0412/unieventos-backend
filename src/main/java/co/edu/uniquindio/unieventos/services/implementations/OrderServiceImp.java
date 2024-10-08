@@ -3,6 +3,9 @@ package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
+import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.*;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
@@ -16,25 +19,13 @@ import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
+import jakarta.validation.constraints.Email;
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.Length;
 import org.jetbrains.annotations.NotNull;
-import org.simplejavamail.api.email.Email;
-import org.simplejavamail.email.EmailBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URL;
-import java.io.InputStream;
-import java.io.IOException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.UUID;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -88,7 +79,7 @@ public class OrderServiceImp implements OrderService {
             accountService.getAccountEmail(createOrderDTO.friendEmail());
             order.setGift(true);
             order.setFriendMail(createOrderDTO.friendEmail());
-            //TODO enviar entrada a ammigo
+            sendEmailWithTickets(createOrderDTO.friendEmail(), order);
         }
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
@@ -107,9 +98,9 @@ public class OrderServiceImp implements OrderService {
                 Event event = eventService.getEvent(String.valueOf(carDetail.getIdEvent()));
                 Location location = event.findLocationByName(carDetail.getLocationName());
                 if (!location.isCapacityAvaible(carDetail.getAmount())) {
-                    throw new Exception("Max capacity exceeded");
+                    throw new InsufficientCapacityException("Max capacity exceeded");
                 } else if (event.getDate().minusDays(2).isBefore(LocalDateTime.now())) { //Se tendria que añadir un or para que la fecha sea igual
-                    throw new Exception("Date is before current date");
+                    throw new OperationNotAllowedException("Date is before current date");
                 } else {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setEventId(carDetail.getIdEvent());
@@ -140,7 +131,7 @@ public class OrderServiceImp implements OrderService {
         float total = 0;
         Coupon coupon = couponService.getCouponById(couponId);
         if (coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)) {
-            throw new Exception("Coupon is not available");
+            throw new OperationNotAllowedException("Coupon is not available");
         }
         for (OrderDetail orderDetail : items) {
             total += orderDetail.getPrice();
@@ -151,7 +142,7 @@ public class OrderServiceImp implements OrderService {
             List<Order> ordersClient = getOrdersByIdCliente(idClient);
             for (Order order : ordersClient) {
                 if (coupon.getId().equals(order.getCouponId().toString())) {
-                    throw new Exception("Coupon is already in use by this client");
+                    throw new OperationNotAllowedException("Coupon is already in use by this client");
                 }
             }
         }
@@ -166,7 +157,7 @@ public class OrderServiceImp implements OrderService {
     public Order getOrder(String s) throws Exception {
         Optional<Order> orderOptional = orderRepo.findById(s);
         if (orderOptional.isEmpty()) {
-            throw new Exception("The Order with the id: " + s + " does not exist");
+            throw new ResourceNotFoundException("The Order with the id: " + s + " does not exist");
         }
         return orderOptional.get();
     }
@@ -338,15 +329,49 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
+    public String sendEmailWithTickets(String emailFriend, Order order) throws Exception {
+        Account account = accountService.getAccountEmail(emailFriend);
+
+        String subject = "Your friend bought you tickets";
+        StringBuilder body = new StringBuilder();
+
+        body.append("<html><body>");
+        body.append("<h1>Hello ").append(account.getUser().getName()).append("!</h1>");
+        body.append("<p>Your friend bought you tickets to the following events. Enjoy them!!:</p>");
+        List<String> listOfEventIds = new ArrayList<>();
+        for (OrderDetail item : order.getItems()) {
+            Event event = eventService.getEvent(item.getEventId().toString());
+            body.append("<p>---------------------------------<br>")
+                    .append("Event: ").append(event.getName()).append("<br>")
+                    .append("Event Date: ").append(event.getDate()).append("<br>")
+                    .append("Location: ").append(item.getLocationName()).append("<br>")
+                    .append("Number of Tickets: ").append(item.getQuantity()).append("<br>")
+                    .append("Total: ").append(item.getPrice()).append("<br>")
+                    .append("---------------------------------</p>");
+            listOfEventIds.add(event.getId().toString());
+        }
+        String combinedIds = String.join(",", listOfEventIds);
+        String qrCodeUrl = "https://quickchart.io/qr?text=" + combinedIds + "&size=300";
+        byte[] qrCodeImage = emailService.downloadImage(qrCodeUrl);
+
+        body.append("<p>To access your tickets, scan the following QR code:</p>");
+        body.append("<img src='cid:qrCodeImage'/>");
+        body.append("<br><p>We hope you enjoy the event!<br>Sincerely,<br>Unieventos Team</p>");
+        body.append("</body></html>");
+
+        emailService.sendEmailHtmlWithAttachment(new EmailDTO(subject, body.toString(), emailFriend), qrCodeImage, "qrCodeImage");
+
+        return "The tickets have been given to your friend";
+    }
+
+    @Override
     public String sendPurchaseSummary(String email, Order order) throws Exception {
         Account account = accountService.getAccountEmail(email);
 
-        // Generar el código QR en base64
         String qrCodeUrl = "https://quickchart.io/qr?text=" + order.getId() + "&size=300";
         byte[] qrCodeImage = emailService.downloadImage(qrCodeUrl);
 
-        // Crear el cuerpo del correo en formato HTML
-        String subject = "Ticket Purchase Summary";
+        String subject = "Your friend spent tickets on you";
         StringBuilder body = new StringBuilder();
 
         body.append("<html><body>");
@@ -382,7 +407,7 @@ public class OrderServiceImp implements OrderService {
                     .append("Discount applied: ").append(coupon.getDiscount() * 100).append("%</p>");
         }
 
-        body.append("<p>To access your tickets, scan the following QR code:</p>");
+        body.append("<p>To view your order, scan the following QR code:</p>");
         body.append("<img src='cid:qrCodeImage'/>");
         body.append("<br><p>We hope you enjoy the event!<br>Sincerely,<br>Unieventos Team</p>");
         body.append("</body></html>");
@@ -392,6 +417,8 @@ public class OrderServiceImp implements OrderService {
 
         return "The summary of your purchase has been sent to your email";
     }
+
+
 
 
 }

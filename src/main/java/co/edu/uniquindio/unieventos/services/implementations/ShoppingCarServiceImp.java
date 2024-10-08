@@ -1,6 +1,9 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.*;
+import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.EmptyShoppingCarException;
+import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.documents.ShoppingCar;
 import co.edu.uniquindio.unieventos.model.vo.CarDetail;
@@ -35,7 +38,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
 
 
         if (existsShoppingCar(idUser)) {
-            throw new Exception("Shopping car already exists for this account");
+            throw new DuplicateResourceException("Shopping car already exists for this account");
         }
         ShoppingCar shoppingCar = new ShoppingCar();
         shoppingCar.setUserId(new ObjectId(idUser));
@@ -55,7 +58,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
         Location location = event.findLocationByName(addShoppingCarDetailDTO.locationName());
 
         if (!location.isCapacityAvaible(addShoppingCarDetailDTO.quantity())) {
-            throw new Exception("Max capacity exceeded");
+            throw new InsufficientCapacityException("Max capacity exceeded");
         }
 
         CarDetail carDetail = new CarDetail();
@@ -116,7 +119,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
                 if (e.getIdEvent().toString().equals(editCarDetailDTO.idEvent()) &&
                         e.getLocationName().equals(editCarDetailDTO.locationName())) {
                     if (!location.isCapacityAvaible(editCarDetailDTO.amount())) {
-                        throw new Exception("Max capacity exceeded");
+                        throw new InsufficientCapacityException("Max capacity exceeded");
                     }else{
                         e.setAmount(editCarDetailDTO.amount());
                     }
@@ -137,7 +140,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     public ShoppingCar getShoppingCar(String userId) throws Exception {
         Optional<ShoppingCar> shoppingCar = shoppingCarRepo.findByUserId(new ObjectId(userId));
         if (shoppingCar.isEmpty()) {
-            throw new Exception("There's no shopping car for this user");
+            throw new EmptyShoppingCarException("There's no shopping car for this user");
         }
         return shoppingCar.get();
     }

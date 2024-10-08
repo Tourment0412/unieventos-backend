@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unieventos.model.documents;
 
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
@@ -50,9 +51,9 @@ public class Event {
     }
 
 
-    public Location findLocationByName(String name) {
+    public Location findLocationByName(String name) throws OperationNotAllowedException {
         if (name == null) {
-            throw new IllegalArgumentException("Location name cannot be null.");
+            throw new OperationNotAllowedException("Location name cannot be null");
         }
 
         return locations.stream()

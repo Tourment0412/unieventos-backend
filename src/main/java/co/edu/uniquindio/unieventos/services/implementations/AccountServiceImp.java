@@ -4,6 +4,7 @@ import co.edu.uniquindio.unieventos.config.JWTUtils;
 import co.edu.uniquindio.unieventos.dto.accountdtos.*;
 import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.TokenDTO;
+import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import co.edu.uniquindio.unieventos.model.enums.AccountStatus;
 import co.edu.uniquindio.unieventos.model.enums.Role;
@@ -39,11 +40,11 @@ public class AccountServiceImp implements AccountService {
     public String createAccount(CreateAccountDTO account) throws Exception {
         if (existsDni(account.dni())) {
             //Remember adding custom exceptions
-            throw new Exception("Account with this dni already exists");
+            throw new DuplicateResourceException("Account with this dni already exists");
         }
 
         if (existsEmail(account.email())) {
-            throw new Exception("Account with this email already exists");
+            throw new DuplicateResourceException("Account with this email already exists");
         }
 
         Account newAccount = new Account();
@@ -127,7 +128,7 @@ public class AccountServiceImp implements AccountService {
     public Account getAccount(String id) throws Exception {
         Optional<Account> accountOptional = accountRepo.findAccountById(id);
         if (accountOptional.isEmpty()) {
-            throw new Exception("Account with this id does not exist");
+            throw new ResourceNotFoundException("Account with this id does not exist");
         }
 
         return accountOptional.get();
@@ -164,7 +165,7 @@ public class AccountServiceImp implements AccountService {
     public Account getAccountEmail(String email) throws Exception {
         Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
         if (accountOptional.isEmpty()) {
-            throw new Exception("This email is not registered");
+            throw new ResourceNotFoundException("This email is not registered");
         }
         return accountOptional.get();
     }
@@ -173,7 +174,7 @@ public class AccountServiceImp implements AccountService {
     public String changePassword(ChangePasswordDTO changePasswordDTO) throws Exception {
         Optional<Account> accountOptional = accountRepo.findAccountByEmail(changePasswordDTO.email());
         if (accountOptional.isEmpty()) {
-            throw new Exception("This email is not registered");
+            throw new ResourceNotFoundException("This email is not registered");
         }
         Account account = accountOptional.get();
         ValidationCode passwordValidationCode = account.getPasswordValidationCode();
@@ -185,10 +186,10 @@ public class AccountServiceImp implements AccountService {
                 } else {
                     account.setPasswordValidationCode(null);
                     accountRepo.save(account);
-                    throw new Exception("This verification code has expired");
+                    throw new ValidationCodeException("This verification code has expired");
                 }
             } else {
-                throw new Exception("This verification is incorrect");
+                throw new ValidationCodeException("This verification is incorrect");
             }
         }
         return "The password has been changed successfully";
@@ -198,14 +199,14 @@ public class AccountServiceImp implements AccountService {
     public TokenDTO login(LoginDTO loginDTO) throws Exception {
         Account account = getAccountEmail(loginDTO.email());
         if (account.getStatus() == AccountStatus.DELETED) {
-            throw new Exception("Account with this email does not exist");
+            throw new ResourceNotFoundException("Account with this email does not exist");
         }
         if (account.getStatus() == AccountStatus.INACTIVE) {
-            throw new Exception("Account with this email is not active");
+            throw new AccountNotActivatedException("Account with this email is not active");
         }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (!passwordEncoder.matches(loginDTO.password(), account.getPassword())) {
-            throw new Exception("Invalid password");
+            throw new InvalidPasswordException("Invalid password");
         }
         Map<String, Object> map = buildClaims(account);
         return new TokenDTO(jwtUtils.generarToken(account.getEmail(), map));
@@ -233,10 +234,10 @@ public class AccountServiceImp implements AccountService {
                     accountRepo.save(accountObtained);
 
                 } else {
-                    throw new Exception("Registration validation code has expired");
+                    throw new ValidationCodeException("Registration validation code has expired");
                 }
             } else {
-                throw new Exception("This registration validation code is incorrect");
+                throw new ValidationCodeException("This registration validation code is incorrect");
             }
         }
         return accountObtained.getId();
