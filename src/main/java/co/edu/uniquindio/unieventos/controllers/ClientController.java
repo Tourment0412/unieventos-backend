@@ -38,29 +38,32 @@ public class ClientController {
     private final OrderService orderService;
     private final CouponService couponService;
 
+
+    //TODO Need to modify this method to make the implementation of verify the shoppingcar existence
     @PutMapping("/shoppingcar/add-item")
     public ResponseEntity<MessageDTO<String>> addShoppingCarDetail
             (@Valid @RequestBody AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception{
-        shoppingCarService.addShoppingCarDetail(addShoppingCarDetailDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Shopping car item added successfully"));
+        String shoppingCarId= shoppingCarService.addShoppingCarDetail(addShoppingCarDetailDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, shoppingCarId));
     }
 
     @PutMapping("/shoppingcar/edit-item")
     public ResponseEntity<MessageDTO<String>> editCarDetail (@Valid @RequestBody EditCarDetailDTO editCarDetailDTO) throws Exception{
-        shoppingCarService.editCarDetail(editCarDetailDTO);
-        return ResponseEntity.ok(new MessageDTO<>(true, "Car item edited successfully"));
+        String shoppingCarId= shoppingCarService.editCarDetail(editCarDetailDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, shoppingCarId));
     }
 
     @DeleteMapping("/shoppingcar/delete-item")
     public ResponseEntity<MessageDTO<String>> deleteShoppingCarDetail(@Valid @RequestBody DeleteCarDetailDTO deleteCarDetailDTO) throws Exception{
-        shoppingCarService.deleteShoppingCarDetail(deleteCarDetailDTO);
-        return ResponseEntity.ok(new MessageDTO<>(true, "Shopping car item deleted successfully"));
+        String shoppingCarId= shoppingCarService.deleteShoppingCarDetail(deleteCarDetailDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, shoppingCarId));
     }
 
+    //TODO delete this as a controller is gonna be used as a service for addItemShoppingcar
     @PostMapping("/shoppingcar/create/{idUser}")
     public ResponseEntity<MessageDTO<String>> createShoppingCar(@PathVariable String idUser) throws Exception{
         shoppingCarService.createShoppingCar(idUser);
-        return ResponseEntity.ok(new MessageDTO<>(true, "Shopping car created successfully"));
+        return ResponseEntity.ok(new MessageDTO<>(false, "Shopping car created successfully"));
     }
 
     //TODO Ask if the carrito obtener controller is for the list of the items or to get the entity of Shopping car
@@ -83,8 +86,8 @@ public class ClientController {
 
     @PostMapping("/order/create")
     public ResponseEntity<MessageDTO<String>> createOrder(@Valid @RequestBody CreateOrderDTO createOrderDTO) throws Exception{
-        orderService.createOrder(createOrderDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Order created successfully"));
+        String orderId= orderService.createOrder(createOrderDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, orderId));
     }
 
     @GetMapping("/order/history/{clientId}")

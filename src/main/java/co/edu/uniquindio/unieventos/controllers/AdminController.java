@@ -34,8 +34,8 @@ public class AdminController {
 
     @PutMapping("/event/update")
     public ResponseEntity<MessageDTO<String>> updateEvent(@Valid @RequestBody UpdateEventDTO updateEventDTO) throws Exception {
-        eventService.updateEvent(updateEventDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Event updated successfully"));
+       String eventId= eventService.updateEvent(updateEventDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, eventId));
     }
 
     @PostMapping("/image/upload")
@@ -48,20 +48,20 @@ public class AdminController {
     //In the front end I'm going to be able to create an event if I already selected the images
     @PostMapping("/event/create")
     public ResponseEntity<MessageDTO<String>> createEvent(@Valid @RequestBody CreateEventDTO createEventDTO) throws Exception {
-        eventService.createEvent(createEventDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Event created successfully"));
+        String eventId= eventService.createEvent(createEventDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, eventId));
     }
 
     @PostMapping("/coupon/create")
     public ResponseEntity<MessageDTO<String>> createCoupon(@Valid @RequestBody CreateCouponDTO coupon) throws Exception {
-        couponService.createCoupon(coupon);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Coupon created successfully"));
+        String couponId= couponService.createCoupon(coupon);
+        return ResponseEntity.ok(new MessageDTO<>(false, couponId));
     }
 
     @PutMapping("/coupon/update")
     public ResponseEntity<MessageDTO<String>> updateCoupon(@Valid @RequestBody UpdateCouponDTO coupon) throws Exception{
-        couponService.updateCoupon(coupon);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Coupon updated successfully"));
+        String couponId= couponService.updateCoupon(coupon);
+        return ResponseEntity.ok(new MessageDTO<>(false, couponId));
     }
 
 
@@ -96,20 +96,20 @@ public class AdminController {
 
     @DeleteMapping("/image/delete")
     public ResponseEntity<MessageDTO<String>> deleteImage(@RequestParam("idImage") String idImage) throws Exception {
-        imagesService.deleteImage(idImage);
-        return ResponseEntity.ok().body(new MessageDTO<>(false, "The image was successfully deleted"));
+        String reply= imagesService.deleteImage(idImage);
+        return ResponseEntity.ok().body(new MessageDTO<>(false, reply));
     }
 
     @DeleteMapping("/event/delete/{id}")
     public ResponseEntity<MessageDTO<String>> deleteEvent(@PathVariable String id) throws Exception {
-        eventService.deleteEvent(id);
-        return ResponseEntity.ok().body(new MessageDTO<>(false, "The event was successfully deleted"));
+        String eventId= eventService.deleteEvent(id);
+        return ResponseEntity.ok().body(new MessageDTO<>(false, eventId));
     }
 
     @DeleteMapping("/coupon/delete/{id}")
     public ResponseEntity<MessageDTO<String>> deleteCoupon(@PathVariable String id) throws Exception{
-        couponService.deleteCoupon(id);
-        return ResponseEntity.ok().body(new MessageDTO<>(false, "Coupon was successfully deleted"));
+        String couponId= couponService.deleteCoupon(id);
+        return ResponseEntity.ok().body(new MessageDTO<>(false, couponId));
     }
 
     @PostMapping("/event/filter-events")
@@ -117,6 +117,8 @@ public class AdminController {
         List<EventItemDTO> eventsFiltered= eventService.filterEventsAdmin(eventFilterDTO);
         return ResponseEntity.ok(new MessageDTO<>(false, eventsFiltered));
     }
+
+    //TODO Add reports controllers
 
 
 }

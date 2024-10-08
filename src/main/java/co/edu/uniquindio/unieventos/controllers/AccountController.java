@@ -24,14 +24,14 @@ public class AccountController {
 
     @PutMapping("/update-account")
     public ResponseEntity<MessageDTO<String>> updateAccount(@Valid @RequestBody UpdateAccountDTO account) throws Exception {
-        accountService.updateAccount(account);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Account updated successfully"));
+        String accountId=accountService.updateAccount(account);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<MessageDTO<String>> deleteAccount(@PathVariable String id) throws Exception {
-        accountService.deleteAccount(id);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Account deleted successfully"));
+        String accountId= accountService.deleteAccount(id);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
     }
 
     @GetMapping("/get/{id}")

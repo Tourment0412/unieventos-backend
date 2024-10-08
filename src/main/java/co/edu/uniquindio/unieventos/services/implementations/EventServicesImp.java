@@ -78,8 +78,8 @@ public class EventServicesImp implements EventService {
         eventToUpdate.setType(updateEventDTO.type());
         eventToUpdate.setLocations(updateEventDTO.locations());
         eventToUpdate.setStatus(updateEventDTO.status());
-        eventRepo.save(eventToUpdate);
-        return eventToUpdate.getId();
+
+        return eventRepo.save(eventToUpdate).getId();
     }
 
     @Override
@@ -96,9 +96,9 @@ public class EventServicesImp implements EventService {
     public String deleteEvent(String id) throws Exception {
         Event eventToDelete = getEvent(id);
         eventToDelete.setStatus(EventStatus.INACTIVE);
-        eventRepo.save(eventToDelete);
 
-        return "Event deleted successfully";
+
+        return eventRepo.save(eventToDelete).getId();
     }
 
     @Override

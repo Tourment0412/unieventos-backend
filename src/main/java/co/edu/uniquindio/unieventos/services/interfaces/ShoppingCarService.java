@@ -12,10 +12,10 @@ public interface ShoppingCarService {
     String createShoppingCar(String idUser) throws Exception;
 
     String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception;
-    void deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception;
+    String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception;
     List<CarItemViewDTO> listShoppingCarDetails(String userId) throws Exception;
     //TODO Ask if maybe a edit option would be good or something.
-    void editCarDetail (EditCarDetailDTO editCarDetailDTO) throws Exception;
+    String editCarDetail (EditCarDetailDTO editCarDetailDTO) throws Exception;
     ShoppingCar getShoppingCar(String userId) throws Exception;
     void deleteShoppingCar(String idUser) throws Exception;
 }

@@ -7,5 +7,5 @@ import java.io.IOException;
 public interface ImagesService {
 
     String uploadImage(MultipartFile file) throws Exception;
-    void deleteImage(String imageName) throws Exception;
+    String deleteImage(String imageName) throws Exception;
 }

@@ -75,7 +75,7 @@ public class AccountServiceImp implements AccountService {
 
         emailService.sendEmail(new EmailDTO(subject, body, account.email()));
         Account accountCreated = accountRepo.save(newAccount);
-        return accountCreated.getUser().getDni();
+        return accountCreated.getId();
     }
 
 
@@ -120,8 +120,7 @@ public class AccountServiceImp implements AccountService {
 
         Account accountToDelete = getAccount(id);
         accountToDelete.setStatus(AccountStatus.DELETED);
-        accountRepo.save(accountToDelete);
-        return "Account deleted successfully";
+        return accountRepo.save(accountToDelete).getId();
     }
 
     @Override
@@ -156,9 +155,9 @@ public class AccountServiceImp implements AccountService {
         String body = "Hey! you have requested the recover of your password code for your Unieventos account\nThis " +
                 "is your recover password code: " + recoverCode + "\nThis code lasts 15 minutes.";
         account.setPasswordValidationCode(new ValidationCode(LocalDateTime.now(), recoverCode));
-        accountRepo.save(account);
+        Account accountSaved= accountRepo.save(account);
         emailService.sendEmail(new EmailDTO(subject, body, account.getEmail()));
-        return "A validation code has been sent to your email, check your email, it lasts 15 minutes.";
+        return accountSaved.getId();
     }
 
     @Override
@@ -177,6 +176,7 @@ public class AccountServiceImp implements AccountService {
             throw new ResourceNotFoundException("This email is not registered");
         }
         Account account = accountOptional.get();
+
         ValidationCode passwordValidationCode = account.getPasswordValidationCode();
         if (passwordValidationCode != null) {
             if (passwordValidationCode.getCode().equals(changePasswordDTO.verificationCode())) {
@@ -192,7 +192,7 @@ public class AccountServiceImp implements AccountService {
                 throw new ValidationCodeException("This verification is incorrect");
             }
         }
-        return "The password has been changed successfully";
+        return account.getId();
     }
 
     @Override

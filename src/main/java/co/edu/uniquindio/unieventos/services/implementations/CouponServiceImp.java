@@ -64,8 +64,8 @@ public class CouponServiceImp implements CouponService {
         newCoupon.setExpirationDate(coupon.expirationDate());
         newCoupon.setType(coupon.type());
         newCoupon.setDiscount(coupon.discount());
-        couponRepo.save(newCoupon);
-        return "Coupon saved successfully";
+
+        return couponRepo.save(newCoupon).getId();
     }
 
     @Override
@@ -75,16 +75,15 @@ public class CouponServiceImp implements CouponService {
         couponToUpdate.setExpirationDate(coupon.expirationDate());
         couponToUpdate.setType(coupon.type());
         couponToUpdate.setDiscount(coupon.discount());
-        couponRepo.save(couponToUpdate);
-        return couponToUpdate.getId();
+
+        return couponRepo.save(couponToUpdate).getId();
     }
 
     @Override
     public String deleteCoupon(String id) throws Exception {
         Coupon couponToDelete = getCupon(id);
         couponToDelete.setStatus(CouponStatus.NOT_AVAILABLE);
-        couponRepo.save(couponToDelete);
-        return "Account deleted successfully";
+        return couponRepo.save(couponToDelete).getId();
     }
 
     @Override

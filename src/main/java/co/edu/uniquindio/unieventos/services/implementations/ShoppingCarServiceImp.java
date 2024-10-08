@@ -73,13 +73,13 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public void deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception {
+    public String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception {
         ShoppingCar shoppingCar = getShoppingCar(deleteCarDetailDTO.idUser());
         List<CarDetail> details = shoppingCar.getItems();
         details.removeIf(e -> e.getIdEvent().toString().equals(deleteCarDetailDTO.idEvent()) &&
                 e.getLocationName().equals(deleteCarDetailDTO.locationName()));
         shoppingCar.setItems(details);
-        shoppingCarRepo.save(shoppingCar);
+        return shoppingCarRepo.save(shoppingCar).getId();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public void editCarDetail(EditCarDetailDTO editCarDetailDTO) throws Exception {
+    public String editCarDetail(EditCarDetailDTO editCarDetailDTO) throws Exception {
         ShoppingCar shoppingCar = getShoppingCar(editCarDetailDTO.idUser());
         List<CarDetail> details = shoppingCar.getItems();
         details.forEach(e -> {
@@ -132,7 +132,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
 
         });
         shoppingCar.setItems(details);
-        shoppingCarRepo.save(shoppingCar);
+        return shoppingCarRepo.save(shoppingCar).getId();
     }
 
     //This method is going to be used

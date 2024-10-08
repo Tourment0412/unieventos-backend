@@ -30,24 +30,24 @@ public class AuthenticationController {
 
     @PostMapping("/create-account")
     public ResponseEntity<MessageDTO<String>> createAccount(@Valid @RequestBody CreateAccountDTO account) throws Exception {
-        accountService.createAccount(account);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Account created successfully"));
+        String accountId= accountService.createAccount(account);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
 
     }
 
 
     @PutMapping("/send-recover/{email}")
     public ResponseEntity<MessageDTO<String>> sendRecoverPasswordCode(@PathVariable String email) throws Exception {
-        accountService.sendRecoverPasswordCode(email);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Recover password code sent successfully"));
+        String accountId= accountService.sendRecoverPasswordCode(email);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
     }
 
 
     @PutMapping("/change-password")
     public ResponseEntity<MessageDTO<String>> changePasswordCode
     (@Valid @RequestBody ChangePasswordDTO changePasswordDTO) throws Exception {
-        accountService.changePassword(changePasswordDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Password changed successfully"));
+        String accountId= accountService.changePassword(changePasswordDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
     }
 
     /*
@@ -57,14 +57,14 @@ public class AuthenticationController {
      */
     @PutMapping("/validate-account")
     public ResponseEntity<MessageDTO<String>>validateRegistrationCode(@Valid @RequestBody ActivateAccountDTO activateAccountDTO) throws Exception{
-        accountService.validateRegistrationCode(activateAccountDTO);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Account validated successfully"));
+        String accountId= accountService.validateRegistrationCode(activateAccountDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
     }
 
     @PutMapping("/resend-validation/{email}")
     public ResponseEntity<MessageDTO<String>>reassignValidationRegistrationCode(@PathVariable String email) throws Exception{
-        accountService.reassignValidationRegistrationCode(email);
-        return ResponseEntity.ok(new MessageDTO<>(false, "Validation code reassigned successfully"));
+        String accountId= accountService.reassignValidationRegistrationCode(email);
+        return ResponseEntity.ok(new MessageDTO<>(false, accountId));
     }
 
 }
