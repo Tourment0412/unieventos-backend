@@ -252,7 +252,7 @@ public class OrderServiceImp implements OrderService {
         }
 
         //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
-        MercadoPagoConfig.setAccessToken("APP_USR-8178646482281064-100513-248819fc76ea7f7577f902e927eaefb7-2014458486");
+        MercadoPagoConfig.setAccessToken("APP_USR-7759979865895803-100720-2039ffe8c5a46ee730f43e6f046b947a-2026338176");
 
         //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
@@ -270,7 +270,7 @@ public class OrderServiceImp implements OrderService {
                 //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
                 //TODO Agregar url de Ngrok (Se actualiza constantemente) la ruta debe incluir la direccion al controlador de las notificaciones 
-                .notificationUrl("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/mercadopago/notification")
+                .notificationUrl("https://bce1-189-50-209-152.ngrok-free.app/api/public/order/receive-notification")
                 .build();
 
 

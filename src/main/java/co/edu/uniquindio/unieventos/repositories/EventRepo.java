@@ -54,13 +54,20 @@ public interface EventRepo extends MongoRepository<Event, String> {
             "}")
     Page<Event> findAllEventsClient(Pageable pageable);
 
+    /*
     @Query("{ $and: [ " +
             " { $or: [ { 'name': { $regex: ?0, $options: 'i' } }, { 'name': { $exists: true } } ] }, " +
             " { $or: [ { 'type': ?1 }, { 'type': { $exists: true } } ] }, " +  // Manejo de tipo de evento
             " { $or: [ { 'city': { $regex: ?2, $options: 'i' } }, { 'city': { $exists: true } } ] } " +
             "] }")
     Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
-
+    */
+    @Query("{ $or: [ " +
+                  " { $and: [ { 'name': { $regex: ?0, $options: 'i' } }, { ?0: { $ne: \"\" } } ] }, " +
+                  " { $and: [ { 'type': ?1 }, { ?1: { $ne: \"\" } } ] }, " +  // Manejo de tipo de evento
+                  " { $and: [ { 'city': { $regex: ?2, $options: 'i' } }, { ?2: { $ne: \"\" } } ] } " +
+                  "] }")
+    Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
 
 
 
