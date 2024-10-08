@@ -48,7 +48,7 @@ public class PublicController {
     //TODO (Ask) why is it a post if it makes modifications on an order already existent
 
     @PostMapping("/order/receive-notification")
-    public ResponseEntity<MessageDTO<String>> receiveNotificationFromMercadoPago(Map<String, Object> request){
+    public ResponseEntity<MessageDTO<String>> receiveNotificationFromMercadoPago(@RequestBody Map<String, Object> request){
         orderService.receiveNotificationFromMercadoPago(request);
         return ResponseEntity.ok(new MessageDTO<>(false,"Notification received"));
     }
