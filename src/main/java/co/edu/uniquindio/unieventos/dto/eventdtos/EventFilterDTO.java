@@ -7,14 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 public record EventFilterDTO(
-        @NotBlank(message = "Event name cannot be empty")
         @Length(max = 100, message = "Event name must not exceed 100 characters")
         String name,
 
         @NotNull(message = "Event type is required")
         EventType eventType,
 
-        @NotBlank(message = "Event city cannot be empty")
         @Length(max = 50, message = "Event city must not exceed 50 characters")
         String city,
 

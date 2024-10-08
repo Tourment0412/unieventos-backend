@@ -184,10 +184,15 @@ public class EventServicesImp implements EventService {
 
     @Override
     public List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO) {
+
+        System.out.println(eventFilterDTO.name());
+        System.out.println(eventFilterDTO.eventType());
+        System.out.println(eventFilterDTO.city());
+
         List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(
-                eventFilterDTO.name() == null ? "" : eventFilterDTO.name(),
+                eventFilterDTO.name(),
                 eventFilterDTO.eventType(),
-                eventFilterDTO.city() == null ? "" : eventFilterDTO.city(),
+                eventFilterDTO.city(),
                 //The 10 is how many events i want for page
                 PageRequest.of(eventFilterDTO.page(),10)
         ).getContent();
