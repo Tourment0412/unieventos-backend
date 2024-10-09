@@ -15,8 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -183,6 +182,19 @@ public class EventServiceTest {
         Event updatedEvent = eventRepo.findById(event.getId()).orElse(null);
         assertNotNull(updatedEvent);
         assertEquals(10, updatedEvent.findLocationByName("VIP").getTicketsSold());
+    }
+
+    //////////////////////////////////////////////
+    @Test
+    void testGetInfoEventAdmin() throws Exception {
+        EventInfoAdminDTO eventInfoAdminDTO=null;
+        try {
+            eventInfoAdminDTO=eventService.getInfoEventAdmin("6706047ac127c9d5e7e16cc6");
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+        assertNotNull(eventInfoAdminDTO);
+
     }
 
 

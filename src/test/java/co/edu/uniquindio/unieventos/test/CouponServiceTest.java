@@ -1,8 +1,6 @@
 package co.edu.uniquindio.unieventos.test;
 
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.CreateCouponDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.UpdateCouponDTO;
+import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
@@ -15,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class CouponServiceTest {
@@ -96,4 +95,26 @@ public class CouponServiceTest {
         assertEquals("0.12", couponInfoDTO.discount()+"");
 
     }
+
+    //////////////////////////////////////////////
+    @Test
+    public void testGetAllCouponsAdmin() throws Exception {
+        List<CouponItemDTO>  couponsItemsDTO=couponService.getAllCouponsAdmin(0);
+        assertTrue(couponsItemsDTO.size()>0 && couponsItemsDTO.size()<=10);
+    }
+
+    @Test
+    public void testGetAllCouponsClient() throws Exception {
+        List<CouponItemClientDTO> couponsItemsClientDTO=couponService.getAllCouponsClient(0);
+        assertTrue(couponsItemsClientDTO.size()>0 && couponsItemsClientDTO.size()<=10);
+    }
+
+    //TODO metodo
+    @Test
+    public void testReceiveNotificationFromMercadoPago() throws Exception {
+
+    }
+
+
+
 }

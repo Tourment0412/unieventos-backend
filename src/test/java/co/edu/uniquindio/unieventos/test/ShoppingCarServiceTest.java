@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.test;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.AddShoppingCarDetailDTO;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.DeleteCarDetailDTO;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.CarItemViewDTO;
+import co.edu.uniquindio.unieventos.dto.shoppingcardtos.EditCarDetailDTO;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.documents.ShoppingCar;
@@ -146,4 +147,22 @@ public class ShoppingCarServiceTest {
         assertFalse(carItemViewDTOList.isEmpty());
         assertEquals(1, carItemViewDTOList.size());
     }
+
+    //////////////////////////////////////////////////////////
+    @Test
+    public void testEditCarDetail() throws Exception {
+        try {
+            EditCarDetailDTO editCarDetailDTO=new EditCarDetailDTO(
+                    "",
+                    "",
+                    "",
+                    0
+            );
+            shoppingCarService.editCarDetail(editCarDetailDTO);
+            assertTrue(true);
+        } catch(Exception e) {
+            assertTrue(false);
+        }
+    }
+
 }
