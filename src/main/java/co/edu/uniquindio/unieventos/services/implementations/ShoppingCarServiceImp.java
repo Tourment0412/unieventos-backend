@@ -34,9 +34,21 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public String createShoppingCar(String idUser) throws Exception {
+    public ShoppingCar createShoppingCar(String idUser) throws Exception {
 
+        Optional<ShoppingCar> shoppingCarReceived = shoppingCarRepo.findByUserId(new ObjectId(idUser));
+        if(shoppingCarReceived.isEmpty()) {
+            ShoppingCar shoppingCar = new ShoppingCar();
+            shoppingCar.setUserId(new ObjectId(idUser));
+            shoppingCar.setDate(LocalDateTime.now());
+            shoppingCar.setItems(new ArrayList<>());
+            return shoppingCarRepo.save(shoppingCar);
 
+        }else{
+            return shoppingCarReceived.get();
+        }
+
+        /*
         if (existsShoppingCar(idUser)) {
             throw new DuplicateResourceException("Shopping car already exists for this account");
         }
@@ -44,7 +56,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
         shoppingCar.setUserId(new ObjectId(idUser));
         shoppingCar.setDate(LocalDateTime.now());
         shoppingCar.setItems(new ArrayList<>());
-        return shoppingCarRepo.save(shoppingCar).getId();
+        return shoppingCarRepo.save(shoppingCar).getId();**/
     }
     @Override
     public void deleteShoppingCar(String idUser) throws Exception{
@@ -53,7 +65,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
     @Override
     public String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception {
-        ShoppingCar shoppingCar = getShoppingCar(addShoppingCarDetailDTO.idUser());
+        ShoppingCar shoppingCar = createShoppingCar(addShoppingCarDetailDTO.idUser());
         Event event = eventService.getEvent(addShoppingCarDetailDTO.idEvent());
         Location location = event.findLocationByName(addShoppingCarDetailDTO.locationName());
 

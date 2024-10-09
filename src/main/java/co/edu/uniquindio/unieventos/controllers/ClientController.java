@@ -60,11 +60,12 @@ public class ClientController {
     }
 
     //TODO delete this as a controller is gonna be used as a service for addItemShoppingcar
+    /*
     @PostMapping("/shoppingcar/create/{idUser}")
     public ResponseEntity<MessageDTO<String>> createShoppingCar(@PathVariable String idUser) throws Exception{
         shoppingCarService.createShoppingCar(idUser);
         return ResponseEntity.ok(new MessageDTO<>(false, "Shopping car created successfully"));
-    }
+    }*/
 
     //TODO Ask if the carrito obtener controller is for the list of the items or to get the entity of Shopping car
     //I'm gonna do it as it's for the list of the items
