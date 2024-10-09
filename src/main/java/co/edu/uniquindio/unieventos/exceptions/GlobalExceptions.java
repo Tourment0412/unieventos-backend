@@ -42,7 +42,7 @@ public class GlobalExceptions {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageDTO<>(true, ex.getMessage()));
     }
 
-    @ExceptionHandler(AccountNotActivatedException.class)
+    @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<MessageDTO<String>> handleInvalidPasswordException(InvalidPasswordException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageDTO<>(true, ex.getMessage()));
     }
