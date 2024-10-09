@@ -101,28 +101,28 @@ db.coupons.insertMany([
         _id: ObjectId("6706047ac127c9d5e7e16cc3"),
         name: "Discount 10%",
         code: "DISC10",
-        CouponType: "percentage",
+        CouponType: "UNIQUE",
         discount: 0.1,
         expirationDate: ISODate("2024-12-31T23:59:59Z"),
-        status: "active"
+        status: "ACTIVE"
     },
     {
         _id: ObjectId("6706047ac127c9d5e7e16cc4"),
         name: "Flat 5000",
         code: "FLAT5000",
-        CouponType: "flat",
-        discount: 0.5,
+        CouponType: "MULTIPLE",
+        discount: 0.75,
         expirationDate: ISODate("2023-12-31T23:59:59Z"),
-        status: "expired"
+        status: "INACTIVE"
     },
     {
         _id: ObjectId("6706047ac127c9d5e7e16cc5"),
         name: "Black Friday",
         code: "BF2024",
-        CouponType: "percentage",
-        discount: 0.75,
+        CouponType: "MULTIPLE",
+        discount: 0.5,
         expirationDate: ISODate("2024-11-30T23:59:59Z"),
-        status: "active"
+        status: "ACTIVE"
     }
 ]);
 
@@ -191,7 +191,7 @@ db.events.insertMany([
         status: "INACTIVE",
         locations: [
             { name: "Palco", price: 180000, ticketsSold: 10, maxCapacity: 50 },
-            { name: "General", price: 60000, ticketsSold: 40, maxCapacity: 300 }
+            { name: "General", price: 50000, ticketsSold: 40, maxCapacity: 300 }
         ]
     },
     {
@@ -218,14 +218,14 @@ db.orders.insertMany([
     {
         _id :  ObjectId("6706047ac127c9d5e7e16ccb"),
         items: [
-            { eventId: ObjectId("6706047ac127c9d5e7e16ccc"), price: 50000, locationName: "General", quantity: 2 },
-            { eventId: ObjectId("6706047ac127c9d5e7e16ccd"), price: 150000, locationName: "VIP", quantity: 1 }
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc9"), price: 50000, locationName: "General", quantity: 2 },
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc7"), price: 150000, locationName: "VIP", quantity: 1 }
         ],
         gatewayCode: "MERCADOPAGO",
         date: new ISODate("2024-10-01T14:30:00Z"),
-        total: 250000,
-        clientId: ObjectId("6706047ac127c9d5e7e16cce"),
-        couponId: ObjectId("67060f8d0cae5fbda81e750b"),
+        total: 125000,
+        clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
+        couponId: ObjectId("6706047ac127c9d5e7e16cc5"),
         payment: {
             id: "PAY-12345",
             currency: "COP",
@@ -233,7 +233,7 @@ db.orders.insertMany([
             statusDetail: "Approved",
             authorizationCode: "AUTH-98765",
             date: new ISODate("2024-10-01T14:32:00Z"),
-            transactionValue: 250000,
+            transactionValue: 125000,
             status: "SUCCESS"
         },
         isGift: false,
@@ -247,7 +247,7 @@ db.orders.insertMany([
         gatewayCode: "MERCADOPAGO",
         date: new ISODate("2024-09-20T10:15:00Z"),
         total: 240000,
-        clientId: ObjectId("67060f8d0cae5fbda81e750f"),
+        clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
         couponId: null,
         payment: {
             id: "PAY-67890",
@@ -265,13 +265,13 @@ db.orders.insertMany([
     {
         _id :  ObjectId("67060f8d0cae5fbda81e7510"),
         items: [
-            { eventId: ObjectId("67060f8d0cae5fbda81e7511"), price: 80000, locationName: "General", quantity: 3 }
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc8"), price: 80000, locationName: "General", quantity: 3 }
         ],
         gatewayCode: "MERCADOPAGO",
         date: new ISODate("2024-11-05T18:45:00Z"),
-        total: 240000,
-        clientId: ObjectId("67060f8d0cae5fbda81e7512"),
-        couponId: ObjectId("67060f8d0cae5fbda81e7513"),
+        total: 120000,
+        clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
+        couponId: ObjectId("6706047ac127c9d5e7e16cc5"),
         payment: {
             id: "PAY-23456",
             currency: "COP",
@@ -279,7 +279,7 @@ db.orders.insertMany([
             statusDetail: "Pending",
             authorizationCode: "AUTH-11223",
             date: new ISODate("2024-11-05T18:50:00Z"),
-            transactionValue: 240000,
+            transactionValue: 120000,
             status: "PENDING"
         },
         isGift: false,
@@ -288,13 +288,13 @@ db.orders.insertMany([
     {
         _id :  ObjectId("67060f8d0cae5fbda81e7514"),
         items: [
-            { eventId: ObjectId("67060f8d0cae5fbda81e7515"), price: 100000, locationName: "Pasarela", quantity: 1 },
-            { eventId: ObjectId("67060f8d0cae5fbda81e7516"), price: 80000, locationName: "General", quantity: 2 }
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc8"), price: 100000, locationName: "Pasarela", quantity: 1 },
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc8"), price: 80000, locationName: "General", quantity: 2 }
         ],
         gatewayCode: "PAYPAL",
         date: new ISODate("2024-10-10T15:30:00Z"),
         total: 260000,
-        clientId: ObjectId("67060f8d0cae5fbda81e7517"),
+        clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
         couponId: null,
         payment: {
             id: "PAY-98765",
@@ -318,34 +318,34 @@ db.shoppingCars.insertMany([
         _id: ObjectId("67060f8d0cae5fbda81e7518"),
         date: new ISODate("2024-12-20T10:15:00Z"),
         items: [
-            { amount: 2, locationName: "General", idEvent: ObjectId("67060f8d0cae5fbda81e751c") },
-            { amount: 1, locationName: "VIP", idEvent: ObjectId("67060f8d0cae5fbda81e751d") }
+            { amount: 2, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc9") },
+            { amount: 1, locationName: "VIP", idEvent: ObjectId("6706047ac127c9d5e7e16cc7") }
         ],
-        userId: ObjectId("67060f8d0cae5fbda81e7519")
+        userId: ObjectId("6706047ac127c9d5e7e16cbf")
     },
     {
         _id: ObjectId("67060f8d0cae5fbda81e751a"),
         date: new ISODate("2024-09-20T10:15:00Z"),
         items: [
-            { amount: 4, locationName: "Tribuna Norte", idEvent: ObjectId("67060f8d0cae5fbda81e751e") }
+            { amount: 4, locationName: "Tribuna Norte", idEvent: ObjectId("") }
         ],
-        userId: ObjectId("67060f8d0cae5fbda81e751b")
+        userId: ObjectId("6706047ac127c9d5e7e16cbf")
     },
     {
         _id: ObjectId("6706114a051852d809818d4c"),
         date: new ISODate("2024-11-05T18:45:00Z"),
         items: [
-            { amount: 3, locationName: "General", idEvent: ObjectId("67060f8d0cae5fbda81e751f") }
+            { amount: 3, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") }
         ],
-        userId: ObjectId("67060f8d0cae5fbda81e7520")
+        userId: ObjectId("6706047ac127c9d5e7e16cbf")
     },
     {
         _id: ObjectId("6706114a051852d809818d4d"),
         date: new ISODate("2024-10-10T15:30:00Z"),
         items: [
-            { amount: 1, locationName: "Pasarela", idEvent: ObjectId("67060f8d0cae5fbda81e7521") },
-            { amount: 2, locationName: "General", idEvent: ObjectId("67060f8d0cae5fbda81e7522") }
+            { amount: 1, locationName: "Pasarela", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") },
+            { amount: 2, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") }
         ],
-        userId: ObjectId("6706114a051852d809818d4e")
+        userId: ObjectId("6706047ac127c9d5e7e16cbf")
     }
 ]);
