@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ShoppingCarService {
 
+<<<<<<< Updated upstream
     /**
      *
      * @param idUser
@@ -15,6 +16,10 @@ public interface ShoppingCarService {
      * @throws Exception
      */
     String createShoppingCar(String idUser) throws Exception;
+=======
+
+    ShoppingCar createShoppingCar(String idUser) throws Exception;
+>>>>>>> Stashed changes
 
     /**
      *
