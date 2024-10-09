@@ -11,6 +11,7 @@ import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -237,28 +238,35 @@ public class EventServicesImp implements EventService {
 
     @Override
     public EventReportDTO createReport(String idEvent) {
-        Map<String, Double> percentageSoldByLocation = eventRepo.calculatePercentageSoldByLocation(idEvent);
-        Map<String, Integer> quantitySoldByLocation = eventRepo.calculateQuantitySoldByLocation(idEvent);
-        Map<String, Double> soldByLocation = eventRepo.calculateSoldByLocation(idEvent);
+        System.out.println("Calculating percentage sold by location...");
+        List<LocationPercentageDTO> percentageSoldByLocation = eventRepo.calculatePercentageSoldByLocation(new ObjectId(idEvent));
+        System.out.println(percentageSoldByLocation.size());
+        System.out.println("Percentage sold by location calculated: "+percentageSoldByLocation);
+
+
+        System.out.println("Calculating quantity sold by location...");
+        List<LocationQuantityDTO> quantitySoldByLocation = eventRepo.calculateQuantitySoldByLocation(new ObjectId(idEvent));
+        System.out.println("Quantity sold by location calculated: " + quantitySoldByLocation);
+
+        System.out.println("Calculating sold by location...");
+        List<LocationSalesDTO> soldByLocation = eventRepo.calculateSoldByLocation(new ObjectId(idEvent));
+        System.out.println("Sold by location calculated: " + soldByLocation);
+
+
         int totalTickets = 0;
         double totalSales = 0.0;
 
-
-        if (soldByLocation != null) {
-            for (Double sales : soldByLocation.values()) {
-                totalSales += sales;
+        if (soldByLocation !=null && !soldByLocation.isEmpty()) {
+            for (LocationSalesDTO dto: soldByLocation) {
+                totalSales += dto.totalSold();
             }
         }
 
-        if (quantitySoldByLocation != null) {
-            for (Integer tickets : quantitySoldByLocation.values()) {
-                totalTickets += tickets;
+        if (quantitySoldByLocation != null && !quantitySoldByLocation.isEmpty()) {
+            for (LocationQuantityDTO dto: quantitySoldByLocation) {
+                totalTickets += dto.quantitySold();
             }
         }
-
-        if (soldByLocation == null) soldByLocation = new HashMap<>();
-        if (percentageSoldByLocation == null) percentageSoldByLocation = new HashMap<>();
-        if (quantitySoldByLocation == null) quantitySoldByLocation = new HashMap<>();
 
         return new EventReportDTO(
                 soldByLocation,
