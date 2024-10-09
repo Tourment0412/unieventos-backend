@@ -14,18 +14,43 @@ import java.util.Optional;
 @Repository
 public interface OrderRepo extends MongoRepository<Order, String> {
 
+    /**
+     * Finds order by its id
+     * @param id id of order
+     * @return Order with the specified id
+     */
     @Query("{_id:  ?0}")
     Optional<Account> findOrderById(String id);
 
+    /**
+     * Finds order by its date
+     * @param date Date of order
+     * @return Order with the specified date
+     */
     @Query("{date:  ?0}")
     Optional<Account> findOrderByDate(LocalDate date);
 
+    /**
+     * Finds order by its client id
+     * @param clientId Client id of order
+     * @return Order with the specified client id
+     */
     @Query("{ 'clientId': ?0 }")
     List<Order> findOrdersByClientId(ObjectId clientId);
 
+    /**
+     * Finds order by its event id
+     * @param eventId Event id of order
+     * @return Order with the specified event id
+     */
     @Query("{ 'items.eventId': ?0 }")
     List<Order> findByItemsEventId(ObjectId eventId);
 
+    /**
+     * Finds order by its event id
+     * @param eventId Event id of order
+     * @return Order with the specified event id
+     */
     @Query("{ 'items.eventId': ?0 }")
     List<Order> findByEventId(ObjectId eventId);
 }

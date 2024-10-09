@@ -11,6 +11,11 @@ import java.util.Optional;
 @Repository
 public interface ShoppingCarRepo extends MongoRepository<ShoppingCar, String> {
 
+    /**
+     * Finds shopping car by its user id
+     * @param id User id of shopping car
+     * @return Shopping car with the specified user id
+     */
     @Query("{'userId': ?0}")
     Optional<ShoppingCar> findByUserId(ObjectId id);
 
