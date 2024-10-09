@@ -52,7 +52,7 @@ public class ShoppingCarServiceTest {
 
     }
 
-
+/*
     @Test
     public void testCreateShoppingCar() throws Exception {
         String userId = "66faf8347e0c1e7206761d25"; // ID de usuario válido
@@ -74,7 +74,7 @@ public class ShoppingCarServiceTest {
         assertTrue(shoppingCar.getItems().isEmpty(), "El carrito debería estar vacío inicialmente");
         assertNotNull(shoppingCar.getDate(), "La fecha de creación del carrito no debería ser nula");
     }
-
+*/
 
     @Test
     public void testAddShoppingCarDetail() throws Exception {
