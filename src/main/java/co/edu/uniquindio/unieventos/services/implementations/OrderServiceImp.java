@@ -18,6 +18,7 @@ import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
 import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
+import com.mercadopago.resources.payment.PaymentStatus;
 import com.mercadopago.resources.preference.Preference;
 import jakarta.validation.constraints.Email;
 import org.bson.types.ObjectId;
@@ -74,13 +75,6 @@ public class OrderServiceImp implements OrderService {
             order.setTotal(calculateTotal(items));
         }
         order.setGift(false);
-
-        if (createOrderDTO.isForFriend()) {
-            accountService.getAccountEmail(createOrderDTO.friendEmail());
-            order.setGift(true);
-            order.setFriendMail(createOrderDTO.friendEmail());
-            sendEmailWithTickets(createOrderDTO.friendEmail(), order);
-        }
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
         Order createOrder = orderRepo.save(order);
@@ -273,7 +267,8 @@ public class OrderServiceImp implements OrderService {
         // Guardar el código de la pasarela en la orden
         saveOrder.setGatewayCode(preference.getId());
         orderRepo.save(saveOrder);
-
+        Account account = accountService.getAccount(saveOrder.getClientId().toString());
+        sendPurchaseSummary(account.getEmail(), saveOrder);
         PaymentResponseDTO paymentResponse = new PaymentResponseDTO(
                 preference.getInitPoint(),
                 idOrden
@@ -329,8 +324,14 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String sendEmailWithTickets(String emailFriend, Order order) throws Exception {
-        Account account = accountService.getAccountEmail(emailFriend);
+    public String sendGift(GiftDTO giftDTO) throws Exception {
+        Order order = getOrder(giftDTO.idOrder());
+        if(!(order.getPayment().getStatus().equals(PaymentStatus.APPROVED))){
+            throw new OperationNotAllowedException("You have to pay for the order before making a gift");
+        }
+        Account account = accountService.getAccountEmail(giftDTO.friendEmail());
+        order.setGift(true);
+        order.setFriendMail(giftDTO.friendEmail());
 
         String subject = "Your friend bought you tickets";
         StringBuilder body = new StringBuilder();
@@ -359,7 +360,8 @@ public class OrderServiceImp implements OrderService {
         body.append("<br><p>We hope you enjoy the event!<br>Sincerely,<br>Unieventos Team</p>");
         body.append("</body></html>");
 
-        emailService.sendEmailHtmlWithAttachment(new EmailDTO(subject, body.toString(), emailFriend), qrCodeImage, "qrCodeImage");
+        emailService.sendEmailHtmlWithAttachment(new EmailDTO(subject, body.toString(), giftDTO.friendEmail()), qrCodeImage, "qrCodeImage");
+        orderRepo.save(order);
 
         return "The tickets have been given to your friend";
     }

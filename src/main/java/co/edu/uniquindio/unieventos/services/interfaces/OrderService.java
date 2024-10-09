@@ -13,7 +13,7 @@ public interface OrderService {
     List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
     String sendPurchaseSummary(String email, Order order) throws Exception;
     Order getOrder(String s) throws Exception;
-    String sendEmailWithTickets(String emailFriend, Order order) throws Exception;
+    String sendGift(GiftDTO giftDTO) throws Exception;
     //Methods for payment gateway
     PaymentResponseDTO makePayment(String idOrder) throws Exception;
     void receiveNotificationFromMercadoPago(Map<String, Object> request);
