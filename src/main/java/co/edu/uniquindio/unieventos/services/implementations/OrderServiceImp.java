@@ -218,23 +218,37 @@ public class OrderServiceImp implements OrderService {
         Order saveOrder = getOrder(idOrden);
         List<PreferenceItemRequest> itemsGateway = new ArrayList<>();
 
+        // Comprobar si hay un cupón de descuento en la orden
+        Coupon coupon = null;
+        if (saveOrder.getCouponId() != null) {
+            coupon = couponService.getCouponById(saveOrder.getCouponId().toString());
+        }
+
         // Recorrer los items de la orden y crea los ítems de la pasarela
         for (OrderDetail item : saveOrder.getItems()) {
             // Obtener el evento y la localidad del ítem
             Event event = eventService.getEvent(item.getEventId().toString());
             Location location = event.findLocationByName(item.getLocationName());
-            // Crear el item de la pasarela
-            PreferenceItemRequest itemRequest =
-                    PreferenceItemRequest.builder()
-                            .id(event.getId())
-                            .title(event.getName())
-                            .pictureUrl(event.getCoverImage())
-                            .categoryId(event.getType().name())
-                            .quantity(item.getQuantity())
-                            .currencyId("COP")
-                            .unitPrice(BigDecimal.valueOf(location.getPrice()))
-                            .build();
-            itemsGateway.add(itemRequest);
+
+            float unitPrice = (coupon != null) ?
+                    Math.max(0, location.getPrice() - (location.getPrice() * coupon.getDiscount())) :
+                    location.getPrice();
+
+
+                // Crear el item de la pasarela
+                PreferenceItemRequest itemRequest =
+                        PreferenceItemRequest.builder()
+                                .id(event.getId())
+                                .title(event.getName())
+                                .pictureUrl(event.getCoverImage())
+                                .categoryId(event.getType().name())
+                                .quantity(item.getQuantity())
+                                .currencyId("COP")
+                                .unitPrice(BigDecimal.valueOf(unitPrice))
+                                .build();
+                itemsGateway.add(itemRequest);
+
+
         }
 
         //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
