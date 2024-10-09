@@ -3,7 +3,7 @@ db = connect("mongodb://localhost:27017/unieventosTest")
 // Colección accounts
 db.accounts.insertMany([
     {
-        _id: ObjectId("6429c8e84f7f4e001c7ebf80"),
+        _id: ObjectId("6706047ac127c9d5e7e16cbf"),
         user: {
             phoneNumber: "1234567890",
             address: "Calle 1",
@@ -25,7 +25,7 @@ db.accounts.insertMany([
         }
     },
     {
-        _id: ObjectId("6429c8e84f7f4e001c7ebf91"),
+        _id: ObjectId("6706047ac127c9d5e7e16cc0"),
         user: {
             phoneNumber: "0987654321",
             address: "Calle 2",
@@ -47,7 +47,7 @@ db.accounts.insertMany([
         }
     },
     {
-        _id: ObjectId("6429c8e84f7f4e001c7ebf92"),
+        _id: ObjectId("6706047ac127c9d5e7e16cc1"),
         user: {
             phoneNumber: "1122334455",
             address: "Calle 3",
@@ -69,7 +69,7 @@ db.accounts.insertMany([
         }
     },
     {
-        _id: ObjectId("6429c8e84f7f4e001c7ebf93"),
+        _id: ObjectId("6706047ac127c9d5e7e16cc2"),
         user: {
             phoneNumber: "2233445566",
             address: "Calle 4",
@@ -98,7 +98,7 @@ db.accounts.insertMany([
 // Colección coupons
 db.coupons.insertMany([
     {
-        _id: ObjectId("65f6d15801b1fc6c7c2037d0"),
+        _id: ObjectId("6706047ac127c9d5e7e16cc3"),
         name: "Discount 10%",
         code: "DISC10",
         CouponType: "percentage",
@@ -107,7 +107,7 @@ db.coupons.insertMany([
         status: "active"
     },
     {
-        _id: ObjectId("65f6d15801b1fc6c7c2037d1"),
+        _id: ObjectId("6706047ac127c9d5e7e16cc4"),
         name: "Flat 5000",
         code: "FLAT5000",
         CouponType: "flat",
@@ -116,7 +116,7 @@ db.coupons.insertMany([
         status: "expired"
     },
     {
-        _id: ObjectId("65f6d15801b1fc6c7c2037d2"),
+        _id: ObjectId("6706047ac127c9d5e7e16cc5"),
         name: "Black Friday",
         code: "BF2024",
         CouponType: "percentage",
@@ -130,7 +130,7 @@ db.coupons.insertMany([
 // Colección events
 db.events.insertMany([
     {
-        _id :  ObjectId("6629c8e84f7f4e001c7ebf90"),
+        _id :  ObjectId("6706047ac127c9d5e7e16cc6"),
         name: "Concierto de Rock",
         address: "Calle 10 #25-35",
         city: "Bogotá",
@@ -146,7 +146,7 @@ db.events.insertMany([
         ]
     },
     {
-        _id :  ObjectId("6629c8e84f7f4e001c7ebf91"),
+        _id :  ObjectId("6706047ac127c9d5e7e16cc7"),
         name: "Partido de Fútbol",
         address: "Estadio Metropolitano",
         city: "Barranquilla",
@@ -163,7 +163,7 @@ db.events.insertMany([
         ]
     },
     {
-        _id :  ObjectId("6629c8e84f7f4e001c7ebf92"),
+        _id :  ObjectId("6706047ac127c9d5e7e16cc8"),
         name: "Desfile de Moda",
         address: "Centro de Convenciones",
         city: "Medellín",
@@ -179,7 +179,7 @@ db.events.insertMany([
         ]
     },
     {
-        _id :  ObjectId("6629c8e84f7f4e001c7ebf3"),
+        _id :  ObjectId("6706047ac127c9d5e7e16cc9"),
         name: "Obra de Teatro Cultural",
         address: "Teatro Nacional",
         city: "Cali",
@@ -195,7 +195,7 @@ db.events.insertMany([
         ]
     },
     {
-        _id :  ObjectId("6629c8e84f7f4e001c7ebf94"),
+        _id :  ObjectId("6706047ac127c9d5e7e16cca"),
         name: "Evento de Belleza",
         address: "Salón de Exposiciones",
         city: "Cartagena",
@@ -216,16 +216,16 @@ db.events.insertMany([
 // Colección orders
 db.orders.insertMany([
     {
-        _id :  ObjectId("6729c8e84f7f4e001c7ebf90"),
+        _id :  ObjectId("6706047ac127c9d5e7e16ccb"),
         items: [
-            { eventId: ObjectId("6629c8e84f7f4e001c7ebf92"), price: 50000, locationName: "General", quantity: 2 },
-            { eventId: ObjectId("6629c8e84f7f4e001c7ebf91"), price: 150000, locationName: "VIP", quantity: 1 }
+            { eventId: ObjectId("6706047ac127c9d5e7e16ccc"), price: 50000, locationName: "General", quantity: 2 },
+            { eventId: ObjectId("6706047ac127c9d5e7e16ccd"), price: 150000, locationName: "VIP", quantity: 1 }
         ],
         gatewayCode: "MERCADOPAGO",
         date: new ISODate("2024-10-01T14:30:00Z"),
         total: 250000,
-        clientId: ObjectId("6429c8e84f7f4e001c7ebf80"),
-        couponId: ObjectId("65f6d15801b1fc6c7c2037d0"),
+        clientId: ObjectId("6706047ac127c9d5e7e16cce"),
+        couponId: ObjectId("67060f8d0cae5fbda81e750b"),
         payment: {
             id: "PAY-12345",
             currency: "COP",
@@ -240,14 +240,14 @@ db.orders.insertMany([
         friendMail: null
     },
     {
-        _id :  ObjectId("6729c8e84f7f4e001c7ebf91"),
+        _id :  ObjectId("67060f8d0cae5fbda81e750c"),
         items: [
-            { eventId: ObjectId("6629c8e84f7f4e001c7ebf91"), price: 60000, locationName: "Tribuna Norte", quantity: 4 }
+            { eventId: ObjectId("67060f8d0cae5fbda81e750d"), price: 60000, locationName: "Tribuna Norte", quantity: 4 }
         ],
         gatewayCode: "MERCADOPAGO",
         date: new ISODate("2024-09-20T10:15:00Z"),
         total: 240000,
-        clientId: ObjectId("6429c8e84f7f4e001c7ebf80"),
+        clientId: ObjectId("67060f8d0cae5fbda81e750f"),
         couponId: null,
         payment: {
             id: "PAY-67890",
@@ -263,15 +263,15 @@ db.orders.insertMany([
         friendMail: "santiquinterouribe0412@gmail.com"
     },
     {
-        _id :  ObjectId("6729c8e84f7f4e001c7ebf92"),
+        _id :  ObjectId("67060f8d0cae5fbda81e7510"),
         items: [
-            { eventId: ObjectId("6629c8e84f7f4e001c7ebf92"), price: 80000, locationName: "General", quantity: 3 }
+            { eventId: ObjectId("67060f8d0cae5fbda81e7511"), price: 80000, locationName: "General", quantity: 3 }
         ],
         gatewayCode: "MERCADOPAGO",
         date: new ISODate("2024-11-05T18:45:00Z"),
         total: 240000,
-        clientId: ObjectId("6429c8e84f7f4e001c7ebf80"),
-        couponId: ObjectId("65f6d15801b1fc6c7c2037d0"),
+        clientId: ObjectId("67060f8d0cae5fbda81e7512"),
+        couponId: ObjectId("67060f8d0cae5fbda81e7513"),
         payment: {
             id: "PAY-23456",
             currency: "COP",
@@ -286,15 +286,15 @@ db.orders.insertMany([
         friendMail: null
     },
     {
-        _id :  ObjectId("6729c8e84f7f4e001c7ebf93"),
+        _id :  ObjectId("67060f8d0cae5fbda81e7514"),
         items: [
-            { eventId: ObjectId("6629c8e84f7f4e001c7ebf92"), price: 100000, locationName: "Pasarela", quantity: 1 },
-            { eventId: ObjectId("6629c8e84f7f4e001c7ebf92"), price: 80000, locationName: "General", quantity: 2 }
+            { eventId: ObjectId("67060f8d0cae5fbda81e7515"), price: 100000, locationName: "Pasarela", quantity: 1 },
+            { eventId: ObjectId("67060f8d0cae5fbda81e7516"), price: 80000, locationName: "General", quantity: 2 }
         ],
         gatewayCode: "PAYPAL",
         date: new ISODate("2024-10-10T15:30:00Z"),
         total: 260000,
-        clientId: ObjectId("6429c8e84f7f4e001c7ebf80"),
+        clientId: ObjectId("67060f8d0cae5fbda81e7517"),
         couponId: null,
         payment: {
             id: "PAY-98765",
@@ -315,37 +315,37 @@ db.orders.insertMany([
 // Colección shoppingCars
 db.shoppingCars.insertMany([
     {
-        _id: ObjectId("68019b1d63e5b8567aabf870"),
+        _id: ObjectId("67060f8d0cae5fbda81e7518"),
         date: new ISODate("2024-12-20T10:15:00Z"),
         items: [
-            { amount: 2, locationName: "General", idEvent: ObjectId("6629c8e84f7f4e001c7ebf90") },
-            { amount: 1, locationName: "VIP", idEvent: ObjectId("6629c8e84f7f4e001c7ebf90") }
+            { amount: 2, locationName: "General", idEvent: ObjectId("67060f8d0cae5fbda81e751c") },
+            { amount: 1, locationName: "VIP", idEvent: ObjectId("67060f8d0cae5fbda81e751d") }
         ],
-        userId: ObjectId("6429c8e84f7f4e001c7ebf80")
+        userId: ObjectId("67060f8d0cae5fbda81e7519")
     },
     {
-        _id: ObjectId("68019b1d63e5b8567aabf871"),
+        _id: ObjectId("67060f8d0cae5fbda81e751a"),
         date: new ISODate("2024-09-20T10:15:00Z"),
         items: [
-            { amount: 4, locationName: "Tribuna Norte", idEvent: ObjectId("6629c8e84f7f4e001c7ebf91") }
+            { amount: 4, locationName: "Tribuna Norte", idEvent: ObjectId("67060f8d0cae5fbda81e751e") }
         ],
-        userId: ObjectId("6529d8e94f7f4e001c7ebf82")
+        userId: ObjectId("67060f8d0cae5fbda81e751b")
     },
     {
-        _id: ObjectId("68019b1d63e5b8567aabf873"),
+        _id: ObjectId("6706114a051852d809818d4c"),
         date: new ISODate("2024-11-05T18:45:00Z"),
         items: [
-            { amount: 3, locationName: "General", idEvent: ObjectId("6629c8e84f7f4e001c7ebf90") }
+            { amount: 3, locationName: "General", idEvent: ObjectId("67060f8d0cae5fbda81e751f") }
         ],
-        userId: ObjectId("6529d8e94f7f4e001c7ebf87")
+        userId: ObjectId("67060f8d0cae5fbda81e7520")
     },
     {
-        _id: ObjectId("68019b1d63e5b8567aabf874"),
+        _id: ObjectId("6706114a051852d809818d4d"),
         date: new ISODate("2024-10-10T15:30:00Z"),
         items: [
-            { amount: 1, locationName: "Pasarela", idEvent: ObjectId("6629c8e84f7f4e001c7ebf92") },
-            { amount: 2, locationName: "General", idEvent: ObjectId("6629c8e84f7f4e001c7ebf92") }
+            { amount: 1, locationName: "Pasarela", idEvent: ObjectId("67060f8d0cae5fbda81e7521") },
+            { amount: 2, locationName: "General", idEvent: ObjectId("67060f8d0cae5fbda81e7522") }
         ],
-        userId: ObjectId("6529d8e94f7f4e001c7ebf88")
+        userId: ObjectId("6706114a051852d809818d4e")
     }
 ]);

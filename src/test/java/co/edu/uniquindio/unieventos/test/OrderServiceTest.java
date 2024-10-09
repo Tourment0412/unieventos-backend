@@ -98,7 +98,7 @@ public class OrderServiceTest {
 
         orderRepo.save(order);
 
-        OrderInfoDTO orderInfo = orderService.getInfoOrder(order.getId());
+        OrderItemDTO orderInfo = orderService.getInfoOrder(order.getId());
 
         assertNotNull(orderInfo);
         assertEquals(order.getId(), orderInfo.id());
@@ -122,6 +122,15 @@ public class OrderServiceTest {
         assertFalse(orders.isEmpty());
         assertEquals(order.getClientId().toString(), orders.get(0).clientId());
     }
+
+    ////////////////////////////////////////////
+    //TODO
+    @Test
+    void testMakePayment() throws Exception {
+
+    }
+
+
 
 }
 
