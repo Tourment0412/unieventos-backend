@@ -37,7 +37,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String createAccount(CreateAccountDTO account) throws Exception {
+    public String createAccount(CreateAccountDTO account) throws DuplicateResourceException, Exception {
         if (existsDni(account.dni())) {
             //Remember adding custom exceptions
             throw new DuplicateResourceException("Account with this dni already exists");
@@ -100,7 +100,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String updateAccount(UpdateAccountDTO account) throws Exception {
+    public String updateAccount(UpdateAccountDTO account) throws ResourceNotFoundException {
 
         Account accountToUpdate = getAccount(account.id());
 
@@ -116,7 +116,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String deleteAccount(String id) throws Exception {
+    public String deleteAccount(String id) throws  ResourceNotFoundException {
 
         Account accountToDelete = getAccount(id);
         accountToDelete.setStatus(AccountStatus.DELETED);
@@ -124,7 +124,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Account getAccount(String id) throws Exception {
+    public Account getAccount(String id) throws ResourceNotFoundException {
         Optional<Account> accountOptional = accountRepo.findAccountById(id);
         if (accountOptional.isEmpty()) {
             throw new ResourceNotFoundException("Account with this id does not exist");
@@ -134,7 +134,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public AccountInfoDTO getInfoAccount(String id) throws Exception {
+    public AccountInfoDTO getInfoAccount(String id) throws ResourceNotFoundException {
         Account account = getAccount(id);
         return new AccountInfoDTO(
                 account.getId(),
@@ -147,7 +147,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String sendRecoverPasswordCode(String email) throws Exception {
+    public String sendRecoverPasswordCode(String email) throws ResourceNotFoundException, Exception {
         Account account = getAccountEmail(email);
         String recoverCode = generateValidationCode();
         //TODO Send this code to the user (Account) email
@@ -161,7 +161,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Account getAccountEmail(String email) throws Exception {
+    public Account getAccountEmail(String email) throws ResourceNotFoundException {
         Optional<Account> accountOptional = accountRepo.findAccountByEmail(email);
         if (accountOptional.isEmpty()) {
             throw new ResourceNotFoundException("This email is not registered");
@@ -170,7 +170,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String changePassword(ChangePasswordDTO changePasswordDTO) throws Exception {
+    public String changePassword(ChangePasswordDTO changePasswordDTO) throws ResourceNotFoundException, ValidationCodeException {
         Optional<Account> accountOptional = accountRepo.findAccountByEmail(changePasswordDTO.email());
         if (accountOptional.isEmpty()) {
             throw new ResourceNotFoundException("This email is not registered");
@@ -196,7 +196,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public TokenDTO login(LoginDTO loginDTO) throws Exception {
+    public TokenDTO login(LoginDTO loginDTO) throws ResourceNotFoundException, AccountNotActivatedException, InvalidPasswordException {
         Account account = getAccountEmail(loginDTO.email());
         if (account.getStatus() == AccountStatus.DELETED) {
             throw new ResourceNotFoundException("Account with this email does not exist");
@@ -223,7 +223,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws Exception {
+    public String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws ResourceNotFoundException, ValidationCodeException {
         Account accountObtained = getAccountEmail(activateAccountDTO.email());
         ValidationCode registrationValidationCode = accountObtained.getRegistrationValidationCode();
 
@@ -244,7 +244,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String reassignValidationRegistrationCode(String email) throws Exception {
+    public String reassignValidationRegistrationCode(String email) throws ResourceNotFoundException, Exception {
         Account accountObtained = getAccountEmail(email);
         ValidationCode reassignValidationCode = new ValidationCode(LocalDateTime.now(), generateValidationCode());
         accountObtained.setRegistrationValidationCode(reassignValidationCode);

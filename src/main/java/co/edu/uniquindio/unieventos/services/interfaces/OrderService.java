@@ -1,6 +1,9 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
+import co.edu.uniquindio.unieventos.exceptions.EmptyShoppingCarException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Order;
 
 import java.util.List;
@@ -14,7 +17,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    String createOrder(CreateOrderDTO createOrderDTO) throws Exception;
+    String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, Exception;
 
     /**
      *
@@ -22,7 +25,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    String deleteOrder(String orderId) throws Exception;
+    String deleteOrder(String orderId) throws ResourceNotFoundException;
 
     /**
      *
@@ -30,7 +33,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    OrderItemDTO getInfoOrder(String orderId) throws Exception;
+    OrderItemDTO getInfoOrder(String orderId) throws ResourceNotFoundException;
 
     /**
      *
@@ -38,7 +41,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    List<OrderItemDTO> listOrdersClient(String clientId) throws Exception;
+    List<OrderItemDTO> listOrdersClient(String clientId) ;
 
     /**
      *
@@ -47,7 +50,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    String sendPurchaseSummary(String email, Order order) throws Exception;
+    String sendPurchaseSummary(String email, Order order) throws ResourceNotFoundException, Exception;
 
     /**
      *
@@ -55,7 +58,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    Order getOrder(String s) throws Exception;
+    Order getOrder(String s) throws ResourceNotFoundException;
 
     /**
      *
@@ -63,7 +66,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    String sendGift(GiftDTO giftDTO) throws Exception;
+    String sendGift(GiftDTO giftDTO) throws ResourceNotFoundException, OperationNotAllowedException, Exception;
 
     /**
      *
@@ -72,7 +75,7 @@ public interface OrderService {
      * @throws Exception
      */
     //Methods for payment gateway
-    PaymentResponseDTO makePayment(String idOrder) throws Exception;
+    PaymentResponseDTO makePayment(String idOrder) throws  ResourceNotFoundException, OperationNotAllowedException, Exception;
 
     /**
      *

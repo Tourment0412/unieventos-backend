@@ -1,6 +1,10 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.*;
+import co.edu.uniquindio.unieventos.exceptions.EmptyShoppingCarException;
+import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.ShoppingCar;
 import co.edu.uniquindio.unieventos.model.vo.CarDetail;
 
@@ -15,7 +19,7 @@ public interface ShoppingCarService {
      * @return
      * @throws Exception
      */
-    ShoppingCar createShoppingCar(String idUser) throws Exception;
+    ShoppingCar createShoppingCar(String idUser);
 
 
     /**
@@ -24,7 +28,7 @@ public interface ShoppingCarService {
      * @return
      * @throws Exception
      */
-    String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception;
+    String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws ResourceNotFoundException, OperationNotAllowedException, InsufficientCapacityException;
 
     /**
      *
@@ -32,7 +36,7 @@ public interface ShoppingCarService {
      * @return
      * @throws Exception
      */
-    String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception;
+    String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws EmptyShoppingCarException;
 
     /**
      *
@@ -40,7 +44,7 @@ public interface ShoppingCarService {
      * @return
      * @throws Exception
      */
-    List<CarItemViewDTO> listShoppingCarDetails(String userId) throws Exception;
+    List<CarItemViewDTO> listShoppingCarDetails(String userId) throws EmptyShoppingCarException;
 
     /**
      *
@@ -49,7 +53,7 @@ public interface ShoppingCarService {
      * @throws Exception
      */
     //TODO Ask if maybe a edit option would be good or something.
-    String editCarDetail (EditCarDetailDTO editCarDetailDTO) throws Exception;
+    String editCarDetail (EditCarDetailDTO editCarDetailDTO) throws EmptyShoppingCarException;
 
     /**
      *
@@ -57,12 +61,12 @@ public interface ShoppingCarService {
      * @return
      * @throws Exception
      */
-    ShoppingCar getShoppingCar(String userId) throws Exception;
+    ShoppingCar getShoppingCar(String userId) throws EmptyShoppingCarException;
 
     /**
      *
      * @param idUser
      * @throws Exception
      */
-    void deleteShoppingCar(String idUser) throws Exception;
+    void deleteShoppingCar(String idUser) throws EmptyShoppingCarException;
 }

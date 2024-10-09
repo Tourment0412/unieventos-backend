@@ -1,6 +1,8 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
+import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 
 import java.util.List;
@@ -13,7 +15,7 @@ public interface CouponService {
      * @return The coupon information
      * @throws Exception
      */
-    CouponInfoDTO getInfoCouponAdmin(String id) throws Exception;
+    CouponInfoDTO getInfoCouponAdmin(String id) throws ResourceNotFoundException;
 
     /**
      * Gets a avaliable coupon
@@ -21,7 +23,7 @@ public interface CouponService {
      * @return The coupon information
      * @throws Exception
      */
-    CouponInfoClientDTO getCouponClient(String id) throws Exception;
+    CouponInfoClientDTO getCouponClient(String id) throws ResourceNotFoundException;
 
     /**
      * Creates a coupon
@@ -29,7 +31,7 @@ public interface CouponService {
      * @return The id of the coupon
      * @throws Exception
      */
-    String createCoupon(CreateCouponDTO coupon) throws Exception;
+    String createCoupon(CreateCouponDTO coupon) throws DuplicateResourceException;
 
     /**
      * Updates a coupon
@@ -37,7 +39,7 @@ public interface CouponService {
      * @return The id of the coupon
      * @throws Exception
      */
-    String updateCoupon(UpdateCouponDTO coupon) throws Exception;
+    String updateCoupon(UpdateCouponDTO coupon) throws ResourceNotFoundException;
 
     /**
      * Deletes a coupon
@@ -45,7 +47,7 @@ public interface CouponService {
      * @return The id of the coupon
      * @throws Exception
      */
-    String deleteCoupon(String id) throws Exception;
+    String deleteCoupon(String id) throws ResourceNotFoundException;
 
     /**
      * Gets a coupon by its id
@@ -53,23 +55,21 @@ public interface CouponService {
      * @return Coupon wth the specified id
      * @throws Exception
      */
-    Coupon getCouponById(String id) throws Exception;
+    Coupon getCouponById(String id) throws ResourceNotFoundException;
 
     /**
      * Gests all the coupons specified by the pagination information
      * @param page The number of the page
      * @return The coupons specified
-     * @throws Exception
      */
-    List<CouponItemDTO> getAllCouponsAdmin(int page) throws Exception;
+    List<CouponItemDTO> getAllCouponsAdmin(int page);
 
     /**
      * Gests all the available coupons specified by the pagination information
      * @param page The number of the page
      * @return The available coupons specified
-     * @throws Exception
      */
-    List<CouponItemClientDTO> getAllCouponsClient(int page) throws Exception;
+    List<CouponItemClientDTO> getAllCouponsClient(int page);
 
     /**
      * Gets a coupon by its code
@@ -77,5 +77,5 @@ public interface CouponService {
      * @return Coupon with the specified code
      * @throws Exception
      */
-    Coupon getCouponByCode(String s) throws Exception;
+    Coupon getCouponByCode(String s) throws ResourceNotFoundException;
 }

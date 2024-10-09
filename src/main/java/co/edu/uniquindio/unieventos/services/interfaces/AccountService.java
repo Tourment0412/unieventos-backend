@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.accountdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.TokenDTO;
+import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Account;
 import jakarta.validation.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -17,7 +18,7 @@ public interface AccountService {
      * @return The id of the created account
      * @throws Exception
      */
-    String createAccount(CreateAccountDTO account) throws Exception;
+    String createAccount(CreateAccountDTO account) throws DuplicateResourceException, Exception;
 
     /**
      * Updates an account
@@ -25,7 +26,7 @@ public interface AccountService {
      * @return The id of the updated account
      * @throws Exception
      */
-    String updateAccount(UpdateAccountDTO account) throws Exception;
+    String updateAccount(UpdateAccountDTO account) throws ResourceNotFoundException;
 
     /**
      * Deletes an account
@@ -33,7 +34,7 @@ public interface AccountService {
      * @return The id of the deleted account
      * @throws Exception
      */
-    String deleteAccount(String id) throws Exception;
+    String deleteAccount(String id) throws ResourceNotFoundException;
 
     /**
      * Gets the information of an account
@@ -41,7 +42,7 @@ public interface AccountService {
      * @return The information of an account
      * @throws Exception
      */
-    AccountInfoDTO getInfoAccount(String id) throws Exception;
+    AccountInfoDTO getInfoAccount(String id) throws ResourceNotFoundException;
 
     /**
      * Sends the recover password code
@@ -49,7 +50,7 @@ public interface AccountService {
      * @return id of the account
      * @throws Exception
      */
-    String sendRecoverPasswordCode(String email) throws Exception;
+    String sendRecoverPasswordCode(String email) throws ResourceNotFoundException, Exception;
 
     /**
      * Changes the password of an account
@@ -57,7 +58,7 @@ public interface AccountService {
      * @return id of the account
      * @throws Exception
      */
-    String changePassword(ChangePasswordDTO changePasswordDTO) throws Exception;
+    String changePassword(ChangePasswordDTO changePasswordDTO) throws ResourceNotFoundException, ValidationCodeException;
 
     /**
      * Creates a token to login
@@ -65,7 +66,7 @@ public interface AccountService {
      * @return The token to login
      * @throws Exception
      */
-    TokenDTO login(LoginDTO loginDTO)throws Exception;
+    TokenDTO login(LoginDTO loginDTO)throws ResourceNotFoundException, AccountNotActivatedException, InvalidPasswordException;
 
     /**
      * Validates the registration code
@@ -73,7 +74,7 @@ public interface AccountService {
      * @return The id of the account
      * @throws Exception
      */
-    String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws Exception;
+    String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws ResourceNotFoundException, ValidationCodeException;
 
     /**
      * Reassigns Validation registration code of an account
@@ -81,7 +82,7 @@ public interface AccountService {
      * @return The id of the account
      * @throws Exception
      */
-    String reassignValidationRegistrationCode(String email) throws Exception;
+    String reassignValidationRegistrationCode(String email) throws ResourceNotFoundException, Exception;
 
     /**
      * Gets an account with the specified email
@@ -89,7 +90,7 @@ public interface AccountService {
      * @return The account with the corresponding email
      * @throws Exception
      */
-    Account getAccountEmail(String email) throws Exception;
+    Account getAccountEmail(String email) throws ResourceNotFoundException;
 
     /**
      * Gets an account with the specified id
@@ -97,5 +98,5 @@ public interface AccountService {
      * @return The account with the corresponding id
      * @throws Exception
      */
-    Account getAccount(String id) throws Exception;
+    Account getAccount(String id) throws ResourceNotFoundException;
 }

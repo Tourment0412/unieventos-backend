@@ -1,9 +1,7 @@
 package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.*;
-import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
-import co.edu.uniquindio.unieventos.exceptions.EmptyShoppingCarException;
-import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
+import co.edu.uniquindio.unieventos.exceptions.*;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.documents.ShoppingCar;
 import co.edu.uniquindio.unieventos.model.vo.CarDetail;
@@ -34,7 +32,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public ShoppingCar createShoppingCar(String idUser) throws Exception {
+    public ShoppingCar createShoppingCar(String idUser) {
 
         Optional<ShoppingCar> shoppingCarReceived = shoppingCarRepo.findByUserId(new ObjectId(idUser));
         if(shoppingCarReceived.isEmpty()) {
@@ -59,12 +57,12 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
         return shoppingCarRepo.save(shoppingCar).getId();**/
     }
     @Override
-    public void deleteShoppingCar(String idUser) throws Exception{
+    public void deleteShoppingCar(String idUser) throws EmptyShoppingCarException{
         ShoppingCar shoppingCar= getShoppingCar(idUser);
         shoppingCarRepo.delete(shoppingCar);
     }
     @Override
-    public String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception {
+    public String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws ResourceNotFoundException, OperationNotAllowedException, InsufficientCapacityException {
         ShoppingCar shoppingCar = createShoppingCar(addShoppingCarDetailDTO.idUser());
         Event event = eventService.getEvent(addShoppingCarDetailDTO.idEvent());
         Location location = event.findLocationByName(addShoppingCarDetailDTO.locationName());
@@ -85,7 +83,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception {
+    public String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws EmptyShoppingCarException {
         ShoppingCar shoppingCar = getShoppingCar(deleteCarDetailDTO.idUser());
         List<CarDetail> details = shoppingCar.getItems();
         details.removeIf(e -> e.getIdEvent().toString().equals(deleteCarDetailDTO.idEvent()) &&
@@ -95,7 +93,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public List<CarItemViewDTO> listShoppingCarDetails(String userId) throws Exception {
+    public List<CarItemViewDTO> listShoppingCarDetails(String userId) throws EmptyShoppingCarException {
         ShoppingCar shoppingCar = getShoppingCar(userId);
         //TODO Ask if this should be an aggregation
         List<CarDetail> shoppingCarDetails = shoppingCar.getItems();
@@ -120,7 +118,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     }
 
     @Override
-    public String editCarDetail(EditCarDetailDTO editCarDetailDTO) throws Exception {
+    public String editCarDetail(EditCarDetailDTO editCarDetailDTO) throws EmptyShoppingCarException{
         ShoppingCar shoppingCar = getShoppingCar(editCarDetailDTO.idUser());
         List<CarDetail> details = shoppingCar.getItems();
         details.forEach(e -> {
@@ -149,7 +147,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
 
     //This method is going to be used
     @Override
-    public ShoppingCar getShoppingCar(String userId) throws Exception {
+    public ShoppingCar getShoppingCar(String userId) throws EmptyShoppingCarException {
         Optional<ShoppingCar> shoppingCar = shoppingCarRepo.findByUserId(new ObjectId(userId));
         if (shoppingCar.isEmpty()) {
             throw new EmptyShoppingCarException("There's no shopping car for this user");

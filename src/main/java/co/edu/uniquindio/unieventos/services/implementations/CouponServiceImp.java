@@ -30,7 +30,7 @@ public class CouponServiceImp implements CouponService {
         return couponRepo.findByName(name).isPresent();
     }
 
-    public Coupon getCupon(String id) throws Exception {
+    public Coupon getCupon(String id) throws ResourceNotFoundException {
         Optional<Coupon> coupon = couponRepo.findById(id);
         if (coupon.isEmpty()) { // Cambié a negación para verificar si el cupón NO está presente
             throw new ResourceNotFoundException("Coupon with this id does not exist");
@@ -39,7 +39,7 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public CouponInfoDTO getInfoCouponAdmin(String id) throws Exception {
+    public CouponInfoDTO getInfoCouponAdmin(String id) throws ResourceNotFoundException {
         Coupon coupon = getCupon(id);
         return new CouponInfoDTO(
                 coupon.getId(),
@@ -53,9 +53,9 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public String createCoupon(CreateCouponDTO coupon) throws Exception {
+    public String createCoupon(CreateCouponDTO coupon) throws DuplicateResourceException {
         if (existCupon(coupon.name())) {
-            throw new DuplicateResourceException("Ya existe un cupon con ese nombre");
+            throw new DuplicateResourceException("A coupon with that name already exists");
         }
         Coupon newCoupon = new Coupon();
         newCoupon.setCode(utilitaryClass.generateCode(6));
@@ -69,7 +69,7 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public String updateCoupon(UpdateCouponDTO coupon) throws Exception {
+    public String updateCoupon(UpdateCouponDTO coupon) throws ResourceNotFoundException {
         Coupon couponToUpdate = getCupon(coupon.id());
         couponToUpdate.setName(coupon.name());
         couponToUpdate.setExpirationDate(coupon.expirationDate());
@@ -80,14 +80,14 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public String deleteCoupon(String id) throws Exception {
+    public String deleteCoupon(String id) throws ResourceNotFoundException {
         Coupon couponToDelete = getCupon(id);
         couponToDelete.setStatus(CouponStatus.NOT_AVAILABLE);
         return couponRepo.save(couponToDelete).getId();
     }
 
     @Override
-    public Coupon getCouponById(String id) throws Exception {
+    public Coupon getCouponById(String id) throws ResourceNotFoundException {
         Optional<Coupon> coupon = couponRepo.findById(id);
         if (coupon.isEmpty()) {
             throw new ResourceNotFoundException("Coupon with this id does not exist");
@@ -110,7 +110,7 @@ public class CouponServiceImp implements CouponService {
 
 
     @Override
-    public CouponInfoClientDTO getCouponClient(String id) throws Exception {
+    public CouponInfoClientDTO getCouponClient(String id) throws ResourceNotFoundException {
         Optional<Coupon> couponOpt = couponRepo.findCouponClient(id);
         if (couponOpt.isEmpty()) {
             throw new ResourceNotFoundException("Coupon with this id does not exist or is not available");
@@ -139,7 +139,7 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public Coupon getCouponByCode(String code) throws Exception {
+    public Coupon getCouponByCode(String code) throws ResourceNotFoundException {
         Optional<Coupon> coupon = couponRepo.findByCode(code);
         if (coupon.isEmpty()){
             throw new ResourceNotFoundException("Coupon Code Not Registered");

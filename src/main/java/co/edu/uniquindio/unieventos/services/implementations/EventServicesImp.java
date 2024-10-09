@@ -4,6 +4,7 @@ import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
 import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
 import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
@@ -33,7 +34,7 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public String createEvent(CreateEventDTO createEventDTO) throws Exception {
+    public String createEvent(CreateEventDTO createEventDTO) throws DuplicateResourceException {
 
         if (existEventActiveName(createEventDTO.name())) {
             throw new DuplicateResourceException("An event with this name is already active");
@@ -67,7 +68,7 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public String updateEvent(UpdateEventDTO updateEventDTO) throws Exception {
+    public String updateEvent(UpdateEventDTO updateEventDTO) throws ResourceNotFoundException {
         Event eventToUpdate = getEvent(updateEventDTO.id());
         eventToUpdate.setName(updateEventDTO.name());
         eventToUpdate.setAddress(updateEventDTO.address());
@@ -84,7 +85,7 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public Event getEvent(String id) throws Exception {
+    public Event getEvent(String id) throws ResourceNotFoundException {
         Optional<Event> eventToUpdate = eventRepo.findById(id);
         if (eventToUpdate.isEmpty()) {
             throw new ResourceNotFoundException("Event with this id does not exist");
@@ -94,7 +95,7 @@ public class EventServicesImp implements EventService {
 
 
     @Override
-    public String deleteEvent(String id) throws Exception {
+    public String deleteEvent(String id) throws ResourceNotFoundException {
         Event eventToDelete = getEvent(id);
         eventToDelete.setStatus(EventStatus.INACTIVE);
 
@@ -103,7 +104,7 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public EventInfoAdminDTO getInfoEventAdmin(String id) throws Exception {
+    public EventInfoAdminDTO getInfoEventAdmin(String id) throws ResourceNotFoundException {
         Event event = getEvent(id);
         return new EventInfoAdminDTO(
                 event.getId(),
@@ -121,7 +122,7 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public EventInfoDTO getInfoEventClient(String id) throws Exception {
+    public EventInfoDTO getInfoEventClient(String id) throws ResourceNotFoundException {
         Optional<Event> eventGot = eventRepo.findEventByIdClient(id);
         if (eventGot.isEmpty()) {
             throw new ResourceNotFoundException("Event with this id does not exist");
@@ -222,7 +223,7 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception {
+    public void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws OperationNotAllowedException, ResourceNotFoundException, InsufficientCapacityException {
         Event event = getEvent(idEvent);
         Location location = event.findLocationByName(nameLocation);
         if (location == null) {

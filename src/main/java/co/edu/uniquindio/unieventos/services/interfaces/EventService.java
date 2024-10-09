@@ -2,6 +2,10 @@ package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
+import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
+import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 
@@ -15,7 +19,7 @@ public interface EventService {
      * @return The id of event
      * @throws Exception
      */
-    String createEvent(CreateEventDTO createEventDTO) throws Exception;
+    String createEvent(CreateEventDTO createEventDTO) throws DuplicateResourceException;
 
     /**
      * Updates an event
@@ -23,7 +27,7 @@ public interface EventService {
      * @return The id of the updated event
      * @throws Exception
      */
-    String updateEvent(UpdateEventDTO updateEventDTO) throws Exception;
+    String updateEvent(UpdateEventDTO updateEventDTO) throws ResourceNotFoundException;
 
     /**
      * Deletes an event
@@ -31,7 +35,7 @@ public interface EventService {
      * @return The id of the deleted event
      * @throws Exception
      */
-    String deleteEvent(String id) throws Exception;
+    String deleteEvent(String id) throws ResourceNotFoundException;
 
     /**
      * Gets the information of an event
@@ -39,7 +43,7 @@ public interface EventService {
      * @return The information of an event
      * @throws Exception
      */
-    EventInfoAdminDTO getInfoEventAdmin(String id) throws Exception;
+    EventInfoAdminDTO getInfoEventAdmin(String id) throws ResourceNotFoundException;
 
     /**
      * Gets the information of an active event
@@ -47,7 +51,7 @@ public interface EventService {
      * @return The information of an active event
      * @throws Exception
      */
-    EventInfoDTO getInfoEventClient(String id) throws Exception;
+    EventInfoDTO getInfoEventClient(String id) throws ResourceNotFoundException;
 
     /**
      * Gests all the events specified by the pagination information
@@ -84,7 +88,7 @@ public interface EventService {
      * @return
      * @throws Exception
      */
-    Event getEvent(String id) throws Exception;
+    Event getEvent(String id) throws ResourceNotFoundException;
 
     /**
      *
@@ -93,7 +97,7 @@ public interface EventService {
      * @param idEvent
      * @throws Exception
      */
-    void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception;
+    void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws OperationNotAllowedException, ResourceNotFoundException, InsufficientCapacityException;
 
     /**
      *

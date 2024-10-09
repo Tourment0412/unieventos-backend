@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unieventos.services.interfaces;
 
+import co.edu.uniquindio.unieventos.exceptions.StorageException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,5 +21,5 @@ public interface ImagesService {
      * @return
      * @throws Exception
      */
-    String deleteImage(String imageName) throws Exception;
+    String deleteImage(String imageName) throws StorageException;
 }

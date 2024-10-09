@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.emaildtos.EmailDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
+import co.edu.uniquindio.unieventos.exceptions.EmptyShoppingCarException;
 import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
 import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
@@ -58,7 +59,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String createOrder(CreateOrderDTO createOrderDTO) throws Exception {
+    public String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, Exception {
         Order order = new Order();
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
         List<OrderDetail> items = getOrderDetails(shoppingCar);
@@ -121,7 +122,7 @@ public class OrderServiceImp implements OrderService {
         return total;
     }
 
-    private float calculateTotal(List<OrderDetail> items, String couponId, String idClient) throws Exception {
+    private float calculateTotal(List<OrderDetail> items, String couponId, String idClient) throws ResourceNotFoundException, OperationNotAllowedException {
         float total = 0;
         Coupon coupon = couponService.getCouponById(couponId);
         if (coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)) {
@@ -148,7 +149,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public Order getOrder(String s) throws Exception {
+    public Order getOrder(String s) throws ResourceNotFoundException {
         Optional<Order> orderOptional = orderRepo.findById(s);
         if (orderOptional.isEmpty()) {
             throw new ResourceNotFoundException("The Order with the id: " + s + " does not exist");
@@ -157,14 +158,14 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String deleteOrder(String orderId) throws Exception {
+    public String deleteOrder(String orderId) throws ResourceNotFoundException {
         Order orderToDelete = getOrder(orderId);
         orderRepo.delete(orderToDelete);
         return "The order was deleted";
     }
 
     @Override
-    public OrderItemDTO getInfoOrder(String orderId) throws Exception {
+    public OrderItemDTO getInfoOrder(String orderId) throws ResourceNotFoundException {
         Order order = getOrder(orderId); // Método que obtiene la orden
 
         return mapToOrderItemDTO(order);
@@ -212,7 +213,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public PaymentResponseDTO makePayment(String idOrden) throws Exception {
+    public PaymentResponseDTO makePayment(String idOrden) throws ResourceNotFoundException, OperationNotAllowedException, Exception {
         // Obtener la orden guardada en la base de datos y los ítems de la orden
         Order saveOrder = getOrder(idOrden);
         List<PreferenceItemRequest> itemsGateway = new ArrayList<>();
@@ -329,7 +330,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String sendGift(GiftDTO giftDTO) throws Exception {
+    public String sendGift(GiftDTO giftDTO) throws ResourceNotFoundException, OperationNotAllowedException, Exception {
         Order order = getOrder(giftDTO.idOrder());
         if(!(order.getPayment().getStatus().equals(PaymentStatus.APPROVED))){
             throw new OperationNotAllowedException("You have to pay for the order before making a gift");
@@ -372,7 +373,7 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String sendPurchaseSummary(String email, Order order) throws Exception {
+    public String sendPurchaseSummary(String email, Order order) throws ResourceNotFoundException, Exception {
         Account account = accountService.getAccountEmail(email);
 
         String qrCodeUrl = "https://quickchart.io/qr?text=" + order.getId() + "&size=300";

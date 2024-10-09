@@ -25,13 +25,13 @@ public class ImagesServiceImp implements ImagesService {
     }
 
     @Override
-    public String deleteImage(String imageName) throws Exception {
+    public String deleteImage(String imageName) throws co.edu.uniquindio.unieventos.exceptions.StorageException {
         Bucket bucket = StorageClient.getInstance().bucket();
         Blob blob = bucket.get(imageName);
         if( blob.delete()){
             return "image deleted successfully";
         }else{
-            throw new Exception("image not deleted");
+            throw new co.edu.uniquindio.unieventos.exceptions.StorageException("image not deleted");
         }
     }
 }
