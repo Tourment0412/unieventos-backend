@@ -101,4 +101,6 @@ public interface EventService {
      * @return
      */
     EventReportDTO createReport(String idEvent);
+
+
 }

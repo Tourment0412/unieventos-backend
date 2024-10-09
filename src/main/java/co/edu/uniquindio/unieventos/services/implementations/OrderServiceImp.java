@@ -298,9 +298,14 @@ public class OrderServiceImp implements OrderService {
                 // Obtener el id de la orden asociada al pago que viene en los metadatos
                 String idOrden = payment.getMetadata().get("id_orden").toString();
 
-                // Se obtiene la orden guardada en la base de datos y se le asigna el pago
+                // Se obtiene la orden guardada en la base de datos y se le asigna el pago, ademas de aumentar la cantidad de entradas vendidas
                 Order order = getOrder(idOrden);
                 Payment orderPayment = createPayment(payment);
+                if (orderPayment.getStatus().equals("APPROVED")){
+                    for (OrderDetail orderDetail : order.getItems()){
+                        eventService.reduceNumberLocations(orderDetail.getQuantity(), orderDetail.getLocationName(), orderDetail.getEventId().toString());
+                    }
+                }
                 order.setPayment(orderPayment);
                 orderRepo.save(order);
             }

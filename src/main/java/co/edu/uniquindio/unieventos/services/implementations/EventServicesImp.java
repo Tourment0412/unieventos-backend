@@ -221,7 +221,7 @@ public class EventServicesImp implements EventService {
 
     }
 
-
+    @Override
     public void reduceNumberLocations(int numLocations, String nameLocation, String idEvent) throws Exception {
         Event event = getEvent(idEvent);
         Location location = event.findLocationByName(nameLocation);
