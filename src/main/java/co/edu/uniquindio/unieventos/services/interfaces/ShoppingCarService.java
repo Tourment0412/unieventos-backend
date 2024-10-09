@@ -8,14 +8,59 @@ import java.util.List;
 
 public interface ShoppingCarService {
 
-
+    /**
+     *
+     * @param idUser
+     * @return
+     * @throws Exception
+     */
     String createShoppingCar(String idUser) throws Exception;
 
+    /**
+     *
+     * @param addShoppingCarDetailDTO
+     * @return
+     * @throws Exception
+     */
     String addShoppingCarDetail(AddShoppingCarDetailDTO addShoppingCarDetailDTO) throws Exception;
+
+    /**
+     *
+     * @param deleteCarDetailDTO
+     * @return
+     * @throws Exception
+     */
     String deleteShoppingCarDetail(DeleteCarDetailDTO deleteCarDetailDTO) throws Exception;
+
+    /**
+     *
+     * @param userId
+     * @return
+     * @throws Exception
+     */
     List<CarItemViewDTO> listShoppingCarDetails(String userId) throws Exception;
+
+    /**
+     *
+     * @param editCarDetailDTO
+     * @return
+     * @throws Exception
+     */
     //TODO Ask if maybe a edit option would be good or something.
     String editCarDetail (EditCarDetailDTO editCarDetailDTO) throws Exception;
+
+    /**
+     *
+     * @param userId
+     * @return
+     * @throws Exception
+     */
     ShoppingCar getShoppingCar(String userId) throws Exception;
+
+    /**
+     *
+     * @param idUser
+     * @throws Exception
+     */
     void deleteShoppingCar(String idUser) throws Exception;
 }
