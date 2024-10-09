@@ -5,6 +5,7 @@ import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -36,7 +37,7 @@ public interface EventRepo extends MongoRepository<Event, String> {
         TODO Ask to teacher if the treatment of null values to make them empty strings can be done in controllers
         or can be done on services
      */
-
+    /*
     @Query("{ $and: [ " +
             " { $or: [ { 'name': { $regex: ?0, $options: 'i' } }, { 'name': { $exists: true } } ] }, " +
             " { $or: [ { 'type': ?1 }, { 'type': { $exists: true } } ] }, " +  // Manejo de tipo de evento
@@ -45,6 +46,11 @@ public interface EventRepo extends MongoRepository<Event, String> {
             " { 'status': 'ACTIVE' } " +  // Estado ACTIVE
             "] }")
     Page<Event> findEventsByFiltersClient(String name, EventType eventType, String city,Pageable pageable);
+    */
+    @Aggregation({
+            "{ $match: { $and: [ ?0, { 'date': { $gte: new Date() } }, { 'status': 'ACTIVE' } ] } }"
+    })
+    Slice<Event> findEventsByFiltersClient(Map<String, Object> filter,Pageable pageable);
 
     @Query("{ '_id': ?0, 'status': 'ACTIVE' }")
     Optional<Event> findEventByIdClient(String id);
@@ -63,14 +69,18 @@ public interface EventRepo extends MongoRepository<Event, String> {
             "] }")
     Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
     */
-
+    /*
     @Query("{ $or: [ " +
             " { $and: [ { 'name': { $regex: ?0, $options: 'i' } }, { ?0: { $ne: \"\" } } ] }, " +
             " { $and: [ { 'type': ?1 }, { ?1: { $ne: \"\" } } ] }, " +  // Manejo de tipo de evento
             " { $and: [ { 'city': { $regex: ?2, $options: 'i' } }, { ?2: { $ne: \"\" } } ] } " +
             "] }")
     Page<Event> findEventsByFiltersAdmin(String name, EventType eventType, String city, Pageable pageable);
+    */
 
+    //Aggregation no se puede usar con Pages al parecer se puede usar solo listas o los slides ya me diran que uso
+    @Aggregation({"{ $match: ?0 }"})
+    Slice<Event> findEventsByFiltersAdmin(Map<String, Object> filter, Pageable pageable);
 
     @Aggregation(pipeline = {
             "{ '$match': { '_id': ?0 } }",
