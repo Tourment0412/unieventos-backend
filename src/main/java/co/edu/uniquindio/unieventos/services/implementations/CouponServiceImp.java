@@ -97,7 +97,7 @@ public class CouponServiceImp implements CouponService {
 
     @Override
     public List<CouponItemDTO> getAllCouponsAdmin(int page){
-        List<Coupon> coupons = couponRepo.findAll(PageRequest.of(page, 10)).getContent();
+        List<Coupon> coupons = couponRepo.findAll(PageRequest.of(page, 9)).getContent();
         return coupons.stream().map(e -> new CouponItemDTO(
                 e.getId(),
                 e.getName(),
@@ -128,7 +128,7 @@ public class CouponServiceImp implements CouponService {
 
     @Override
     public List<CouponItemClientDTO> getAllCouponsClient(int page){
-        List<Coupon> coupons = couponRepo.findAllCouponsClient(PageRequest.of(page, 10)).getContent();
+        List<Coupon> coupons = couponRepo.findAllCouponsClient(PageRequest.of(page, 9)).getContent();
         return coupons.stream().map(e -> new CouponItemClientDTO(
                 e.getId(),
                 e.getName(),
