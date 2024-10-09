@@ -7,6 +7,7 @@ import co.edu.uniquindio.unieventos.dto.coupondtos.CreateCouponDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.UpdateCouponDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
+import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.ImagesService;
@@ -118,7 +119,13 @@ public class AdminController {
         return ResponseEntity.ok(new MessageDTO<>(false, eventsFiltered));
     }
 
-    //TODO Add reports controllers
+
+    //TODO Ask if here this should have a exception coming from the service
+    @GetMapping("/event/reports-info/{idEvent}")
+    public ResponseEntity<MessageDTO<EventReportDTO>> createReport(@PathVariable String idEvent){
+        EventReportDTO report= eventService.createReport(idEvent);
+        return ResponseEntity.ok().body(new MessageDTO<>(false, report));
+    }
 
 
 }
