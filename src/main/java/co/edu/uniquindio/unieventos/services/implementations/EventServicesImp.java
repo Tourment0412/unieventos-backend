@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -142,7 +143,7 @@ public class EventServicesImp implements EventService {
     @Override
     public List<EventItemDTO> listEventsAdmin(int page) {
         //For the admin, all events are going to be shown.
-        List<Event> events = eventRepo.findAll(PageRequest.of(page, 10)).getContent();
+        List<Event> events = eventRepo.findAll(PageRequest.of(page, 9)).getContent();
 
         return events.stream().map(event -> new EventItemDTO(
                 event.getId(),
@@ -156,7 +157,7 @@ public class EventServicesImp implements EventService {
     @Override
     public List<EventItemDTO> listEventsClient(int page) {
         //listar excluyendo los inactivos y los vencidos
-        List<Event> events = eventRepo.findAllEventsClient(PageRequest.of(page, 10)).getContent();
+        List<Event> events = eventRepo.findAllEventsClient(PageRequest.of(page, 9)).getContent();
         return events.stream()
                 .map(event -> new EventItemDTO(
                         event.getId(),
@@ -171,13 +172,10 @@ public class EventServicesImp implements EventService {
 
     @Override
     public List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO) {
-        List<Event> eventsFiltered = eventRepo.findEventsByFiltersClient(
-                eventFilterDTO.name() == null ? "" : eventFilterDTO.name(),
-                eventFilterDTO.eventType(),
-                eventFilterDTO.city() == null ? "" : eventFilterDTO.city(),
-                //The 10 is how many events i want for page
-                PageRequest.of(eventFilterDTO.page(), 10)
-        ).getContent();
+        Map<String, Object> params = createFilterMap(eventFilterDTO);
+
+
+        List<Event> eventsFiltered= eventRepo.findEventsByFiltersClient(params,PageRequest.of(0, 9)).getContent();
         return eventsFiltered.stream()
                 .map(event -> new EventItemDTO(
                         event.getId(),
@@ -190,28 +188,37 @@ public class EventServicesImp implements EventService {
 
     }
 
+    private Map<String, Object> createFilterMap(EventFilterDTO eventFilterDTO) {
+        Map <String, Object> params = new HashMap<>();
+        if (eventFilterDTO.name() != null && !eventFilterDTO.name().isEmpty()) {
+            String regexName = ".*" + eventFilterDTO.name() + ".*";
+            params.put("name", Pattern.compile(regexName, Pattern.CASE_INSENSITIVE));
+        }
+        if(eventFilterDTO.eventType()!=null){
+            String regexType = ".*" + eventFilterDTO.eventType() + ".*";
+            params.put("type", Pattern.compile(regexType, Pattern.CASE_INSENSITIVE));
+        }
+        if(eventFilterDTO.city() != null && !eventFilterDTO.city().isEmpty()){
+            String regexCity = ".*" + eventFilterDTO.city() + ".*";
+            params.put("city", Pattern.compile(regexCity, Pattern.CASE_INSENSITIVE));
+        }
+        return params;
+    }
+
     @Override
     public List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO) {
 
-        System.out.println(eventFilterDTO.name());
-        System.out.println(eventFilterDTO.eventType());
-        System.out.println(eventFilterDTO.city());
+        Map<String,Object>params= createFilterMap(eventFilterDTO);
 
-        List<Event> eventsFiltered = eventRepo.findEventsByFiltersAdmin(
-                eventFilterDTO.name(),
-                eventFilterDTO.eventType(),
-                eventFilterDTO.city(),
-                //The 10 is how many events i want for page
-                PageRequest.of(eventFilterDTO.page(), 10)
-        ).getContent();
-        return eventsFiltered.stream().
-                map(event -> new EventItemDTO(
-                        event.getId(),
-                        event.getName(),
-                        event.getDate(),
-                        event.getAddress(),
-                        event.getCoverImage()
-                )).collect(Collectors.toList());
+        List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(params,PageRequest.of(0, 9)).getContent();
+        return eventsFiltered.stream().map(event -> new EventItemDTO(
+                event.getId(),
+                event.getName(),
+                event.getDate(),
+                event.getAddress(),
+                event.getCoverImage()
+        )).collect(Collectors.toList());
+
     }
 
 
