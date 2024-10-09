@@ -1,8 +1,12 @@
 package co.edu.uniquindio.unieventos.repositories;
 
+import co.edu.uniquindio.unieventos.dto.eventdtos.LocationPercentageDTO;
+import co.edu.uniquindio.unieventos.dto.eventdtos.LocationQuantityDTO;
+import co.edu.uniquindio.unieventos.dto.eventdtos.LocationSalesDTO;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -86,29 +90,35 @@ public interface EventRepo extends MongoRepository<Event, String> {
             "{ '$match': { '_id': ?0 } }",
             "{ '$unwind': '$locations' }",
             "{ '$project': { " +
+                    "   '_id': 0, " + // Excluir el campo _id de la ubicación
                     "   'locationName': '$locations.name', " +
-                    "   'percentageSold': { '$multiply': [ { '$divide': ['$locations.ticketsSold', '$locations.maxCapacity'] }, 100 ] }" +
+                    "   'percentageSold': { '$multiply': [ { '$divide': ['$locations.ticketsSold', '$locations.maxCapacity'] }, 100 ] }, " +
+                    "   'eventId': '$_id' " + // Incluir el ID del evento
                     "} }"
     })
-    Map<String, Double> calculatePercentageSoldByLocation(String eventId);
+    List<LocationPercentageDTO> calculatePercentageSoldByLocation(ObjectId eventId);
 
     @Aggregation(pipeline = {
             "{ '$match': { '_id': ?0 } }",
             "{ '$unwind': '$locations' }",
             "{ '$project': { " +
+                    "   '_id': 0, " + // Excluir el campo _id de la ubicación
                     "   'locationName': '$locations.name', " +
-                    "   'totalSold': { '$sum': { '$multiply': ['$locations.ticketsSold', '$locations.price'] } }" +
+                    "   'totalSold': { '$multiply': ['$locations.ticketsSold', '$locations.price'] }, " + // Mantener la lógica original
+                    "   'eventId': '$_id' " + // Incluir el ID del evento
                     "} }"
     })
-    Map<String, Double> calculateSoldByLocation(String eventId);
+    List<LocationSalesDTO> calculateSoldByLocation(ObjectId eventId);
 
     @Aggregation(pipeline = {
             "{ '$match': { '_id': ?0 } }",
             "{ '$unwind': '$locations' }",
             "{ '$project': { " +
+                    "   '_id': 0, " + // Excluir el campo _id de la ubicación
                     "   'locationName': '$locations.name', " +
-                    "   'quantitySold': { '$sum':  '$locations.ticketsSold'  }" +
+                    "   'quantitySold': '$locations.ticketsSold', " + // Mantener la lógica original
+                    "   'eventId': '$_id' " + // Incluir el ID del evento
                     "} }"
     })
-    Map<String, Integer> calculateQuantitySoldByLocation(String idEvent);
+    List<LocationQuantityDTO> calculateQuantitySoldByLocation(ObjectId eventId);
 }
