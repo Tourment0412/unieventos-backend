@@ -9,6 +9,7 @@ import co.edu.uniquindio.unieventos.dto.shoppingcardtos.AddShoppingCarDetailDTO;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.CarItemViewDTO;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.DeleteCarDetailDTO;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.EditCarDetailDTO;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
@@ -93,7 +94,7 @@ public class ClientController {
     }
 
     @DeleteMapping("/order/cancel/{orderId}")
-    public ResponseEntity<MessageDTO<String>> deleteOrder(@PathVariable String orderId) throws ResourceNotFoundException{
+    public ResponseEntity<MessageDTO<String>> deleteOrder(@PathVariable String orderId) throws ResourceNotFoundException, OperationNotAllowedException {
         String result = orderService.deleteOrder(orderId);
         return ResponseEntity.ok(new MessageDTO<>(false,result));
 
