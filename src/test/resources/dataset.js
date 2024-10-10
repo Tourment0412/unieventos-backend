@@ -11,7 +11,7 @@ db.accounts.insertMany([
             name: "Juan Perez"
         },
         email: "miraortega2020@gmail.com",
-        password: "$2a$10$FdypU2Q7lbwzocQ2ljYpK.uoUSyU3Z8OLlOUWTEZIAK2ek4VpEpwq",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION123"
@@ -33,7 +33,7 @@ db.accounts.insertMany([
             name: "Maria Lopez"
         },
         email: "santiquinterouribe0412@gmail.com",
-        password: "$2a$10$dWEGQefdBqXl.SsEuXuSoOBc79c1FMB8vfp6LIvcKKr3fWSCUycau",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION456"
@@ -55,7 +55,7 @@ db.accounts.insertMany([
             name: "Juan Manauel"
         },
         email: "juanmanuel2004@gmail.com",
-        password: "$2a$10$FdypU2Q7lbwzocQ2ljYpK.uoUSyU3Z8OLlOUWTEZIAK2ek4VpEpwq",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION123"
@@ -77,7 +77,7 @@ db.accounts.insertMany([
             name: "Carlos Gomez"
         },
         email: "carlos.gomez@example.com",
-        password: "$2a$10$dWEGQefdBqXl.SsEuXuSoOBc79c1FMB8vfp6LIvcKKr3fWSCUycau",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION789"
@@ -99,7 +99,7 @@ db.accounts.insertMany([
             name: "Ana Torres"
         },
         email: "ana.torres@example.com",
-        password: "$2a$10$dWEGQefdBqXl.SsEuXuSoOBc79c1FMB8vfp6LIvcKKr3fWSCUycau",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION101112"

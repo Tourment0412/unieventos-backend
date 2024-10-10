@@ -60,7 +60,7 @@ public class AccountServiceTest {
                 "3147830068",
                 "Mercedes del Norte No1",
                 "juanmanuel200413@gmail.com",
-                "1234"
+                "12345678"
         );
 
         String dni = accountService.createAccount(createAccountDTO);
@@ -124,7 +124,7 @@ public class AccountServiceTest {
     public void testLogin() throws Exception {
         Account account = accountRepo.findAccountById(userId).get();
 
-        LoginDTO loginDTO = new LoginDTO(account.getEmail(), "1234");
+        LoginDTO loginDTO = new LoginDTO(account.getEmail(), "12345678");
         TokenDTO tokenDTO = accountService.login(loginDTO);
 
         assertNotNull(tokenDTO.token(), "El token devuelto no debería ser nulo");
