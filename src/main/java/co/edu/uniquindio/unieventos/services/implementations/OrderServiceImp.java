@@ -76,7 +76,7 @@ public class OrderServiceImp implements OrderService {
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
         Order createOrder = orderRepo.save(order);
-        sendPurchaseSummary(account.getEmail(), order);
+        //sendPurchaseSummary(account.getEmail(), order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
     }
@@ -293,7 +293,7 @@ public class OrderServiceImp implements OrderService {
                 //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
                 //TODO Agregar url de Ngrok (Se actualiza constantemente) la ruta debe incluir la direccion al controlador de las notificaciones 
-                .notificationUrl("https://bce1-189-50-209-152.ngrok-free.app/api/public/order/receive-notification")
+                .notificationUrl("https://92c3-152-202-220-211.ngrok-free.app/api/public/order/receive-notification")
                 .build();
 
 
@@ -306,9 +306,7 @@ public class OrderServiceImp implements OrderService {
         saveOrder.setGatewayCode(preference.getId());
         orderRepo.save(saveOrder);
 
-        //Envio nuevamente resuemn de compra
-        Account account = accountService.getAccount(saveOrder.getClientId().toString());
-        sendPurchaseSummary(account.getEmail(), saveOrder);
+
 
         return new PaymentResponseDTO(
                 preference.getInitPoint(),
@@ -340,19 +338,26 @@ public class OrderServiceImp implements OrderService {
                 // Se obtiene la orden guardada en la base de datos y se le asigna el pago, ademas de aumentar la cantidad de entradas vendidas
                 Order order = getOrder(idOrden);
                 Payment orderPayment = createPayment(payment);
+
+                order.setPayment(orderPayment);
+                orderRepo.save(order);
                 Account account = accountService.getAccount(order.getClientId().toString());
+                System.out.println(account.getEmail());
                 List<Order> ordersClient = getOrdersByIdClient(account.getId());
-                if (orderPayment.getStatus().equals("APPROVED") && orderPayment.getStatusDetail().equals("accredited")) {
+                System.out.println("HOLAAA SI ESTOY LLEGANDO");
+                if (order.getPayment().getStatus().equalsIgnoreCase("APPROVED") && order.getPayment().getStatusDetail().equalsIgnoreCase("accredited")) {
+                    System.out.println("HOLA SIN ESTOY ENTRANDO");
                     for (OrderDetail orderDetail : order.getItems()){
                         eventService.reduceNumberLocations(orderDetail.getQuantity(), orderDetail.getLocationName(), orderDetail.getEventId().toString());
                     }
+                    //Envio nuevamente resuemn de compra
+
+                    sendPurchaseSummary(account.getEmail(), order);
                     if(ordersClient.size()==1){
                         //TODO crear cupon con codigo FIRST1
                         sendCouponFirstPurchase(account.getEmail());
                     }
                 }
-                order.setPayment(orderPayment);
-                orderRepo.save(order);
             }
         } catch (Exception e) {
             e.printStackTrace();
