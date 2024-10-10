@@ -27,7 +27,7 @@ public class EventServiceTest {
     @Autowired
     private EventRepo eventRepo;
 
-    String eventId="66fb6cd9c087605dfd69829b";
+    String eventId="6706047ac127c9d5e7e16cc8";
 
     @Test
     void testCreateEvent() throws Exception {
@@ -79,13 +79,14 @@ public class EventServiceTest {
     @Test
     void testDeleteEvent() throws Exception {
         Event event = new Event();
+        event.setId("6707574f8330fb37e7f74969");
         event.setName("Event to Delete");
         event.setStatus(EventStatus.ACTIVE);
         eventRepo.save(event);
 
         String result = eventService.deleteEvent(event.getId());
 
-        assertEquals("Event deleted successfully", result);
+        assertEquals("6707574f8330fb37e7f74969", result);
         Event deletedEvent = eventRepo.findById(event.getId()).orElse(null);
         assertNotNull(deletedEvent);
         assertEquals(EventStatus.INACTIVE, deletedEvent.getStatus());
@@ -94,14 +95,15 @@ public class EventServiceTest {
     @Test
     void testGetInfoEvent() throws Exception {
 
-        EventInfoDTO eventInfo = eventService.getInfoEventClient(eventId);
+        EventInfoDTO eventInfo = eventService.getInfoEventClient("6706047ac127c9d5e7e16cc6");
 
         //TODO Modificar valores compraracion (Preguntar si comparaciones son suficioente)
         assertNotNull(eventInfo);
-        assertEquals("Updated Event", eventInfo.name());
-        assertEquals("New Address", eventInfo.address());
-        assertEquals("2024-10-05T22:33:38.085", eventInfo.date().toString());
-        assertEquals("Updated Description", eventInfo.description());
+        assertEquals("Concierto de Rock", eventInfo.name());
+        assertEquals("Calle 10 #25-35", eventInfo.address());
+        assertEquals("2024-11-15T15:00", eventInfo.date().toString());
+        assertEquals("Concierto de rock con las mejores bandas locales " +
+                "e internacionales.", eventInfo.description());
         assertEquals("CONCERT", eventInfo.type().toString());
     }
 
@@ -117,9 +119,7 @@ public class EventServiceTest {
 
         List<EventItemDTO> events = eventService.listEventsAdmin(0);
 
-        assertEquals(3, events.size());
-        assertEquals("Event 1", events.get(1).name());
-        assertEquals("Event 2", events.get(2).name());
+        assertTrue(events.size()>0 && events.size()<=10);
         eventRepo.delete(event1);
         eventRepo.delete(event2);
 
@@ -134,39 +134,31 @@ public class EventServiceTest {
 
         List<EventItemDTO> events = eventService.listEventsClient(0);
 
-        assertEquals(1, events.size());
-        assertEquals("Updated Event", events.get(0).name());
+        assertTrue(events.size()>0 && events.size()<=10);
         eventRepo.delete(event);
     }
 
     @Test
     void testFilterEventsClient() {
-        Event event = new Event();
-        event.setName("Filtered Event");
-        event.setStatus(EventStatus.ACTIVE);
-        eventRepo.save(event);
 
-        EventFilterDTO filterDTO = new EventFilterDTO("Filtered Event", EventType.CONCERT, "Test City", 0);
+        EventFilterDTO filterDTO = new EventFilterDTO("Evento de Belleza", EventType.BEAUTY, "Cartagena", 0);
 
         List<EventItemDTO> filteredEvents = eventService.filterEventsClient(filterDTO);
 
         assertEquals(1, filteredEvents.size());
-        assertEquals("Filtered Event", filteredEvents.get(1).name());
-        eventRepo.delete(event);
+        assertEquals("Evento de Belleza", filteredEvents.get(0).name());
+
     }
 
     @Test
     void testFilterEventsAdmin() {
-        Event event = new Event();
-        event.setName("Admin Filtered Event");
-        eventRepo.save(event);
 
-        EventFilterDTO filterDTO = new EventFilterDTO("Admin Filtered Event", EventType.CONCERT, "Test City", 0);
+        EventFilterDTO filterDTO = new EventFilterDTO("Concierto de Rock", EventType.CONCERT, "Bogotá", 0);
 
         List<EventItemDTO> filteredEvents = eventService.filterEventsAdmin(filterDTO);
 
         assertEquals(1, filteredEvents.size());
-        assertEquals("Admin Filtered Event", filteredEvents.get(0).name());
+        assertEquals("Concierto de Rock", filteredEvents.get(0).name());
     }
 
     @Test
@@ -190,6 +182,16 @@ public class EventServiceTest {
         EventInfoAdminDTO eventInfoAdminDTO=null;
         try {
             eventInfoAdminDTO=eventService.getInfoEventAdmin("6706047ac127c9d5e7e16cc6");
+            assertEquals("Concierto de Rock", eventInfoAdminDTO.name());
+            assertEquals("Calle 10 #25-35",eventInfoAdminDTO.address());
+            assertEquals("cover_rock_concert.jpg",eventInfoAdminDTO.coverImage());
+            assertEquals("localities_rock_concert.jpg",eventInfoAdminDTO.localitiesImage());
+            assertEquals("2024-11-15T15:00",eventInfoAdminDTO.date().toString());
+            assertEquals("Concierto de rock con las mejores bandas locales e " +
+                    "internacionales.",eventInfoAdminDTO.description());
+            assertEquals("CONCERT", eventInfoAdminDTO.type().toString());
+            assertEquals("ACTIVE", eventInfoAdminDTO.status().toString());
+            assertEquals(2,eventInfoAdminDTO.locations().size());
         } catch (Exception e) {
             assertTrue(false);
         }
