@@ -339,7 +339,7 @@ db.shoppingCars.insertMany([
             { amount: 2, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc9") },
             { amount: 1, locationName: "VIP", idEvent: ObjectId("6706047ac127c9d5e7e16cc7") }
         ],
-        userId: ObjectId("6706047ac127c9d5e7e16cbf")
+        userId: ObjectId("6706047ac127c9d5e7e16cc0")
     },
     {
         _id: ObjectId("67060f8d0cae5fbda81e751a"),

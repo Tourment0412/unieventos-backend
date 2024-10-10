@@ -44,7 +44,7 @@ public class ShoppingCarServiceTest {
     @Autowired
     private EventRepo eventRepo;
 
-    private String userId = "66faf8347e0c1e7206761d25";
+    private String userId = "6706047ac127c9d5e7e16cc0";
     private String eventId = "66f9e4d542ac3e6f6a3d7672";
 
     @BeforeEach

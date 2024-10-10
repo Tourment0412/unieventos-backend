@@ -49,7 +49,7 @@ public class OrderServiceTest {
     private PreferenceClient preferenceClient;
 
     private String eventId = "67019b1d63e5b8567aabf871";
-    private String clientId = "66faf8347e0c1e7206761d25";
+    private String clientId = "6706047ac127c9d5e7e16cc0";
     private String couponId = "66fafd1310b4027d916c95dd";
 
     @BeforeEach
@@ -62,7 +62,7 @@ public class OrderServiceTest {
         // Arrange
         CreateOrderDTO createOrderDTO = new CreateOrderDTO(
                 clientId,
-                "MULTI5");
+                "NEW15P");
 
         String orderId = orderService.createOrder(createOrderDTO);
 
@@ -75,6 +75,7 @@ public class OrderServiceTest {
     @Test
     public void testDeleteOrder() throws Exception {
         Order order = new Order();
+        order.setId("67076f13686baa923c7fb3e0");
         orderRepo.save(order); // Guardar orden en la base de datos
 
         String response = orderService.deleteOrder(order.getId());
