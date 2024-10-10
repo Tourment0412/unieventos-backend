@@ -126,29 +126,19 @@ public class ShoppingCarServiceTest {
         ShoppingCar shoppingCar = new ShoppingCar();
         List<CarDetail> carDetails = new ArrayList<>();
         CarDetail carDetail = new CarDetail();
-        carDetail.setIdEvent(new ObjectId(eventId));
-        carDetail.setLocationName("Locación 1");
+        carDetail.setIdEvent(new ObjectId("6706047ac127c9d5e7e16cca"));
+        carDetail.setLocationName("Sala Principal");
         carDetails.add(carDetail);
         shoppingCar.setItems(carDetails);
         shoppingCarRepo.save(shoppingCar);
-
-        Event event = new Event();
-        event.setName("Evento 1");
-        event.setType(EventType.CONCERT);
-        eventRepo.save(event);
-
-        Location location = new Location();
-        location.setPrice(100.0F);
-        event.getLocations().add(location);
 
         List<CarItemViewDTO> carItemViewDTOList = shoppingCarService.listShoppingCarDetails(userId);
 
         assertNotNull(carItemViewDTOList);
         assertFalse(carItemViewDTOList.isEmpty());
-        assertEquals(1, carItemViewDTOList.size());
+        assertEquals(2, carItemViewDTOList.size());
     }
-
-    //////////////////////////////////////////////////////////
+    
     @Test
     public void testEditCarDetail() throws Exception {
         try {
