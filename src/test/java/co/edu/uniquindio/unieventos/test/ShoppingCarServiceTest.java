@@ -45,7 +45,7 @@ public class ShoppingCarServiceTest {
     private EventRepo eventRepo;
 
     private String userId = "6706047ac127c9d5e7e16cc0";
-    private String eventId = "66f9e4d542ac3e6f6a3d7672";
+    private String eventId = "6706047ac127c9d5e7e16cc6";
 
     @BeforeEach
     void setUp() {
@@ -79,7 +79,7 @@ public class ShoppingCarServiceTest {
     @Test
     public void testAddShoppingCarDetail() throws Exception {
         Event event = eventRepo.findById(eventId).get();
-        Location location = event.findLocationByName("Locación 1");
+        Location location = event.findLocationByName("General");
         AddShoppingCarDetailDTO addShoppingCarDetailDTO = new AddShoppingCarDetailDTO(userId, eventId, location.getName(), 2);
 
         // Act
@@ -97,8 +97,8 @@ public class ShoppingCarServiceTest {
     @Test
     public void testDeleteShoppingCarDetail() throws Exception {
         // Arrange
-        String userId = "66d082d1f1f27b1e5b8e1339"; // ID del usuario
-        String eventId = "66f9e4d542ac3e6f6a3d7672"; // ID del evento
+        String userId = "6707783f1c261697d9b3f989"; // ID del usuario
+        String eventId = "6706047ac127c9d5e7e16cc6"; // ID del evento
         DeleteCarDetailDTO deleteCarDetailDTO = new DeleteCarDetailDTO(userId, eventId, "Locación 2");
         List<CarDetail> carDetails = new ArrayList<>();
         CarDetail carDetail = new CarDetail();
@@ -153,14 +153,15 @@ public class ShoppingCarServiceTest {
     public void testEditCarDetail() throws Exception {
         try {
             EditCarDetailDTO editCarDetailDTO=new EditCarDetailDTO(
-                    "",
-                    "",
-                    "",
+                    "6707783f1c261697d9b3f989",
+                    "6706047ac127c9d5e7e16cc8",
+                    "NewLocation",
                     0
             );
             shoppingCarService.editCarDetail(editCarDetailDTO);
             assertTrue(true);
         } catch(Exception e) {
+            e.printStackTrace();
             assertTrue(false);
         }
     }
