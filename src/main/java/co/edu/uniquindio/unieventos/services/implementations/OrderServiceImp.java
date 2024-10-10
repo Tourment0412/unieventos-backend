@@ -305,14 +305,15 @@ public class OrderServiceImp implements OrderService {
         // Guardar el código de la pasarela en la orden
         saveOrder.setGatewayCode(preference.getId());
         orderRepo.save(saveOrder);
+
+        //Envio nuevamente resuemn de compra
         Account account = accountService.getAccount(saveOrder.getClientId().toString());
         sendPurchaseSummary(account.getEmail(), saveOrder);
-        PaymentResponseDTO paymentResponse = new PaymentResponseDTO(
+
+        return new PaymentResponseDTO(
                 preference.getInitPoint(),
                 idOrden
         );
-
-        return paymentResponse;
     }
 
     @Override
@@ -438,7 +439,7 @@ public class OrderServiceImp implements OrderService {
         String qrCodeUrl = "https://quickchart.io/qr?text=" + order.getId() + "&size=300";
         byte[] qrCodeImage = emailService.downloadImage(qrCodeUrl);
 
-        String subject = "Your friend spent tickets on you";
+        String subject = "Summary of your purchase";
         StringBuilder body = new StringBuilder();
 
         body.append("<html><body>");
