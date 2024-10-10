@@ -73,6 +73,8 @@ public class ClientController {
     //I'm gonna do it as it's for the list of the items
     @GetMapping("/shoppingcar/get-items/{idUser}")
     public ResponseEntity<MessageDTO<List<CarItemViewDTO>>> listShoppingCarDetails(@PathVariable String idUser) throws Exception{
+        List<CarItemViewDTO> carItems = shoppingCarService.listShoppingCarDetails(idUser);
+        return ResponseEntity.ok(new MessageDTO<>(false, carItems));
     }
 
 

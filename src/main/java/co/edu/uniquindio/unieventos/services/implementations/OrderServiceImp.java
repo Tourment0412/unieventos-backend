@@ -277,7 +277,7 @@ public class OrderServiceImp implements OrderService {
         }
 
         //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
-        MercadoPagoConfig.setAccessToken("APP_USR-7759979865895803-100720-2039ffe8c5a46ee730f43e6f046b947a-2026338176");
+        MercadoPagoConfig.setAccessToken("APP_USR-8796351071075181-093011-f38467b970c3e2f073362932bea970a5-1190282227");
 
         //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
