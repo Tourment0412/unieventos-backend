@@ -11,7 +11,7 @@ db.accounts.insertMany([
             name: "Juan Perez"
         },
         email: "miraortega2020@gmail.com",
-        password: "password123",
+        password: "$2a$10$FdypU2Q7lbwzocQ2ljYpK.uoUSyU3Z8OLlOUWTEZIAK2ek4VpEpwq",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION123"
@@ -33,7 +33,7 @@ db.accounts.insertMany([
             name: "Maria Lopez"
         },
         email: "santiquinterouribe0412@gmail.com",
-        password: "password456",
+        password: "$2a$10$dWEGQefdBqXl.SsEuXuSoOBc79c1FMB8vfp6LIvcKKr3fWSCUycau",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION456"
@@ -55,7 +55,7 @@ db.accounts.insertMany([
             name: "Carlos Gomez"
         },
         email: "carlos.gomez@example.com",
-        password: "password789",
+        password: "$2a$10$dWEGQefdBqXl.SsEuXuSoOBc79c1FMB8vfp6LIvcKKr3fWSCUycau",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION789"
@@ -77,7 +77,7 @@ db.accounts.insertMany([
             name: "Ana Torres"
         },
         email: "ana.torres@example.com",
-        password: "password101112",
+        password: "$2a$10$dWEGQefdBqXl.SsEuXuSoOBc79c1FMB8vfp6LIvcKKr3fWSCUycau",
         registrationValidationCode: {
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "VALIDATION101112"
@@ -97,6 +97,15 @@ db.accounts.insertMany([
 
 // Colección coupons
 db.coupons.insertMany([
+    {
+        _id: ObjectId("67071f55d0dce577b85b995"),
+        name: "New account",
+        code: "NEW15P",
+        CouponType: "MULTIPLE",
+        discount: 0.15,
+        expirationDate: ISODate("2024-12-31T23:59:59Z"),
+        status: "ACTIVE"
+    },
     {
         _id: ObjectId("6706047ac127c9d5e7e16cc3"),
         name: "Discount 10%",
@@ -315,7 +324,7 @@ db.orders.insertMany([
 // Colección shoppingCars
 db.shoppingCars.insertMany([
     {
-        _id: ObjectId("67060f8d0cae5fbda81e7518"),
+        _id: ObjectId("6707006494e25e379df5bd95"),
         date: new ISODate("2024-12-20T10:15:00Z"),
         items: [
             { amount: 2, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc9") },
@@ -327,7 +336,7 @@ db.shoppingCars.insertMany([
         _id: ObjectId("67060f8d0cae5fbda81e751a"),
         date: new ISODate("2024-09-20T10:15:00Z"),
         items: [
-            { amount: 4, locationName: "Tribuna Norte", idEvent: ObjectId("") }
+            { amount: 4, locationName: "Tribuna Norte", idEvent: ObjectId("67060f8d0cae5fbda81e750d") }
         ],
         userId: ObjectId("6706047ac127c9d5e7e16cbf")
     },
