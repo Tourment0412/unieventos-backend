@@ -116,6 +116,50 @@ db.accounts.insertMany([
             creationDate: new ISODate("2024-10-01T10:00:00Z"),
             code: "PASSWORDVALIDATION101112"
         }
+    },
+    {
+        _id: ObjectId("67081bf451d48a7a35b186c1"),
+        user: {
+            phoneNumber: "3246748951",
+            address: "Rio espejo",
+            dni: "1065983465",
+            name: "Fernando Escobar"
+        },
+        email: "fernanEs69@gmail.com",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
+        registrationValidationCode: {
+            creationDate: new ISODate("2024-10-01T10:00:00Z"),
+            code: "VALIDATION1213"
+        },
+        role: "CLIENT",
+        registrationDate: new ISODate("2024-10-01T10:00:00Z"),
+        status: "ACTIVE",
+        passwordValidationCode: {
+            creationDate: new ISODate("2024-10-01T10:00:00Z"),
+            code: "PASSWORDVALIDATION456"
+        }
+    },
+    {
+        _id: ObjectId("670820b73008bccbdf1c8151"),
+        user: {
+            phoneNumber: "83475934",
+            address: "La vecindad",
+            dni: "1902323032",
+            name: "Ramon Valdez"
+        },
+        email: "donramon82@gmail.com",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
+        registrationValidationCode: {
+            creationDate: new ISODate("2024-10-01T10:00:00Z"),
+            code: "VALIDATION008"
+        },
+        role: "CLIENT",
+        registrationDate: new ISODate("2024-10-01T10:00:00Z"),
+        status: "ACTIVE",
+        passwordValidationCode: {
+            creationDate: new ISODate("2024-10-01T10:00:00Z"),
+            code: "PASSWORDVALIDATION888"
+        }
     }
 ]);
 
@@ -166,6 +210,33 @@ db.coupons.insertMany([
         code: "BF2024",
         type: "MULTIPLE",
         discount: 0.5,
+        expirationDate: ISODate("2024-11-30T23:59:59Z"),
+        status: "AVAILABLE"
+    },
+    {
+        _id: ObjectId("67081f1a2523bfa1066eb212"),
+        name: "Prueba 1",
+        code: "PROVE1",
+        type: "MULTIPLE",
+        discount: 0.15,
+        expirationDate: ISODate("2024-11-30T23:59:59Z"),
+        status: "AVAILABLE"
+    },
+    {
+        _id: ObjectId("67081f1a2523bfa1066eb216"),
+        name: "Prueba 2",
+        code: "PROVE2",
+        type: "MULTIPLE",
+        discount: 0.5,
+        expirationDate: ISODate("2024-11-30T23:59:59Z"),
+        status: "AVAILABLE"
+    },
+    {
+        _id: ObjectId("67081f1a2523bfa1066eb21f"),
+        name: "Prueba 3",
+        code: "PROVE3",
+        type: "UNIQUE",
+        discount: 0.75,
         expirationDate: ISODate("2024-11-30T23:59:59Z"),
         status: "AVAILABLE"
     }
@@ -353,6 +424,30 @@ db.orders.insertMany([
         },
         isGift: true,
         friendMail: "santiquinterouribe0412@gmail.com"
+    },
+    {
+        _id :  ObjectId("67081bf451d48a7a35b186ca"),
+        items: [
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc8"), price: 100000, locationName: "Pasarela", quantity: 1 },
+            { eventId: ObjectId("6706047ac127c9d5e7e16cc8"), price: 80000, locationName: "General", quantity: 2 }
+        ],
+        gatewayCode: "MERCADOPAGO",
+        date: new ISODate("2024-10-10T15:30:00Z"),
+        total: 260000,
+        clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
+        couponId: null,
+        payment: {
+            id: "PAY-98765",
+            currency: "USD",
+            paymentType: "PAYPAL",
+            statusDetail: "Approved",
+            authorizationCode: "AUTH-33445",
+            date: new ISODate("2024-10-10T15:35:00Z"),
+            transactionValue: 260000,
+            status: "SUCCESS"
+        },
+        isGift: true,
+        friendMail: "santiquinterouribe0412@gmail.com"
     }
 ]);
 
@@ -366,7 +461,7 @@ db.shoppingCars.insertMany([
             { amount: 2, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc9") },
             { amount: 1, locationName: "VIP", idEvent: ObjectId("6706047ac127c9d5e7e16cc7") }
         ],
-        userId: ObjectId("6706047ac127c9d5e7e16cc0")
+        userId: ObjectId("670820b73008bccbdf1c8151")
     },
     {
         _id: ObjectId("67060f8d0cae5fbda81e751a"),
@@ -382,7 +477,7 @@ db.shoppingCars.insertMany([
         items: [
             { amount: 3, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") }
         ],
-        userId: ObjectId("6706047ac127c9d5e7e16cbf")
+        userId: ObjectId("6706047ac127c9d5e7e16cc1")
     },
     {
         _id: ObjectId("6706114a051852d809818d4d"),
@@ -392,5 +487,13 @@ db.shoppingCars.insertMany([
             { amount: 2, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") }
         ],
         userId: ObjectId("6707783f1c261697d9b3f989")
+    },
+    {
+        _id: ObjectId("67081bf451d48a7a35b186c8"),
+        date: new ISODate("2024-11-05T18:45:00Z"),
+        items: [
+            { amount: 3, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") }
+        ],
+        userId: ObjectId("67081bf451d48a7a35b186c1")
     }
 ]);
