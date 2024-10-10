@@ -1,5 +1,10 @@
 db = connect("mongodb://localhost:27017/unieventosTest")
 
+//Todas las contraseñas encriptadas son "12345678"
+
+//En caso del fallo de una prueba hacer un truncate (o borrar manualmente) los datos
+//y volver a ejecutar el script para volver a poner los datos
+
 // Colección accounts
 db.accounts.insertMany([
     {

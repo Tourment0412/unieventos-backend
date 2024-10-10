@@ -138,7 +138,7 @@ public class ShoppingCarServiceTest {
         assertFalse(carItemViewDTOList.isEmpty());
         assertEquals(2, carItemViewDTOList.size());
     }
-    
+
     @Test
     public void testEditCarDetail() throws Exception {
         try {
