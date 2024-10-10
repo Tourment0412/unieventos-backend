@@ -98,12 +98,12 @@ public class ShoppingCarServiceTest {
     public void testDeleteShoppingCarDetail() throws Exception {
         // Arrange
         String userId = "6707783f1c261697d9b3f989"; // ID del usuario
-        String eventId = "6706047ac127c9d5e7e16cc6"; // ID del evento
-        DeleteCarDetailDTO deleteCarDetailDTO = new DeleteCarDetailDTO(userId, eventId, "Locación 2");
+        String eventId = "6706047ac127c9d5e7e16cc8"; // ID del evento
+        DeleteCarDetailDTO deleteCarDetailDTO = new DeleteCarDetailDTO(userId, eventId, "Pasarela");
         List<CarDetail> carDetails = new ArrayList<>();
         CarDetail carDetail = new CarDetail();
         carDetail.setIdEvent(new ObjectId(eventId));
-        carDetail.setLocationName("Locación 2");
+        carDetail.setLocationName("Pasarela");
         carDetails.add(carDetail);
 
         ShoppingCar shoppingCar = new ShoppingCar();
@@ -111,12 +111,12 @@ public class ShoppingCarServiceTest {
         shoppingCarRepo.save(shoppingCar);
         shoppingCarService.deleteShoppingCarDetail(deleteCarDetailDTO);
 
-        ShoppingCar updatedShoppingCar = shoppingCarRepo.findById("carId").orElse(null);
+        ShoppingCar updatedShoppingCar = shoppingCarRepo.findById("6706114a051852d809818d4d").orElse(null);
         assertNotNull(updatedShoppingCar, "El carrito de compras debería existir después de la eliminación");
 
         assertFalse(updatedShoppingCar.getItems().stream()
-                        .anyMatch(item -> item.getLocationName().equals("Locación 2")),
-                "El detalle del carrito con 'Locación 2' debería haber sido eliminado");
+                        .anyMatch(item -> item.getLocationName().equals("Pasarela")),
+                "El detalle del carrito con 'Pasarela' debería haber sido eliminado");
 
 
     }
