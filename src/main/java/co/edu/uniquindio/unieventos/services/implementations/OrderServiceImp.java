@@ -86,9 +86,11 @@ public class OrderServiceImp implements OrderService {
         List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
 
         for (Order orderClient : ordersClient) {
-            Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
-            if (couponClient.getCode().equals(createOrderDTO.couponCode())) {
-                throw new OperationNotAllowedException("You can't use a coupon you previously used");
+            if(orderClient.getCouponId()!=null){
+                Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
+                if (couponClient.getCode().equals(createOrderDTO.couponCode())) {
+                    throw new OperationNotAllowedException("You can't use a coupon you previously used");
+                }
             }
         }
 
