@@ -25,7 +25,7 @@ public interface OrderService {
      * @return
      * @throws Exception
      */
-    String deleteOrder(String orderId) throws ResourceNotFoundException;
+    String deleteOrder(String orderId) throws ResourceNotFoundException, OperationNotAllowedException;
 
     /**
      *

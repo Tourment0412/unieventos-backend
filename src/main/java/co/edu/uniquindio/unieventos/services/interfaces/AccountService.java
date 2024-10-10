@@ -74,7 +74,7 @@ public interface AccountService {
      * @return The id of the account
      * @throws Exception
      */
-    String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws ResourceNotFoundException, ValidationCodeException;
+    String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws ResourceNotFoundException, ValidationCodeException, Exception;
 
     /**
      * Reassigns Validation registration code of an account

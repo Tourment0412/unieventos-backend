@@ -21,9 +21,7 @@ import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.payment.PaymentStatus;
 import com.mercadopago.resources.preference.Preference;
-import jakarta.validation.constraints.Email;
 import org.bson.types.ObjectId;
-import org.hibernate.validator.constraints.Length;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,22 +57,21 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, Exception {
-        Order order = new Order();
+    public String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, OperationNotAllowedException, Exception {
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
         List<OrderDetail> items = getOrderDetails(shoppingCar);
 
+        Order order = new Order();
         order.setItems(items);
         order.setDate(LocalDateTime.now());
-
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
-        if (!(createOrderDTO.counponCode() == null || createOrderDTO.counponCode().isEmpty())) {
-            Coupon coupon = couponService.getCouponByCode(createOrderDTO.counponCode());
-            order.setTotal(calculateTotal(items, coupon.getId(), createOrderDTO.clientId()));
-            order.setCouponId(new ObjectId(coupon.getId()));
+
+        if (createOrderDTO.couponCode() != null && !createOrderDTO.couponCode().isEmpty()) {
+            validateCouponUsage(createOrderDTO, order);
         } else {
             order.setTotal(calculateTotal(items));
         }
+
         order.setGift(false);
 
         Account account = accountService.getAccount(createOrderDTO.clientId());
@@ -82,6 +79,26 @@ public class OrderServiceImp implements OrderService {
         sendPurchaseSummary(account.getEmail(), order);
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
         return createOrder.getId();
+    }
+
+
+    private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order) throws ResourceNotFoundException, OperationNotAllowedException {
+        List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
+
+        for (Order orderClient : ordersClient) {
+            Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
+            if (couponClient.getCode().equals(createOrderDTO.couponCode())) {
+                throw new OperationNotAllowedException("You can't use a coupon you previously used");
+            }
+        }
+
+        Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
+        if (coupon.getType().equals(CouponType.UNIQUE)) {
+            couponService.deleteCoupon(coupon.getId());
+        }
+
+        order.setTotal(calculateTotal(order.getItems(), coupon.getId(), createOrderDTO.clientId()));
+        order.setCouponId(new ObjectId(coupon.getId()));
     }
 
     private @NotNull List<OrderDetail> getOrderDetails(ShoppingCar shoppingCar) {
@@ -94,8 +111,8 @@ public class OrderServiceImp implements OrderService {
                 Location location = event.findLocationByName(carDetail.getLocationName());
                 if (!location.isCapacityAvaible(carDetail.getAmount())) {
                     throw new InsufficientCapacityException("Max capacity exceeded");
-                } else if (event.getDate().minusDays(2).isBefore(LocalDateTime.now())) { //Se tendria que añadir un or para que la fecha sea igual
-                    throw new OperationNotAllowedException("Date is before current date");
+                } else if (event.getDate().minusDays(2).isBefore(LocalDateTime.now()) || event.getDate().minusDays(2).equals(LocalDateTime.now())) { //Se tendria que añadir un or para que la fecha sea igual
+                    throw new OperationNotAllowedException("Date not valid");
                 } else {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setEventId(carDetail.getIdEvent());
@@ -134,7 +151,7 @@ public class OrderServiceImp implements OrderService {
         if (coupon.getType().equals(CouponType.UNIQUE)) {
             couponService.deleteCoupon(couponId);
         } else if (coupon.getType().equals(CouponType.MULTIPLE)) {
-            List<Order> ordersClient = getOrdersByIdCliente(idClient);
+            List<Order> ordersClient = getOrdersByIdClient(idClient);
             for (Order order : ordersClient) {
                 if (coupon.getId().equals(order.getCouponId().toString())) {
                     throw new OperationNotAllowedException("Coupon is already in use by this client");
@@ -144,7 +161,7 @@ public class OrderServiceImp implements OrderService {
         return total - (total * coupon.getDiscount());
     }
 
-    private List<Order> getOrdersByIdCliente(String idClient) {
+    private List<Order> getOrdersByIdClient(String idClient) {
         return orderRepo.findOrdersByClientId(new ObjectId(idClient));
     }
 
@@ -158,10 +175,15 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String deleteOrder(String orderId) throws ResourceNotFoundException {
+    public String deleteOrder(String orderId) throws ResourceNotFoundException, OperationNotAllowedException {
         Order orderToDelete = getOrder(orderId);
-        orderRepo.delete(orderToDelete);
-        return "The order was deleted";
+        Payment payment = orderToDelete.getPayment();
+        if(payment==null || (!(payment.getStatus().equals(PaymentStatus.APPROVED) && payment.getStatusDetail().equalsIgnoreCase("accredited"))) ){
+            orderRepo.delete(orderToDelete);
+            return "The order was deleted";
+        }else{
+            throw new OperationNotAllowedException("Unable to delete an order that has already been paid");
+        }
     }
 
     @Override
@@ -223,6 +245,7 @@ public class OrderServiceImp implements OrderService {
         if (saveOrder.getCouponId() != null) {
             coupon = couponService.getCouponById(saveOrder.getCouponId().toString());
         }
+        List<Order> ordersClient = getOrdersByIdClient(saveOrder.getClientId().toString());
 
         // Recorrer los items de la orden y crea los ítems de la pasarela
         for (OrderDetail item : saveOrder.getItems()) {
@@ -316,9 +339,15 @@ public class OrderServiceImp implements OrderService {
                 // Se obtiene la orden guardada en la base de datos y se le asigna el pago, ademas de aumentar la cantidad de entradas vendidas
                 Order order = getOrder(idOrden);
                 Payment orderPayment = createPayment(payment);
-                if (orderPayment.getStatus().equals("APPROVED")){
+                Account account = accountService.getAccount(order.getClientId().toString());
+                List<Order> ordersClient = getOrdersByIdClient(account.getId());
+                if (orderPayment.getStatus().equals("APPROVED") && orderPayment.getStatusDetail().equals("accredited")) {
                     for (OrderDetail orderDetail : order.getItems()){
                         eventService.reduceNumberLocations(orderDetail.getQuantity(), orderDetail.getLocationName(), orderDetail.getEventId().toString());
+                    }
+                    if(ordersClient.size()==1){
+                        //TODO crear cupon con codigo FIRST1
+                        sendCouponFirstPurchase(account.getEmail());
                     }
                 }
                 order.setPayment(orderPayment);
@@ -328,6 +357,22 @@ public class OrderServiceImp implements OrderService {
             e.printStackTrace();
         }
 
+    }
+
+    private void sendCouponFirstPurchase(String email) throws Exception {
+        String subject = "Welcome to Unieventos - Enjoy a Gift for Your First Purchase!";
+        String body = String.format(
+                "Hello,\n\n" +
+                        "Thank you for making your first purchase with Unieventos! As a token of our appreciation, we have a special gift for you.\n\n" +
+                        "Your exclusive Coupon Code: %s\n\n" +
+                        "Use this code at checkout to receive a discount on your next purchase.\n\n" +
+                        "We are excited to have you with us, and we hope you enjoy all the exciting events available on our platform.\n\n" +
+                        "If you have any questions, feel free to contact our support team.\n\n" +
+                        "Best regards,\n" +
+                        "The Unieventos Team",
+                "FIRST1"
+        );
+        emailService.sendEmail(new EmailDTO(subject, body, email));
     }
 
     private Payment createPayment(com.mercadopago.resources.payment.Payment payment) {

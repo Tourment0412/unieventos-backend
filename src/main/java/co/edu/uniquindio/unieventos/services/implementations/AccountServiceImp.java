@@ -12,6 +12,7 @@ import co.edu.uniquindio.unieventos.model.vo.User;
 import co.edu.uniquindio.unieventos.model.vo.ValidationCode;
 import co.edu.uniquindio.unieventos.repositories.AccountRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.AccountService;
+import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.EmailService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,14 @@ public class AccountServiceImp implements AccountService {
     //This repo is final because we are not going to modify the repo
     private final AccountRepo accountRepo;
     private final EmailService emailService;
+    private final CouponService couponService;
     private final JWTUtils jwtUtils;
 
-    public AccountServiceImp(AccountRepo accountRepo, EmailService emailService, JWTUtils jwtUtils) {
+    public AccountServiceImp(AccountRepo accountRepo, EmailService emailService, CouponService couponService, JWTUtils jwtUtils) {
 
         this.accountRepo = accountRepo;
         this.emailService = emailService;
+        this.couponService = couponService;
         this.jwtUtils = jwtUtils;
     }
 
@@ -223,7 +226,7 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws ResourceNotFoundException, ValidationCodeException {
+    public String validateRegistrationCode(ActivateAccountDTO activateAccountDTO) throws ResourceNotFoundException, ValidationCodeException, Exception {
         Account accountObtained = getAccountEmail(activateAccountDTO.email());
         ValidationCode registrationValidationCode = accountObtained.getRegistrationValidationCode();
 
@@ -232,7 +235,8 @@ public class AccountServiceImp implements AccountService {
                 if (registrationValidationCode.getCreationDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
                     accountObtained.setStatus(AccountStatus.ACTIVE);
                     accountRepo.save(accountObtained);
-
+                    //TODO Habría que tener tener un cupon multiple con el codigo NEW15P;
+                    sendEmailCoupon(accountObtained.getEmail());
                 } else {
                     throw new ValidationCodeException("Registration validation code has expired");
                 }
@@ -241,6 +245,21 @@ public class AccountServiceImp implements AccountService {
             }
         }
         return accountObtained.getId();
+    }
+
+    private void sendEmailCoupon(String email) throws Exception {
+        String subject = "Welcome to Unieventos - Here's your gift coupon!";
+        String body = String.format(
+                "Hello,\n\n" +
+                        "Thank you for registering on Unieventos! As a token of appreciation, we're giving you a special gift coupon.\n\n" +
+                        "Your Coupon Code: %s\n\n" +
+                        "Simply use this code during checkout to enjoy exclusive discounts.\n\n" +
+                        "We hope you have a great time exploring the events on our platform.\n\n" +
+                        "Best regards,\n" +
+                        "The Unieventos Team",
+                "NEW15P"
+        );
+        emailService.sendEmail(new EmailDTO(subject, body, email));
     }
 
     @Override
