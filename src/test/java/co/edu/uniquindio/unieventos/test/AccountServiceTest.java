@@ -43,7 +43,7 @@ public class AccountServiceTest {
     @Autowired
     private EmailService emailService;
 
-    String userId = "6529c8e84f7f4e001c7ebf95";
+    String userId = "6706047ac127c9d5e7e16cbf";
 
     @BeforeEach
     public void setUp() {
@@ -59,15 +59,15 @@ public class AccountServiceTest {
                 "Pepe",
                 "3147830068",
                 "Mercedes del Norte No1",
-                "example@gmail.com",
-                "mira0515"
+                "juanmanuel200413@gmail.com",
+                "1234"
         );
 
         String dni = accountService.createAccount(createAccountDTO);
 
         assertNotNull(dni, "El DNI devuelto no debería ser nulo");
 
-        Optional<Account> createdAccount = accountRepo.findAccountByDni(dni);
+        Optional<Account> createdAccount = accountRepo.findById(dni);
         assertTrue(createdAccount.isPresent(), "La cuenta debería existir en la base de datos");
 
         Account account = createdAccount.get();
@@ -86,7 +86,7 @@ public class AccountServiceTest {
                 "Angel",
                 "32225035863",
                 "1234 Main St",
-                "00000");
+                "00200");
 
         String result = accountService.updateAccount(updateAccountDTO);
 
@@ -112,10 +112,10 @@ public class AccountServiceTest {
 
        String result = accountService.deleteAccount("66d082d1f1f27b1e5b8e1339");
 
-        assertEquals("Account deleted successfully", result);
+        assertEquals("66d082d1f1f27b1e5b8e1339", result);
 
         Optional<Account> deletedAccount = accountRepo.findAccountById("66d082d1f1f27b1e5b8e1339");
-        assertTrue(deletedAccount.isPresent(), "La cuenta debería seguir existiendo en la base de datos");
+        assertTrue(deletedAccount.isPresent(), "La cuenta no debería seguir existiendo en la base de datos");
         assertEquals(AccountStatus.DELETED, deletedAccount.get().getStatus(), "El estado de la cuenta no se actualizó correctamente");
     }
 
@@ -124,7 +124,7 @@ public class AccountServiceTest {
     public void testLogin() throws Exception {
         Account account = accountRepo.findAccountById(userId).get();
 
-        LoginDTO loginDTO = new LoginDTO(account.getEmail(), account.getPassword());
+        LoginDTO loginDTO = new LoginDTO(account.getEmail(), "1234");
         TokenDTO tokenDTO = accountService.login(loginDTO);
 
         assertNotNull(tokenDTO.token(), "El token devuelto no debería ser nulo");
@@ -133,14 +133,15 @@ public class AccountServiceTest {
 
     @Test
     public void testGetInfoAccount() throws Exception {
-        AccountInfoDTO accountInfo = accountService.getInfoAccount(userId);
+        String id="6706047ac127c9d5e7e16cc0";
+        AccountInfoDTO accountInfo = accountService.getInfoAccount(id);
 
         assertNotNull(accountInfo);
-        assertEquals(userId, accountInfo.id());
-        assertEquals("1091884520", accountInfo.dni());
-        assertEquals("Santiago Quintero", accountInfo.name());
-        assertEquals("3147830068", accountInfo.phoneNumber());
-        assertEquals("3147830068", accountInfo.address());
+        assertEquals(id, accountInfo.id());
+        assertEquals("2222222222", accountInfo.dni());
+        assertEquals("Maria Lopez", accountInfo.name());
+        assertEquals("0987654321", accountInfo.phoneNumber());
+        assertEquals("Calle 2", accountInfo.address());
         assertEquals("santiquinterouribe0412@gmail.com", accountInfo.email());
     }
 
@@ -151,7 +152,7 @@ public class AccountServiceTest {
         String result = accountService.sendRecoverPasswordCode(account.getEmail());
 
         assertNotNull(result);
-        assertEquals("A validation code has been sent to your email, check your email, it lasts 15 minutes.", result);
+        assertEquals(userId, result);
 
         Account accountFromRepo = accountRepo.findAccountByEmail(account.getEmail()).get();
         assertNotNull(accountFromRepo.getPasswordValidationCode());
@@ -160,14 +161,15 @@ public class AccountServiceTest {
     @Test
     public void testChangePassword() throws Exception {
         // Arrange
-        String email = "test@example.com";
+        String email = "example@gmail.com";
         String verificationCode = "ABC123";
         String newPassword = "newPassword";
 
         Account account = new Account();
+        account.setId("67072d61d18f5db00879b7c8");
         account.setEmail(email);
 
-        ValidationCode validationCode = new ValidationCode(LocalDateTime.now().minusMinutes(20), verificationCode);
+        ValidationCode validationCode = new ValidationCode(LocalDateTime.now(), verificationCode);
         account.setPasswordValidationCode(validationCode);
 
         accountRepo.save(account); // Guardar la cuenta en el repo
@@ -177,7 +179,7 @@ public class AccountServiceTest {
 
         String result = accountService.changePassword(changePasswordDTO);
 
-        assertEquals("The password has been changed successfully", result);
+        assertEquals("67072d61d18f5db00879b7c8", result);
 
         Account accountFromRepo = accountRepo.findAccountByEmail(email).get();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -188,12 +190,12 @@ public class AccountServiceTest {
 
     @Test
     public void testValidateRegistrationCode() throws Exception {
-        String email = "test@example.com";
+        String email = "test2@example.com";
         String validationCode = "ABC123";
 
         Account account = new Account();
         account.setEmail(email);
-        ValidationCode validationCodeObj = new ValidationCode(LocalDateTime.now().minusMinutes(20), validationCode);
+        ValidationCode validationCodeObj = new ValidationCode(LocalDateTime.now(), validationCode);
         account.setRegistrationValidationCode(validationCodeObj);
         account.setStatus(AccountStatus.INACTIVE);
 
@@ -211,7 +213,7 @@ public class AccountServiceTest {
 
     @Test
     public void testReassignValidationRegistrationCode() throws Exception {
-        String email = "test@example.com";
+        String email = "test3@example.com";
 
         Account account = new Account();
         account.setEmail(email);

@@ -61,8 +61,6 @@ public class OrderServiceTest {
     public void testCreateOrder() throws Exception {
         // Arrange
         CreateOrderDTO createOrderDTO = new CreateOrderDTO(
-                false,
-                "",
                 clientId,
                 "MULTI5");
 
