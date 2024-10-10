@@ -98,40 +98,49 @@ db.accounts.insertMany([
 // Colección coupons
 db.coupons.insertMany([
     {
-        _id: ObjectId("67071f55d0dce577b85b995"),
+        _id: ObjectId("67072d61d18f5db00879b7c6"),
         name: "New account",
         code: "NEW15P",
-        CouponType: "MULTIPLE",
+        type: "MULTIPLE",
         discount: 0.15,
         expirationDate: ISODate("2024-12-31T23:59:59Z"),
-        status: "ACTIVE"
+        status: "AVAILABLE"
+    },
+    {
+        _id: ObjectId("67072d61d18f5db00879b7c7"),
+        name: "Firts coupon",
+        code: "FIRST1",
+        type: "MULTIPLE",
+        discount: 0.1,
+        expirationDate: ISODate("2024-12-31T23:59:59Z"),
+        status: "AVAILABLE"
     },
     {
         _id: ObjectId("6706047ac127c9d5e7e16cc3"),
         name: "Discount 10%",
         code: "DISC10",
-        CouponType: "UNIQUE",
+        type: "UNIQUE",
         discount: 0.1,
         expirationDate: ISODate("2024-12-31T23:59:59Z"),
-        status: "ACTIVE"
+        status: "AVAILABLE"
     },
     {
         _id: ObjectId("6706047ac127c9d5e7e16cc4"),
         name: "Flat 5000",
         code: "FLAT5000",
-        CouponType: "MULTIPLE",
+        type: "MULTIPLE",
         discount: 0.75,
         expirationDate: ISODate("2023-12-31T23:59:59Z"),
-        status: "INACTIVE"
+        status: "NOT_AVAILABLE"
     },
     {
         _id: ObjectId("6706047ac127c9d5e7e16cc5"),
         name: "Black Friday",
         code: "BF2024",
-        CouponType: "MULTIPLE",
+        type: "MULTIPLE",
         discount: 0.5,
         expirationDate: ISODate("2024-11-30T23:59:59Z"),
-        status: "ACTIVE"
+        status: "AVAILABLE"
     }
 ]);
 
