@@ -129,14 +129,16 @@ public class ShoppingCarServiceTest {
         carDetail.setIdEvent(new ObjectId("6706047ac127c9d5e7e16cca"));
         carDetail.setLocationName("Sala Principal");
         carDetails.add(carDetail);
+        shoppingCar.setUserId(new ObjectId("67088fbce43cb98fc9136861"));
         shoppingCar.setItems(carDetails);
         shoppingCarRepo.save(shoppingCar);
 
-        List<CarItemViewDTO> carItemViewDTOList = shoppingCarService.listShoppingCarDetails(userId);
+        List<CarItemViewDTO> carItemViewDTOList = shoppingCarService.listShoppingCarDetails("67088fbce43cb98fc9136861");
 
         assertNotNull(carItemViewDTOList);
         assertFalse(carItemViewDTOList.isEmpty());
-        assertEquals(2, carItemViewDTOList.size());
+        assertEquals(1, carItemViewDTOList.size());
+        shoppingCarRepo.delete(shoppingCar);
     }
 
     @Test

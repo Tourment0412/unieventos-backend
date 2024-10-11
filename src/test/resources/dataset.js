@@ -74,6 +74,28 @@ db.accounts.insertMany([
         }
     },
     {
+        _id: ObjectId("67088fbce43cb98fc9136861"),
+        user: {
+            phoneNumber: "345345435",
+            address: "Calle Esencia",
+            dni: "2323232323",
+            name: "Goku Antonio"
+        },
+        email: "sayayin@gmail.com",
+        password: "$2a$10$ow0l.CE3A.sr2fo2hYvgvOjAcpV7oOvVRPWlGPdCq3fj/YUPEJI86",
+        registrationValidationCode: {
+            creationDate: new ISODate("2024-10-01T10:00:00Z"),
+            code: "VALIDATION777"
+        },
+        role: "CLIENT",
+        registrationDate: new ISODate("2024-10-01T10:00:00Z"),
+        status: "ACTIVE",
+        passwordValidationCode: {
+            creationDate: new ISODate("2024-10-01T10:00:00Z"),
+            code: "PASSWORDVALIDATION777"
+        }
+    },
+    {
         _id: ObjectId("6706047ac127c9d5e7e16cc1"),
         user: {
             phoneNumber: "1122334455",
@@ -487,7 +509,7 @@ db.shoppingCars.insertMany([
         _id: ObjectId("67081bf451d48a7a35b186c8"),
         date: new ISODate("2024-11-05T18:45:00Z"),
         items: [
-            { amount: 3, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc8") }
+            { amount: 3, locationName: "General", idEvent: ObjectId("6706047ac127c9d5e7e16cc6") }
         ],
         userId: ObjectId("67081bf451d48a7a35b186c1")
     }
