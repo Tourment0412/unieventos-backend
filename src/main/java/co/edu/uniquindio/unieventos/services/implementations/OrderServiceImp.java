@@ -84,23 +84,26 @@ public class OrderServiceImp implements OrderService {
 
     private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order) throws ResourceNotFoundException, OperationNotAllowedException {
         List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
-
-        for (Order orderClient : ordersClient) {
-            if(orderClient.getCouponId()!=null){
-                Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
-                if (couponClient.getCode().equals(createOrderDTO.couponCode())) {
-                    throw new OperationNotAllowedException("You can't use a coupon you previously used");
+        Coupon couponOrder = couponService.getCouponByCode(createOrderDTO.couponCode());
+        if(couponOrder == null) {
+            for (Order orderClient : ordersClient) {
+                if(orderClient.getCouponId()!=null){
+                    Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
+                    if (couponClient.getCode().equals(createOrderDTO.couponCode())) {
+                        throw new OperationNotAllowedException("You can't use a coupon you previously used");
+                    }
                 }
             }
+
+            Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
+            if (coupon.getType().equals(CouponType.UNIQUE)) {
+                couponService.deleteCoupon(coupon.getId());
+            }
+
+            order.setTotal(calculateTotal(order.getItems(), coupon.getId(), createOrderDTO.clientId()));
+            order.setCouponId(new ObjectId(coupon.getId()));
         }
 
-        Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
-        if (coupon.getType().equals(CouponType.UNIQUE)) {
-            couponService.deleteCoupon(coupon.getId());
-        }
-
-        order.setTotal(calculateTotal(order.getItems(), coupon.getId(), createOrderDTO.clientId()));
-        order.setCouponId(new ObjectId(coupon.getId()));
     }
 
     private @NotNull List<OrderDetail> getOrderDetails(ShoppingCar shoppingCar) {
@@ -277,7 +280,7 @@ public class OrderServiceImp implements OrderService {
         }
 
         //TODO Configurar las credenciales de MercadoPag. Crear cuenta de mercado pago
-        MercadoPagoConfig.setAccessToken("APP_USR-8796351071075181-093011-f38467b970c3e2f073362932bea970a5-1190282227");
+        MercadoPagoConfig.setAccessToken("APP_USR-8178646482281064-100513-248819fc76ea7f7577f902e927eaefb7-2014458486");
 
         //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
@@ -295,7 +298,7 @@ public class OrderServiceImp implements OrderService {
                 //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
                 //TODO Agregar url de Ngrok (Se actualiza constantemente) la ruta debe incluir la direccion al controlador de las notificaciones 
-                .notificationUrl("https://92c3-152-202-220-211.ngrok-free.app/api/public/order/receive-notification")
+                .notificationUrl("https://f0d4-191-95-34-96.ngrok-free.app/api/public/order/receive-notification")
                 .build();
 
 
@@ -346,14 +349,10 @@ public class OrderServiceImp implements OrderService {
                 Account account = accountService.getAccount(order.getClientId().toString());
                 System.out.println(account.getEmail());
                 List<Order> ordersClient = getOrdersByIdClient(account.getId());
-                System.out.println("HOLAAA SI ESTOY LLEGANDO");
                 if (order.getPayment().getStatus().equalsIgnoreCase("APPROVED") && order.getPayment().getStatusDetail().equalsIgnoreCase("accredited")) {
-                    System.out.println("HOLA SIN ESTOY ENTRANDO");
                     for (OrderDetail orderDetail : order.getItems()){
                         eventService.reduceNumberLocations(orderDetail.getQuantity(), orderDetail.getLocationName(), orderDetail.getEventId().toString());
                     }
-                    //Envio nuevamente resuemn de compra
-
                     sendPurchaseSummary(account.getEmail(), order);
                     if(ordersClient.size()==1){
                         //TODO crear cupon con codigo FIRST1
