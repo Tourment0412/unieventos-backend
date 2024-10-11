@@ -1,8 +1,8 @@
 # Unieventos Backend
 
 ## Presentado por:
-Santiago Quintero Uribe
-Miguel Angel Mira Ortega
+Santiago Quintero Uribe, 
+Miguel Angel Mira Ortega, 
 Juan Manuel Isaza Vergara
 
 ## Descripción
