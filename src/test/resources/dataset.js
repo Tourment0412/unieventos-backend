@@ -352,8 +352,7 @@ db.orders.insertMany([
             transactionValue: 125000,
             status: "SUCCESS"
         },
-        isGift: false,
-        friendMail: null
+        isGift: false
     },
     {
         _id :  ObjectId("67060f8d0cae5fbda81e750c"),
@@ -364,7 +363,6 @@ db.orders.insertMany([
         date: new ISODate("2024-09-20T10:15:00Z"),
         total: 240000,
         clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
-        couponId: null,
         payment: {
             id: "PAY-67890",
             currency: "COP",
@@ -398,8 +396,7 @@ db.orders.insertMany([
             transactionValue: 120000,
             status: "PENDING"
         },
-        isGift: false,
-        friendMail: null
+        isGift: false
     },
     {
         _id :  ObjectId("67060f8d0cae5fbda81e7514"),
@@ -411,7 +408,6 @@ db.orders.insertMany([
         date: new ISODate("2024-10-10T15:30:00Z"),
         total: 260000,
         clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
-        couponId: null,
         payment: {
             id: "PAY-98765",
             currency: "USD",
@@ -435,7 +431,6 @@ db.orders.insertMany([
         date: new ISODate("2024-10-10T15:30:00Z"),
         total: 260000,
         clientId: ObjectId("6706047ac127c9d5e7e16cbf"),
-        couponId: null,
         payment: {
             id: "PAY-98765",
             currency: "USD",
