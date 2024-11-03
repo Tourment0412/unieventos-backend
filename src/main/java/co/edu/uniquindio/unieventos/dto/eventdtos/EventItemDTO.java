@@ -12,6 +12,7 @@ public record EventItemDTO(
         String name,
         LocalDateTime date,
         String address,
+        String city,
         String coverImage
 ) {
 }

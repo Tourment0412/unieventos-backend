@@ -7,6 +7,8 @@ import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
 import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
+import co.edu.uniquindio.unieventos.model.enums.City;
+import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 
 import java.util.List;
@@ -106,5 +108,8 @@ public interface EventService {
      */
     EventReportDTO createReport(String idEvent);
 
+    List<EventType> getEventTypes() throws Exception;
+
+    List<City> getCities() throws Exception;
 
 }

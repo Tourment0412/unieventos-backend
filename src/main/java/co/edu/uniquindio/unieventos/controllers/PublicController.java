@@ -4,6 +4,8 @@ import co.edu.uniquindio.unieventos.dto.eventdtos.EventFilterDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventInfoDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventItemDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
+import co.edu.uniquindio.unieventos.model.enums.City;
+import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
 import jakarta.validation.Valid;
@@ -51,6 +53,18 @@ public class PublicController {
     public ResponseEntity<MessageDTO<String>> receiveNotificationFromMercadoPago(@RequestBody Map<String, Object> request){
         orderService.receiveNotificationFromMercadoPago(request);
         return ResponseEntity.ok(new MessageDTO<>(false,"Notification received"));
+    }
+
+    @GetMapping("/event/get-types")
+    public ResponseEntity<MessageDTO<List<EventType>>>  getEventTypes() throws Exception{
+        List<EventType> eventTypes = eventService.getEventTypes();
+        return ResponseEntity.ok(new MessageDTO<>(false,eventTypes));
+    }
+
+    @GetMapping("/event/get-cities")
+    public ResponseEntity<MessageDTO<List<City>>> getCities() throws Exception{
+        List<City> cities = eventService.getCities();
+        return ResponseEntity.ok(new MessageDTO<>(false,cities));
     }
 
 }

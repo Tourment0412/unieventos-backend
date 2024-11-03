@@ -7,7 +7,9 @@ import co.edu.uniquindio.unieventos.exceptions.InsufficientCapacityException;
 import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
+import co.edu.uniquindio.unieventos.model.enums.City;
 import co.edu.uniquindio.unieventos.model.enums.EventStatus;
+import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
@@ -17,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -152,6 +151,7 @@ public class EventServicesImp implements EventService {
                 event.getName(),
                 event.getDate(),        // Asegúrate de que sea LocalDateTime si es necesario
                 event.getAddress(),
+                event.getCity(),
                 event.getCoverImage()
         )).collect(Collectors.toList());
     }
@@ -166,6 +166,7 @@ public class EventServicesImp implements EventService {
                         event.getName(),
                         event.getDate(),
                         event.getAddress(),
+                        event.getCity(),
                         event.getCoverImage()
                 ))
                 .collect(Collectors.toList());
@@ -184,6 +185,7 @@ public class EventServicesImp implements EventService {
                         event.getName(),
                         event.getDate(),
                         event.getAddress(),
+                        event.getCity(),
                         event.getCoverImage()
                 ))
                 .collect(Collectors.toList());
@@ -218,6 +220,7 @@ public class EventServicesImp implements EventService {
                 event.getName(),
                 event.getDate(),
                 event.getAddress(),
+                event.getCity(),
                 event.getCoverImage()
         )).collect(Collectors.toList());
 
@@ -275,6 +278,25 @@ public class EventServicesImp implements EventService {
                 totalSales,
                 totalTickets
         );
+    }
+
+    @Override
+    public List<EventType> getEventTypes() throws Exception {
+        List<EventType> tipos= Arrays.asList(EventType.values());
+        if (tipos.isEmpty()){
+            throw new Exception("No existen tipos de eventos");
+
+        }
+        return tipos;
+    }
+
+    @Override
+    public List<City> getCities() throws Exception {
+        List<City> cities= Arrays.asList(City.values());
+        if (cities.isEmpty()){
+            throw new Exception("No existen cidades");
+        }
+        return cities;
     }
 
 }

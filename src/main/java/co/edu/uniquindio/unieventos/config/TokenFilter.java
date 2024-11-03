@@ -42,9 +42,9 @@ public class TokenFilter extends OncePerRequestFilter {
             String requestURI = request.getRequestURI();
             //Se obtiene el token de la petición del encabezado del mensaje HTTP
             String token = getToken(request);
-            boolean error = true;
+            boolean error = false;
             try {
-                if (requestURI.startsWith("/api/account")) {
+                /*if (requestURI.startsWith("/api/account")) {
                     error = validarToken(token, Role.CLIENT) && validarToken(token, Role.ADMIN);
                 } else if (requestURI.startsWith("/api/admin")) {
                     error = validarToken(token, Role.ADMIN);
@@ -52,7 +52,7 @@ public class TokenFilter extends OncePerRequestFilter {
                     error = validarToken(token, Role.CLIENT);
                 } else {
                     error = false;
-                }
+                }/*/
                 //Agregar la validación para las peticiones que sean de los administradores
 
                 if (error) {
