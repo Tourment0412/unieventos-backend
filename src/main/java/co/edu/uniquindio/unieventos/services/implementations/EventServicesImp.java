@@ -163,10 +163,10 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> listEventsClient(int page) {
+    public ListEvents listEventsClient(int page) {
         //listar excluyendo los inactivos y los vencidos
-        List<Event> events = eventRepo.findAllEventsClient(PageRequest.of(page, 9)).getContent();
-        return events.stream()
+        Page<Event> events = eventRepo.findAllEventsClient(PageRequest.of(page, 9));
+        List<EventItemDTO> list=events.stream()
                 .map(event -> new EventItemDTO(
                         event.getId(),
                         event.getName(),
@@ -176,7 +176,9 @@ public class EventServicesImp implements EventService {
                         event.getCoverImage()
                 ))
                 .collect(Collectors.toList());
-
+        return new ListEvents(
+                events.getTotalPages(),list
+        );
     }
 
     @Override
