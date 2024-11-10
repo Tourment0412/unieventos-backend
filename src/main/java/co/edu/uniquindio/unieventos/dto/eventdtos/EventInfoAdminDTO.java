@@ -16,6 +16,7 @@ public record EventInfoAdminDTO(
         String id,
         String name,
         String address,
+        String city,
         String coverImage,
         String localitiesImage,
         LocalDateTime date,

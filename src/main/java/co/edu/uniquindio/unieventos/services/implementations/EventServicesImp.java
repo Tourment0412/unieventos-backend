@@ -112,6 +112,7 @@ public class EventServicesImp implements EventService {
                 event.getId(),
                 event.getName(),
                 event.getAddress(),
+                event.getCity(),
                 event.getCoverImage(),
                 event.getLocalitiesImage(),
                 event.getDate(),
@@ -134,6 +135,7 @@ public class EventServicesImp implements EventService {
                 event.getId(),
                 event.getName(),
                 event.getAddress(),
+                event.getCity(),
                 event.getCoverImage(),
                 event.getLocalitiesImage(),
                 event.getDate(),
@@ -301,6 +303,15 @@ public class EventServicesImp implements EventService {
             throw new Exception("No existen cidades");
         }
         return cities;
+    }
+
+    @Override
+    public List<EventStatus> getStatuses() throws Exception {
+        List<EventStatus> statuses= Arrays.asList(EventStatus.values());
+        if (statuses.isEmpty()){
+            throw new Exception("No existen estados");
+        }
+        return statuses;
     }
 
 }

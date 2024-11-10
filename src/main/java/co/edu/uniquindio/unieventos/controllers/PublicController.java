@@ -5,6 +5,7 @@ import co.edu.uniquindio.unieventos.dto.eventdtos.EventInfoDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventItemDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.model.enums.City;
+import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
@@ -65,6 +66,12 @@ public class PublicController {
     public ResponseEntity<MessageDTO<List<City>>> getCities() throws Exception{
         List<City> cities = eventService.getCities();
         return ResponseEntity.ok(new MessageDTO<>(false,cities));
+    }
+
+    @GetMapping("/event/get-statuses")
+    public ResponseEntity<MessageDTO<List<EventStatus>>> getStatuses() throws Exception{
+        List<EventStatus> statuses= eventService.getStatuses();
+        return ResponseEntity.ok(new MessageDTO<>(false,statuses));
     }
 
 }

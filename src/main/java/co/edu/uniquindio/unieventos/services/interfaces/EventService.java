@@ -8,6 +8,7 @@ import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Event;
 import co.edu.uniquindio.unieventos.model.enums.City;
+import co.edu.uniquindio.unieventos.model.enums.EventStatus;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
 import co.edu.uniquindio.unieventos.model.vo.Location;
 
@@ -111,5 +112,7 @@ public interface EventService {
     List<EventType> getEventTypes() throws Exception;
 
     List<City> getCities() throws Exception;
+
+    List<EventStatus> getStatuses() throws Exception;
 
 }
