@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record CarItemViewDTO(
         String eventName,
-        String location,
+        String locationName,
         EventType eventType,
         float price,
         int quantity,

@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.controllers;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoClientDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemClientDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemDTO;
+import co.edu.uniquindio.unieventos.dto.eventdtos.EventInfoAdminDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.AddShoppingCarDetailDTO;
@@ -12,6 +13,7 @@ import co.edu.uniquindio.unieventos.dto.shoppingcardtos.EditCarDetailDTO;
 import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
+import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
 import co.edu.uniquindio.unieventos.services.interfaces.ShoppingCarService;
 import com.mercadopago.resources.preference.Preference;
@@ -39,7 +41,7 @@ public class ClientController {
     private final ShoppingCarService shoppingCarService;
     private final OrderService orderService;
     private final CouponService couponService;
-
+    private final EventService eventService;
 
     //TODO Need to modify this method to make the implementation of verify the shoppingcar existence
     @PutMapping("/shoppingcar/add-item")
@@ -73,7 +75,9 @@ public class ClientController {
     //I'm gonna do it as it's for the list of the items
     @GetMapping("/shoppingcar/get-items/{idUser}")
     public ResponseEntity<MessageDTO<List<CarItemViewDTO>>> listShoppingCarDetails(@PathVariable String idUser) throws Exception{
+        System.out.println("Obteniendo items");
         List<CarItemViewDTO> carItems = shoppingCarService.listShoppingCarDetails(idUser);
+        System.out.println("Los items son: "+carItems);
         return ResponseEntity.ok(new MessageDTO<>(false, carItems));
     }
 
@@ -132,7 +136,11 @@ public class ClientController {
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
 
-
+    @GetMapping("/event/get/{id}")
+    public ResponseEntity<MessageDTO<EventInfoAdminDTO>> getEvent(@PathVariable String id) throws Exception {
+        EventInfoAdminDTO event = eventService.getInfoEventAdmin(id);
+        return ResponseEntity.ok(new MessageDTO<>(false, event));
+    }
 
 
 
