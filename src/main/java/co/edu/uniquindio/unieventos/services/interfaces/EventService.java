@@ -67,7 +67,7 @@ public interface EventService {
      * @param page The number of the page
      * @return The active events specified
      */
-    List<EventItemDTO> listEventsClient(int page);
+    ListEvents listEventsClient(int page);
 
     /**
      *

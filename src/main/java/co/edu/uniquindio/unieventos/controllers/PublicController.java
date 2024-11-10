@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.controllers;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventFilterDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventInfoDTO;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventItemDTO;
+import co.edu.uniquindio.unieventos.dto.eventdtos.ListEvents;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.model.enums.City;
 import co.edu.uniquindio.unieventos.model.enums.EventType;
@@ -25,8 +26,8 @@ public class PublicController {
     private  final OrderService orderService;
 
     @GetMapping("/event/get-all/{page}")
-    public ResponseEntity<MessageDTO<List<EventItemDTO>>> listEventsClient(@PathVariable int page){
-        List<EventItemDTO> events = eventService.listEventsClient(page);
+    public ResponseEntity<MessageDTO<ListEvents>> listEventsClient(@PathVariable int page){
+        ListEvents events = eventService.listEventsClient(page);
         return ResponseEntity.ok(new MessageDTO<>(false,events));
     }
 
