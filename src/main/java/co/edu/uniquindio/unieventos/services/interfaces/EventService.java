@@ -60,7 +60,7 @@ public interface EventService {
      * @param page The number of the page
      * @return The events specified
      */
-    List<EventItemDTO> listEventsAdmin(int page);
+    ListEvents listEventsAdmin(int page);
 
     /**
      * Gests all the active events specified by the pagination information

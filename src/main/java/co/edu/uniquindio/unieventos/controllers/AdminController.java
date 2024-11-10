@@ -74,8 +74,8 @@ public class AdminController {
 
 
     @GetMapping("/event/get-all/{page}")
-    public ResponseEntity<MessageDTO<List<EventItemDTO>>> listEventsAdmin(@PathVariable int page) {
-        List<EventItemDTO> events = eventService.listEventsAdmin(page);
+    public ResponseEntity<MessageDTO<ListEvents>> listEventsAdmin(@PathVariable int page) {
+        ListEvents events = eventService.listEventsAdmin(page);
         return ResponseEntity.ok(new MessageDTO<>(false, events));
     }
 

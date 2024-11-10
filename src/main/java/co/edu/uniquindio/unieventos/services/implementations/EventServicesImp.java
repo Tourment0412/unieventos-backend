@@ -14,7 +14,9 @@ import co.edu.uniquindio.unieventos.model.vo.Location;
 import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,11 +144,11 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> listEventsAdmin(int page) {
+    public ListEvents listEventsAdmin(int page) {
         //For the admin, all events are going to be shown.
-        List<Event> events = eventRepo.findAll(PageRequest.of(page, 9)).getContent();
+        Page<Event> events = eventRepo.findAll(PageRequest.of(page, 9));
 
-        return events.stream().map(event -> new EventItemDTO(
+        List<EventItemDTO> list = events.stream().map(event -> new EventItemDTO(
                 event.getId(),
                 event.getName(),
                 event.getDate(),        // Asegúrate de que sea LocalDateTime si es necesario
@@ -154,6 +156,8 @@ public class EventServicesImp implements EventService {
                 event.getCity(),
                 event.getCoverImage()
         )).collect(Collectors.toList());
+
+        return new ListEvents( events.getTotalPages(), list );
     }
 
     @Override
