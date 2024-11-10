@@ -95,26 +95,33 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
     @Override
     public List<CarItemViewDTO> listShoppingCarDetails(String userId) throws EmptyShoppingCarException {
         ShoppingCar shoppingCar = getShoppingCar(userId);
-        //TODO Ask if this should be an aggregation
         List<CarDetail> shoppingCarDetails = shoppingCar.getItems();
-        return shoppingCarDetails.stream()
-                .map(itemView -> {
-                    try {
-                        Event event = eventService.getEvent(itemView.getIdEvent().toString());
-                        Location location = event.findLocationByName(itemView.getLocationName());
-                        return new CarItemViewDTO(
-                                event.getName(),
-                                itemView.getLocationName(),
-                                event.getType(),
-                                location.getPrice(),
-                                itemView.getAmount(),
-                                location.getPrice() * itemView.getAmount()
-                        );
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }).collect(Collectors.toList());
 
+        return shoppingCarDetails.stream()
+                .map(this::convertToCarItemViewDTO)
+                .flatMap(Optional::stream) // Descartar valores nulos si la conversión falló
+                .collect(Collectors.toList());
+    }
+
+    private Optional<CarItemViewDTO> convertToCarItemViewDTO(CarDetail itemView) {
+        try {
+            Event event = eventService.getEvent(itemView.getIdEvent().toString());
+            Location location = event.findLocationByName(itemView.getLocationName());
+
+            return Optional.of(new CarItemViewDTO(
+                    event.getName(),
+                    itemView.getLocationName(),
+                    event.getType(),
+                    location.getPrice(),
+                    itemView.getAmount(),
+                    location.getPrice() * itemView.getAmount()
+            ));
+
+        } catch (Exception e) {
+            // Registro del error para informar o para debugging
+            System.err.println("Error: " + e.getMessage());
+            return Optional.empty(); // Retornar vacío si hay un error en la conversión
+        }
     }
 
     @Override
