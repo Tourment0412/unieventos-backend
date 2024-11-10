@@ -99,4 +99,6 @@ public interface AccountService {
      * @throws Exception
      */
     Account getAccount(String id) throws ResourceNotFoundException;
+
+    TokenDTO refresh(Map<String,Object> claims);
 }

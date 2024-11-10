@@ -137,6 +137,11 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
+    public TokenDTO refresh(Map<String, Object> claims) {
+        return new TokenDTO(jwtUtils.generarToken(claims.get("email").toString(), claims));
+    }
+
+    @Override
     public AccountInfoDTO getInfoAccount(String id) throws ResourceNotFoundException {
         Account account = getAccount(id);
         return new AccountInfoDTO(
@@ -220,7 +225,8 @@ public class AccountServiceImp implements AccountService {
                 "role", account.getRole(),
                 "name", account.getUser().getName(),
                 "status", account.getStatus(),
-                "id", account.getId()
+                "id", account.getId(),
+                "email", account.getEmail()
         );
 
     }

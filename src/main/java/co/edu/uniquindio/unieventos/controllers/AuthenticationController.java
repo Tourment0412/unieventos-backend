@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -26,6 +28,12 @@ public class AuthenticationController {
                                                                       loginDTO) throws Exception{
         TokenDTO token = accountService.login(loginDTO);
         return ResponseEntity.ok(new MessageDTO<>(false, token));
+    }
+
+    public ResponseEntity<MessageDTO<TokenDTO>> refresh (Map<String,Object> claims) throws Exception{
+        TokenDTO token = accountService.refresh(claims);
+        return ResponseEntity.ok(new MessageDTO<>(true, token));
+
     }
 
     @PostMapping("/create-account")
