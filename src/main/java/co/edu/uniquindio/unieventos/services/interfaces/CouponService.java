@@ -4,6 +4,7 @@ import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
+import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 
 import java.util.List;
@@ -89,4 +90,6 @@ public interface CouponService {
     CouponInfoClientDTO getCouponClientCode(String code) throws ResourceNotFoundException;
 
     List<CouponType> getCouponTypes() throws Exception;
+
+    List<CouponStatus> getCouponStatuses() throws Exception;
 }

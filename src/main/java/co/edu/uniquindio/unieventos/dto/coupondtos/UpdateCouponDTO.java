@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unieventos.dto.coupondtos;
 
+import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
@@ -23,7 +24,9 @@ public record UpdateCouponDTO(
 
         @NotBlank(message = "Coupon name cannot be empty")
         @Length(max = 50, message = "Coupon name must not exceed 50 characters")
-        String name
+        String name,
+
+        CouponStatus status
 
 ) {
 }

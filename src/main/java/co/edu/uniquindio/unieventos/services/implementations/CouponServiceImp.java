@@ -80,6 +80,7 @@ public class CouponServiceImp implements CouponService {
         couponToUpdate.setExpirationDate(coupon.expirationDate());
         couponToUpdate.setType(coupon.type());
         couponToUpdate.setDiscount(coupon.discount());
+        couponToUpdate.setStatus(coupon.status());
 
         return couponRepo.save(couponToUpdate).getId();
     }
@@ -159,6 +160,15 @@ public class CouponServiceImp implements CouponService {
             throw new Exception("No coupon types available");
         }
         return couponTypes;
+    }
+
+    @Override
+    public List<CouponStatus> getCouponStatuses() throws Exception {
+        List<CouponStatus> couponStatuses = Arrays.asList(CouponStatus.values());
+        if (couponStatuses.isEmpty()) {
+            throw new Exception("No coupon statuses available");
+        }
+        return couponStatuses;
     }
 
     @Override
