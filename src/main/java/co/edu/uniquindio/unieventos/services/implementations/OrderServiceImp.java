@@ -58,16 +58,16 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, OperationNotAllowedException, Exception {
-        System.out.println("ID del cliente "+createOrderDTO.clientId() );
+
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
-        System.out.println("Items: "+shoppingCar.getItems());
+
         List<OrderDetail> items = getOrderDetails(shoppingCar);
-        System.out.println("items "+items);
+
         Order order = new Order();
         order.setItems(items);
         order.setDate(LocalDateTime.now());
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
-
+        System.out.println("Codigo cupon del DTO de orden: "+createOrderDTO.couponCode());
         if (createOrderDTO.couponCode() != null && !createOrderDTO.couponCode().isEmpty()) {
             validateCouponUsage(createOrderDTO, order);
         } else {
@@ -84,29 +84,32 @@ public class OrderServiceImp implements OrderService {
     }
 
 
-    private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order) throws ResourceNotFoundException, OperationNotAllowedException {
-        List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
+    private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order)
+            throws ResourceNotFoundException, OperationNotAllowedException {
+
         Coupon couponOrder = couponService.getCouponByCode(createOrderDTO.couponCode());
-        if(couponOrder == null) {
-            for (Order orderClient : ordersClient) {
-                if(orderClient.getCouponId()!=null){
-                    Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
-                    if (couponClient.getCode().equals(createOrderDTO.couponCode())) {
-                        throw new OperationNotAllowedException("You can't use a coupon you previously used");
-                    }
-                }
-            }
-
-            Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
-            if (coupon.getType().equals(CouponType.UNIQUE)) {
-                couponService.deleteCoupon(coupon.getId());
-            }
-
-            order.setTotal(calculateTotal(order.getItems(), coupon.getId(), createOrderDTO.clientId()));
-            order.setCouponId(new ObjectId(coupon.getId()));
+        if (couponOrder == null) {
+            throw new ResourceNotFoundException("Coupon not found with code: " + createOrderDTO.couponCode());
         }
 
+        List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
+        for (Order orderClient : ordersClient) {
+            if (orderClient.getCouponId() != null) {
+                Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
+                if (couponClient != null && couponClient.getCode().equals(createOrderDTO.couponCode())) {
+                    throw new OperationNotAllowedException("You can't use a coupon you previously used");
+                }
+            }
+        }
+
+        if (couponOrder.getType().equals(CouponType.UNIQUE)) {
+            couponService.deleteCoupon(couponOrder.getId());
+        }
+        
+        order.setTotal(calculateTotal(order.getItems(), couponOrder.getId(), createOrderDTO.clientId()));
+        order.setCouponId(new ObjectId(couponOrder.getId()));
     }
+
 
     private @NotNull List<OrderDetail> getOrderDetails(ShoppingCar shoppingCar) {
         List<OrderDetail> items = new ArrayList<>();
@@ -245,6 +248,8 @@ public class OrderServiceImp implements OrderService {
     public PaymentResponseDTO makePayment(String idOrden) throws ResourceNotFoundException, OperationNotAllowedException, Exception {
         // Obtener la orden guardada en la base de datos y los ítems de la orden
         Order saveOrder = getOrder(idOrden);
+        System.out.println("Id de la orden: "+saveOrder.getId());
+        System.out.println("Id del cupon: "+saveOrder.getCouponId());
         List<PreferenceItemRequest> itemsGateway = new ArrayList<>();
 
         // Comprobar si hay un cupón de descuento en la orden
@@ -287,9 +292,9 @@ public class OrderServiceImp implements OrderService {
         //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/payment-success")
-                .failure("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/payment-failure")
-                .pending("https://1d66-2803-1800-421c-e739-3db2-42-a406-e5da.ngrok-free.app/payment-pending")
+                .success("https://smooth-unicorn-trusting.ngrok-free.app/?status=success")
+                .failure("https://smooth-unicorn-trusting.ngrok-free.app/?status=failure")
+                .pending("https://smooth-unicorn-trusting.ngrok-free.app/?status=pending")
                 .build();
 
 
@@ -300,7 +305,7 @@ public class OrderServiceImp implements OrderService {
                 //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
                 //TODO Agregar url de Ngrok (Se actualiza constantemente) la ruta debe incluir la direccion al controlador de las notificaciones 
-                .notificationUrl("https://f0d4-191-95-34-96.ngrok-free.app/api/public/order/receive-notification")
+                .notificationUrl("https://smooth-unicorn-trusting.ngrok-free.app/api/public/order/receive-notification")
                 .build();
 
 
@@ -349,7 +354,7 @@ public class OrderServiceImp implements OrderService {
                 order.setPayment(orderPayment);
                 orderRepo.save(order);
                 Account account = accountService.getAccount(order.getClientId().toString());
-                System.out.println(account.getEmail());
+
                 List<Order> ordersClient = getOrdersByIdClient(account.getId());
                 if (order.getPayment().getStatus().equalsIgnoreCase("APPROVED") && order.getPayment().getStatusDetail().equalsIgnoreCase("accredited")) {
                     for (OrderDetail orderDetail : order.getItems()){

@@ -12,6 +12,7 @@ import co.edu.uniquindio.unieventos.dto.shoppingcardtos.DeleteCarDetailDTO;
 import co.edu.uniquindio.unieventos.dto.shoppingcardtos.EditCarDetailDTO;
 import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
+import co.edu.uniquindio.unieventos.model.documents.Order;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
@@ -148,6 +149,12 @@ public class ClientController {
     public ResponseEntity<MessageDTO<EventInfoAdminDTO>> getEvent(@PathVariable String id) throws Exception {
         EventInfoAdminDTO event = eventService.getInfoEventAdmin(id);
         return ResponseEntity.ok(new MessageDTO<>(false, event));
+    }
+
+    @GetMapping("/order/status/{orderId}")
+    public ResponseEntity<MessageDTO<String>> obtenerEstadoOrden(@PathVariable String orderId) throws ResourceNotFoundException {
+        Order order = orderService.getOrder(orderId);
+        return ResponseEntity.ok(new MessageDTO<>(false, order.getPayment().getStatus()));
     }
 
 
