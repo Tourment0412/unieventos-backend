@@ -71,7 +71,7 @@ public interface CouponService {
      * @param page The number of the page
      * @return The available coupons specified
      */
-    List<CouponItemClientDTO> getAllCouponsClient(int page);
+    ListCouponsClient getAllCouponsClient(int page);
 
     /**
      * Gets a coupon by its code

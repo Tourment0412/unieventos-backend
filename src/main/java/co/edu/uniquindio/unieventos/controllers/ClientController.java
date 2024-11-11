@@ -3,6 +3,7 @@ package co.edu.uniquindio.unieventos.controllers;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoClientDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemClientDTO;
 import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemDTO;
+import co.edu.uniquindio.unieventos.dto.coupondtos.ListCouponsClient;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventInfoAdminDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
@@ -121,8 +122,8 @@ public class ClientController {
 
     //TODO Ask if this could be the tittle for the extra functionality.
     @GetMapping("/coupon/get-all/{page}")
-    public ResponseEntity<MessageDTO<List<CouponItemClientDTO>>> couponsAvailable(@PathVariable int page) throws Exception {
-        List<CouponItemClientDTO> coupons= couponService.getAllCouponsClient(page);
+    public ResponseEntity<MessageDTO<ListCouponsClient>> couponsAvailable(@PathVariable int page) throws Exception {
+        ListCouponsClient coupons= couponService.getAllCouponsClient(page);
         return ResponseEntity.ok(new MessageDTO<>(false, coupons));
     }
 
