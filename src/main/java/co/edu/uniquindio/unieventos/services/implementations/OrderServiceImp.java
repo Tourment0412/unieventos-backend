@@ -57,31 +57,41 @@ public class OrderServiceImp implements OrderService {
     }
 
     @Override
-    public String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, OperationNotAllowedException, Exception {
+    public String createOrder(CreateOrderDTO createOrderDTO)
+            throws EmptyShoppingCarException, ResourceNotFoundException, OperationNotAllowedException, Exception {
 
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
-
         List<OrderDetail> items = getOrderDetails(shoppingCar);
 
         Order order = new Order();
         order.setItems(items);
         order.setDate(LocalDateTime.now());
         order.setClientId(new ObjectId(createOrderDTO.clientId()));
-        System.out.println("Codigo cupon del DTO de orden: "+createOrderDTO.couponCode());
-        if (createOrderDTO.couponCode() != null && !createOrderDTO.couponCode().isEmpty()) {
-            validateCouponUsage(createOrderDTO, order);
-        } else {
-            order.setTotal(calculateTotal(items));
-        }
-
         order.setGift(false);
 
+        if (createOrderDTO.couponCode() != null && !createOrderDTO.couponCode().isEmpty()) {
+            validateCouponUsage(createOrderDTO, order); // Valida el uso del cupón
+            Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
+            float totalWithDiscount = calculateTotal(items, coupon.getId(), createOrderDTO.clientId());
+            order.setTotal(totalWithDiscount);
+
+            if (coupon.getType() == CouponType.UNIQUE) {
+                couponService.deleteCoupon(coupon.getId());
+            }
+        } else {
+            order.setTotal(calculateTotal(items, null, createOrderDTO.clientId()));
+        }
+        
         Account account = accountService.getAccount(createOrderDTO.clientId());
         Order createOrder = orderRepo.save(order);
-        //sendPurchaseSummary(account.getEmail(), order);
+
+        sendPurchaseSummary(account.getEmail(), order);
+
         shoppingCarService.deleteShoppingCar(createOrderDTO.clientId());
+
         return createOrder.getId();
     }
+
 
 
     private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order)
@@ -102,10 +112,6 @@ public class OrderServiceImp implements OrderService {
             }
         }
 
-        if (couponOrder.getType().equals(CouponType.UNIQUE)) {
-            couponService.deleteCoupon(couponOrder.getId());
-        }
-        
         order.setTotal(calculateTotal(order.getItems(), couponOrder.getId(), createOrderDTO.clientId()));
         order.setCouponId(new ObjectId(couponOrder.getId()));
     }
@@ -149,26 +155,32 @@ public class OrderServiceImp implements OrderService {
         return total;
     }
 
-    private float calculateTotal(List<OrderDetail> items, String couponId, String idClient) throws ResourceNotFoundException, OperationNotAllowedException {
-        float total = 0;
+    private float calculateTotal(List<OrderDetail> items, String couponId, String idClient)
+            throws ResourceNotFoundException, OperationNotAllowedException {
+
         Coupon coupon = couponService.getCouponById(couponId);
-        if (coupon.getStatus().equals(CouponStatus.NOT_AVAILABLE)) {
+        if (coupon == null) {
+            throw new ResourceNotFoundException("Coupon not found with id: " + couponId);
+        }
+        if (coupon.getStatus() == CouponStatus.NOT_AVAILABLE) {
             throw new OperationNotAllowedException("Coupon is not available");
         }
+
+        float total = 0;
         for (OrderDetail orderDetail : items) {
             total += orderDetail.getPrice();
         }
-        if (coupon.getType().equals(CouponType.UNIQUE)) {
-            couponService.deleteCoupon(couponId);
-        } else if (coupon.getType().equals(CouponType.MULTIPLE)) {
+
+        if (coupon.getType() == CouponType.MULTIPLE) {
             List<Order> ordersClient = getOrdersByIdClient(idClient);
             for (Order order : ordersClient) {
-                if (coupon.getId().equals(order.getCouponId().toString())) {
+                if (couponId.equals(order.getCouponId().toString())) {
                     throw new OperationNotAllowedException("Coupon is already in use by this client");
                 }
             }
         }
-        return total - (total * coupon.getDiscount());
+
+        return total * (1 - coupon.getDiscount());
     }
 
     private List<Order> getOrdersByIdClient(String idClient) {
@@ -248,8 +260,6 @@ public class OrderServiceImp implements OrderService {
     public PaymentResponseDTO makePayment(String idOrden) throws ResourceNotFoundException, OperationNotAllowedException, Exception {
         // Obtener la orden guardada en la base de datos y los ítems de la orden
         Order saveOrder = getOrder(idOrden);
-        System.out.println("Id de la orden: "+saveOrder.getId());
-        System.out.println("Id del cupon: "+saveOrder.getCouponId());
         List<PreferenceItemRequest> itemsGateway = new ArrayList<>();
 
         // Comprobar si hay un cupón de descuento en la orden
