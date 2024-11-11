@@ -33,8 +33,8 @@ public class PublicController {
     }
 
     @PostMapping("/event/filter-events")
-    public ResponseEntity<MessageDTO<List<EventItemDTO>>> filterEventsClient(@Valid @RequestBody EventFilterDTO eventFilterDTO){
-        List<EventItemDTO> events = eventService.filterEventsClient(eventFilterDTO);
+    public ResponseEntity<MessageDTO<ListEvents>> filterEventsClient(@Valid @RequestBody EventFilterDTO eventFilterDTO){
+        ListEvents events = eventService.filterEventsClient(eventFilterDTO);
         return ResponseEntity.ok(new MessageDTO<>(false,events));
     }
 

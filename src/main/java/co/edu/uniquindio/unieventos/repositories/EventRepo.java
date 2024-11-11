@@ -54,7 +54,7 @@ public interface EventRepo extends MongoRepository<Event, String> {
     @Aggregation({
             "{ $match: { $and: [ ?0, { 'date': { $gte: new Date() } }, { 'status': 'ACTIVE' } ] } }"
     })
-    Slice<Event> findEventsByFiltersClient(Map<String, Object> filter,Pageable pageable);
+    List<Event> findEventsByFiltersClient(Map<String, Object> filter);
 
     @Query("{ '_id': ?0, 'status': 'ACTIVE' }")
     Optional<Event> findEventByIdClient(String id);

@@ -15,6 +15,7 @@ import co.edu.uniquindio.unieventos.repositories.EventRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -182,22 +183,32 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO) {
+    public ListEvents filterEventsClient(EventFilterDTO eventFilterDTO) {
         Map<String, Object> params = createFilterMap(eventFilterDTO);
+        List<Event> eventsFilteredList= eventRepo.findEventsByFiltersClient(params);
 
+        int pageSize = 9;
+        int pageNumber = eventFilterDTO.page();
+        int startItem = pageNumber * pageSize;
+        int endItem = Math.min(startItem + pageSize, eventsFilteredList.size());
 
-        List<Event> eventsFiltered= eventRepo.findEventsByFiltersClient(params,PageRequest.of(0, 9)).getContent();
-        return eventsFiltered.stream()
-                .map(event -> new EventItemDTO(
-                        event.getId(),
-                        event.getName(),
-                        event.getDate(),
-                        event.getAddress(),
-                        event.getCity(),
-                        event.getCoverImage()
-                ))
-                .collect(Collectors.toList());
+        List<Event> paginatedList = eventsFilteredList.subList(startItem, endItem);
 
+        int totalPages=(int) Math.ceil((double) eventsFilteredList.size() / pageSize);
+
+        return new ListEvents(
+                totalPages,
+                paginatedList.stream()
+                        .map(event -> new EventItemDTO(
+                                event.getId(),
+                                event.getName(),
+                                event.getDate(),
+                                event.getAddress(),
+                                event.getCity(),
+                                event.getCoverImage()
+                        ))
+                        .collect(Collectors.toList())
+        );
     }
 
     private Map<String, Object> createFilterMap(EventFilterDTO eventFilterDTO) {
