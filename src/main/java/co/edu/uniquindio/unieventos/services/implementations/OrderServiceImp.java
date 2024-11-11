@@ -70,8 +70,15 @@ public class OrderServiceImp implements OrderService {
         order.setGift(false);
 
         if (createOrderDTO.couponCode() != null && !createOrderDTO.couponCode().isEmpty()) {
-            validateCouponUsage(createOrderDTO, order); // Valida el uso del cupón
+            System.out.println("Codigo de coupon: "+createOrderDTO.couponCode());
             Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
+
+            if (coupon == null) {
+                throw new ResourceNotFoundException("El cupon proporcionado no existe.");
+            }
+
+            validateCouponUsage(createOrderDTO, order);
+
             float totalWithDiscount = calculateTotal(items, coupon.getId(), createOrderDTO.clientId());
             order.setTotal(totalWithDiscount);
 
@@ -91,6 +98,7 @@ public class OrderServiceImp implements OrderService {
 
         return createOrder.getId();
     }
+
 
     @Override
     public boolean hasClientUsedCoupon(String clientId, String couponId) {
@@ -160,31 +168,42 @@ public class OrderServiceImp implements OrderService {
 
     private float calculateTotal(List<OrderDetail> items, String couponId, String idClient)
             throws ResourceNotFoundException, OperationNotAllowedException {
+        
+        if (couponId != null && !couponId.isEmpty()) {
+            Coupon coupon = couponService.getCouponById(couponId);
 
-        Coupon coupon = couponService.getCouponById(couponId);
-        if (coupon == null) {
-            throw new ResourceNotFoundException("Coupon not found with id: " + couponId);
-        }
-        if (coupon.getStatus() == CouponStatus.NOT_AVAILABLE) {
-            throw new OperationNotAllowedException("Coupon is not available");
-        }
+            if (coupon == null) {
+                throw new ResourceNotFoundException("Coupon not found with id: " + couponId);
+            }
 
-        float total = 0;
-        for (OrderDetail orderDetail : items) {
-            total += orderDetail.getPrice();
-        }
+            if (coupon.getStatus() == CouponStatus.NOT_AVAILABLE) {
+                throw new OperationNotAllowedException("Coupon is not available");
+            }
 
-        if (coupon.getType() == CouponType.MULTIPLE) {
-            List<Order> ordersClient = getOrdersByIdClient(idClient);
-            for (Order order : ordersClient) {
-                if (couponId.equals(order.getCouponId().toString())) {
-                    throw new OperationNotAllowedException("Coupon is already in use by this client");
+            float total = 0;
+            for (OrderDetail orderDetail : items) {
+                total += orderDetail.getPrice();
+            }
+
+            if (coupon.getType() == CouponType.MULTIPLE) {
+                List<Order> ordersClient = getOrdersByIdClient(idClient);
+                for (Order order : ordersClient) {
+                    if (couponId.equals(order.getCouponId().toString())) {
+                        throw new OperationNotAllowedException("Coupon is already in use by this client");
+                    }
                 }
             }
-        }
 
-        return total * (1 - coupon.getDiscount());
+            return total * (1 - coupon.getDiscount());
+        } else {
+            float total = 0;
+            for (OrderDetail orderDetail : items) {
+                total += orderDetail.getPrice();
+            }
+            return total;
+        }
     }
+
 
     private List<Order> getOrdersByIdClient(String idClient) {
         return orderRepo.findOrdersByClientId(new ObjectId(idClient));
