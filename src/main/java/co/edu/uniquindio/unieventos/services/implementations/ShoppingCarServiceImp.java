@@ -33,29 +33,22 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
 
     @Override
     public ShoppingCar createShoppingCar(String idUser) {
-
         Optional<ShoppingCar> shoppingCarReceived = shoppingCarRepo.findByUserId(new ObjectId(idUser));
-        if(shoppingCarReceived.isEmpty()) {
+
+        if (shoppingCarReceived.isEmpty()) {
+
             ShoppingCar shoppingCar = new ShoppingCar();
             shoppingCar.setUserId(new ObjectId(idUser));
             shoppingCar.setDate(LocalDateTime.now());
             shoppingCar.setItems(new ArrayList<>());
-            return shoppingCarRepo.save(shoppingCar);
 
-        }else{
+            return shoppingCarRepo.save(shoppingCar);
+        } else {
             return shoppingCarReceived.get();
         }
-
-        /*
-        if (existsShoppingCar(idUser)) {
-            throw new DuplicateResourceException("Shopping car already exists for this account");
-        }
-        ShoppingCar shoppingCar = new ShoppingCar();
-        shoppingCar.setUserId(new ObjectId(idUser));
-        shoppingCar.setDate(LocalDateTime.now());
-        shoppingCar.setItems(new ArrayList<>());
-        return shoppingCarRepo.save(shoppingCar).getId();**/
     }
+
+
     @Override
     public void deleteShoppingCar(String idUser) throws EmptyShoppingCarException{
         ShoppingCar shoppingCar= getShoppingCar(idUser);
@@ -94,7 +87,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
 
     @Override
     public List<CarItemViewDTO> listShoppingCarDetails(String userId) throws EmptyShoppingCarException {
-        ShoppingCar shoppingCar = getShoppingCar(userId);
+        ShoppingCar shoppingCar = createShoppingCar(userId);
         List<CarDetail> shoppingCarDetails = shoppingCar.getItems();
 
         return shoppingCarDetails.stream()

@@ -58,9 +58,11 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public String createOrder(CreateOrderDTO createOrderDTO) throws EmptyShoppingCarException, ResourceNotFoundException, OperationNotAllowedException, Exception {
+        System.out.println("ID del cliente "+createOrderDTO.clientId() );
         ShoppingCar shoppingCar = shoppingCarService.getShoppingCar(createOrderDTO.clientId());
+        System.out.println("Items: "+shoppingCar.getItems());
         List<OrderDetail> items = getOrderDetails(shoppingCar);
-
+        System.out.println("items "+items);
         Order order = new Order();
         order.setItems(items);
         order.setDate(LocalDateTime.now());
