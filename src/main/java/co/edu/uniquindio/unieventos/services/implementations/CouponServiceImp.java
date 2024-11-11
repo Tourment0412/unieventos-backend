@@ -128,6 +128,23 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
+    public CouponInfoClientDTO getCouponClientCode(String id) throws ResourceNotFoundException {
+        Optional<Coupon> couponOpt = couponRepo.findCouponClient(id);
+        if (couponOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Coupon with this code does not exist or is not available");
+        }
+        Coupon coupon = couponOpt.get();
+        return new CouponInfoClientDTO(
+                coupon.getId(),
+                coupon.getName(),
+                coupon.getType(),
+                coupon.getCode(),
+                coupon.getExpirationDate(),
+                coupon.getDiscount()
+        );
+    }
+
+    @Override
     public List<CouponItemClientDTO> getAllCouponsClient(int page){
         List<Coupon> coupons = couponRepo.findAllCouponsClient(PageRequest.of(page, 9)).getContent();
         return coupons.stream().map(e -> new CouponItemClientDTO(

@@ -74,6 +74,14 @@ public interface CouponRepo extends MongoRepository<Coupon, String> {
     Optional<Coupon> findCouponClient(String id);
 
     /**
+     * Finds a available coupon by its code
+     * @param code code of coupon
+     * @return Available coupon with the specified id
+     */
+    @Query("{ '_code': ?0, 'status': 'AVAILABLE', 'expirationDate': { $gt: new Date() } }")
+    Optional<Coupon> findCouponClientCode(String code);
+
+    /**
      * Gets a group of coupons
      * @param pageable The pagination information, including page number and size
      * @return Indicated group of coupons

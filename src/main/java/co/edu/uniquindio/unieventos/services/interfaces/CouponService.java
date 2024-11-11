@@ -78,4 +78,12 @@ public interface CouponService {
      * @throws Exception
      */
     Coupon getCouponByCode(String s) throws ResourceNotFoundException;
+
+    /**
+     * Gets a coupon by its  an avali
+     * @param code Code of coupon
+     * @return Coupon with the specified code
+     * @throws Exception
+     */
+    CouponInfoClientDTO getCouponClientCode(String code) throws ResourceNotFoundException;
 }

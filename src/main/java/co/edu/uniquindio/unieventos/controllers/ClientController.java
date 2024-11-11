@@ -133,6 +133,13 @@ public class ClientController {
         CouponInfoClientDTO coupon= couponService.getCouponClient(id);
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
+
+
+    @GetMapping("/coupon/get-info-code/{code}")
+    public ResponseEntity<MessageDTO<CouponInfoClientDTO>> getCouponClientCode(@PathVariable String code) throws Exception{
+        CouponInfoClientDTO coupon= couponService.getCouponClientCode(code);
+        return ResponseEntity.ok(new MessageDTO<>(false, coupon));
+    }
     //TODO ask if it does not matter that the functionality that is to give away the purchase is done as an
     // implementation in the service and with the two new attributes of the order, and in the front end it will
     // be seen as a separate window.
