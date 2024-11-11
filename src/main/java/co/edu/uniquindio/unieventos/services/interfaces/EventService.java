@@ -83,7 +83,7 @@ public interface EventService {
      * @param eventFilterDTO
      * @return
      */
-    List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO);
+    ListEvents filterEventsAdmin(EventFilterDTO eventFilterDTO);
 
     /**
      *
