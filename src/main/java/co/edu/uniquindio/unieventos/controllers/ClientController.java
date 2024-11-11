@@ -121,8 +121,8 @@ public class ClientController {
 
     //TODO Ask if this could be the tittle for the extra functionality.
     @GetMapping("/coupon/get-all/{page}")
-    public ResponseEntity<MessageDTO<List<CouponItemClientDTO>>> couponsAvailable(@PathVariable int page) throws Exception {
-        List<CouponItemClientDTO> coupons= couponService.getAllCouponsClient(page);
+    public ResponseEntity<MessageDTO<List<CouponInfoClientDTO>>> couponsAvailable(@PathVariable int page) throws Exception {
+        List<CouponInfoClientDTO> coupons= couponService.getAllCouponsClient(page);
         return ResponseEntity.ok(new MessageDTO<>(false, coupons));
     }
 
