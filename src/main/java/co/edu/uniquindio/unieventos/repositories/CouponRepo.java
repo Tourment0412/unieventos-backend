@@ -78,8 +78,8 @@ public interface CouponRepo extends MongoRepository<Coupon, String> {
      * @param code code of coupon
      * @return Available coupon with the specified id
      */
-    @Query("{ '_code': ?0, 'status': 'AVAILABLE', 'expirationDate': { $gt: new Date() } }")
-    Optional<Coupon> findCouponClientCode(String code);
+    @Query("{ 'code': ?0, 'status': 'AVAILABLE', 'expirationDate': { $gt: new Date() } }")
+    Optional<Coupon> findCouponByCode(String code);
 
     /**
      * Gets a group of coupons

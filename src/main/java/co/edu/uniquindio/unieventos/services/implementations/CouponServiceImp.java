@@ -135,8 +135,9 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public CouponInfoClientDTO getCouponClientCode(String id) throws ResourceNotFoundException {
-        Optional<Coupon> couponOpt = couponRepo.findCouponClient(id);
+    public CouponInfoClientDTO getCouponClientCode(String code) throws ResourceNotFoundException {
+        Optional<Coupon> couponOpt = couponRepo.findCouponByCode(code);
+
         if (couponOpt.isEmpty()) {
             throw new ResourceNotFoundException("Coupon with this code does not exist or is not available");
         }

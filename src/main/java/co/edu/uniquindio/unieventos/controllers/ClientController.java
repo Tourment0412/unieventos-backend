@@ -75,9 +75,7 @@ public class ClientController {
     //I'm gonna do it as it's for the list of the items
     @GetMapping("/shoppingcar/get-items/{idUser}")
     public ResponseEntity<MessageDTO<List<CarItemViewDTO>>> listShoppingCarDetails(@PathVariable String idUser) throws Exception{
-        System.out.println("Obteniendo items");
         List<CarItemViewDTO> carItems = shoppingCarService.listShoppingCarDetails(idUser);
-        System.out.println("Los items son: "+carItems);
         return ResponseEntity.ok(new MessageDTO<>(false, carItems));
     }
 
@@ -137,6 +135,7 @@ public class ClientController {
 
     @GetMapping("/coupon/get-info-code/{code}")
     public ResponseEntity<MessageDTO<CouponInfoClientDTO>> getCouponClientCode(@PathVariable String code) throws Exception{
+        System.out.println("Buscando cupon codigo: "+code);
         CouponInfoClientDTO coupon= couponService.getCouponClientCode(code);
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
