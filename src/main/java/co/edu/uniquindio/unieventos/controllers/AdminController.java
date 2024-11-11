@@ -1,10 +1,7 @@
 package co.edu.uniquindio.unieventos.controllers;
 
 
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.CreateCouponDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.UpdateCouponDTO;
+import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
@@ -89,8 +86,8 @@ public class AdminController {
 
     //TODO I need a service to get all coupons for the admin
     @GetMapping("/coupon/get-all/{page}")
-    public ResponseEntity<MessageDTO<List<CouponItemDTO>>> getAllCouponsAdmin(@PathVariable int page) throws Exception{
-        List<CouponItemDTO> coupons = couponService.getAllCouponsAdmin(page);
+    public ResponseEntity<MessageDTO<ListCoupon>> getAllCouponsAdmin(@PathVariable int page) throws Exception{
+        ListCoupon coupons = couponService.getAllCouponsAdmin(page);
         return ResponseEntity.ok(new MessageDTO<>(false, coupons));
     }
 

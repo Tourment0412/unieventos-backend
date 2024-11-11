@@ -9,6 +9,7 @@ import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.util.utilitaryClass;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,9 +97,9 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public List<CouponItemDTO> getAllCouponsAdmin(int page){
-        List<Coupon> coupons = couponRepo.findAll(PageRequest.of(page, 9)).getContent();
-        return coupons.stream().map(e -> new CouponItemDTO(
+    public ListCoupon getAllCouponsAdmin(int page){
+        Page<Coupon> coupons = couponRepo.findAll(PageRequest.of(page, 9));
+        List<CouponItemDTO>couponsList= coupons.stream().map(e -> new CouponItemDTO(
                 e.getId(),
                 e.getName(),
                 e.getCode(),
@@ -107,6 +108,8 @@ public class CouponServiceImp implements CouponService {
                 e.getExpirationDate(),
                 e.getDiscount()
         )).collect(Collectors.toList());
+
+        return new ListCoupon(coupons.getTotalPages(), couponsList);
     }
 
 

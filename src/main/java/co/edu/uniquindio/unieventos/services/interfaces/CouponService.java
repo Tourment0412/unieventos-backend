@@ -62,7 +62,7 @@ public interface CouponService {
      * @param page The number of the page
      * @return The coupons specified
      */
-    List<CouponItemDTO> getAllCouponsAdmin(int page);
+    ListCoupon getAllCouponsAdmin(int page);
 
     /**
      * Gests all the available coupons specified by the pagination information
