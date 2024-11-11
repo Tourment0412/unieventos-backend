@@ -101,6 +101,7 @@ public class CouponServiceImp implements CouponService {
         return coupons.stream().map(e -> new CouponItemDTO(
                 e.getId(),
                 e.getName(),
+                e.getCode(),
                 e.getType(),
                 e.getStatus(),
                 e.getExpirationDate(),

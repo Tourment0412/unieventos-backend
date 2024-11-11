@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public record CouponItemDTO(
         String id,
         String name,
+        String code,
         CouponType type,
         CouponStatus status,
         LocalDateTime expirationDate,
