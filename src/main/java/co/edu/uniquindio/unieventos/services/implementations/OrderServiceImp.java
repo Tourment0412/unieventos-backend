@@ -109,6 +109,9 @@ public class OrderServiceImp implements OrderService {
             throws ResourceNotFoundException, OperationNotAllowedException {
 
         Coupon couponOrder = couponService.getCouponByCode(createOrderDTO.couponCode());
+        System.out.println("CODE 1 "+ createOrderDTO.couponCode());
+        System.out.println("CODE 2 "+ couponOrder.getCode());
+        System.out.println("ID 2 "+ couponOrder.getId());
         if (couponOrder == null) {
             throw new ResourceNotFoundException("Coupon not found with code: " + createOrderDTO.couponCode());
         }
@@ -116,6 +119,7 @@ public class OrderServiceImp implements OrderService {
         List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
         for (Order orderClient : ordersClient) {
             if (orderClient.getCouponId() != null) {
+                System.out.println(orderClient.getCouponId());
                 Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
                 if (couponClient != null && couponClient.getCode().equals(createOrderDTO.couponCode())) {
                     throw new OperationNotAllowedException("You can't use a coupon you previously used");
@@ -124,6 +128,8 @@ public class OrderServiceImp implements OrderService {
         }
 
         order.setTotal(calculateTotal(order.getItems(), couponOrder.getId(), createOrderDTO.clientId()));
+
+        System.out.println(couponOrder.getId());
         order.setCouponId(new ObjectId(couponOrder.getId()));
     }
 
@@ -158,17 +164,10 @@ public class OrderServiceImp implements OrderService {
         return items;
     }
 
-    private float calculateTotal(List<OrderDetail> items) {
-        float total = 0;
-        for (OrderDetail orderDetail : items) {
-            total += orderDetail.getPrice();
-        }
-        return total;
-    }
 
     private float calculateTotal(List<OrderDetail> items, String couponId, String idClient)
             throws ResourceNotFoundException, OperationNotAllowedException {
-        
+
         if (couponId != null && !couponId.isEmpty()) {
             Coupon coupon = couponService.getCouponById(couponId);
 
