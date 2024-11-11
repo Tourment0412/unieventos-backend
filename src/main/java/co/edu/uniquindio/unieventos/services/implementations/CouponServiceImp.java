@@ -6,6 +6,7 @@ import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
+import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.util.utilitaryClass;
@@ -13,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -145,6 +149,15 @@ public class CouponServiceImp implements CouponService {
                 coupon.getExpirationDate(),
                 coupon.getDiscount()
         );
+    }
+
+    @Override
+    public List<CouponType> getCouponTypes() throws Exception {
+        List<CouponType> couponTypes = Arrays.asList(CouponType.values());
+        if (couponTypes.isEmpty()) {
+            throw new Exception("No coupon types available");
+        }
+        return couponTypes;
     }
 
     @Override

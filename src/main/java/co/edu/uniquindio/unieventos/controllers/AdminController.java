@@ -5,6 +5,7 @@ import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.dto.eventdtos.*;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.EventReportDTO;
+import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
 import co.edu.uniquindio.unieventos.services.interfaces.EventService;
 import co.edu.uniquindio.unieventos.services.interfaces.ImagesService;
@@ -122,6 +123,12 @@ public class AdminController {
     public ResponseEntity<MessageDTO<EventReportDTO>> createReport(@PathVariable String idEvent){
         EventReportDTO report= eventService.createReport(idEvent);
         return ResponseEntity.ok().body(new MessageDTO<>(false, report));
+    }
+
+    @GetMapping("/coupon/get-types")
+    public ResponseEntity<MessageDTO<List<CouponType>>>  getCouponTypes() throws Exception{
+        List<CouponType> couponTypes= couponService.getCouponTypes();
+        return ResponseEntity.ok().body(new MessageDTO<>(false, couponTypes));
     }
 
 
