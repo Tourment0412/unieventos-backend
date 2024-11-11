@@ -172,12 +172,13 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public List<CouponItemClientDTO> getAllCouponsClient(int page){
+    public List<CouponInfoClientDTO> getAllCouponsClient(int page){
         List<Coupon> coupons = couponRepo.findAllCouponsClient(PageRequest.of(page, 9)).getContent();
-        return coupons.stream().map(e -> new CouponItemClientDTO(
+        return coupons.stream().map(e -> new CouponInfoClientDTO(
                 e.getId(),
                 e.getName(),
                 e.getType(),
+                e.getCode(),
                 e.getExpirationDate(),
                 e.getDiscount()
         )).collect(Collectors.toList());
