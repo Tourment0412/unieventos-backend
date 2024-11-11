@@ -109,6 +109,7 @@ public class ShoppingCarServiceImp implements ShoppingCarService {
             Location location = event.findLocationByName(itemView.getLocationName());
 
             return Optional.of(new CarItemViewDTO(
+                    event.getId(),
                     event.getName(),
                     itemView.getLocationName(),
                     event.getType(),

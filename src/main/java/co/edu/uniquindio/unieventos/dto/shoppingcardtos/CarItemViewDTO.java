@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CarItemViewDTO(
+        String idEvent,
         String eventName,
         String locationName,
         EventType eventType,

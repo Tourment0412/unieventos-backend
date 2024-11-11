@@ -126,15 +126,17 @@ public class ClientController {
         List<CouponItemClientDTO> coupons= couponService.getAllCouponsClient(page);
         return ResponseEntity.ok(new MessageDTO<>(false, coupons));
     }
-    //TODO ask if it does not matter that the functionality that is to give away the purchase is done as an
-    // implementation in the service and with the two new attributes of the order, and in the front end it will
-    // be seen as a separate window.
+
 
     @GetMapping("/coupon/get-info/{id}")
     public ResponseEntity<MessageDTO<CouponInfoClientDTO>> getCouponClient(@PathVariable String id) throws Exception{
         CouponInfoClientDTO coupon= couponService.getCouponClient(id);
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
+    //TODO ask if it does not matter that the functionality that is to give away the purchase is done as an
+    // implementation in the service and with the two new attributes of the order, and in the front end it will
+    // be seen as a separate window.
+
 
     @GetMapping("/event/get/{id}")
     public ResponseEntity<MessageDTO<EventInfoAdminDTO>> getEvent(@PathVariable String id) throws Exception {
