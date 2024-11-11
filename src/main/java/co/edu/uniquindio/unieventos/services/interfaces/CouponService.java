@@ -2,6 +2,7 @@ package co.edu.uniquindio.unieventos.services.interfaces;
 
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
@@ -81,15 +82,12 @@ public interface CouponService {
      */
     Coupon getCouponByCode(String s) throws ResourceNotFoundException;
 
-    /**
-     * Gets a coupon by its  an avali
-     * @param code Code of coupon
-     * @return Coupon with the specified code
-     * @throws Exception
-     */
-    CouponInfoClientDTO getCouponClientCode(String code) throws ResourceNotFoundException;
+
+    CouponInfoClientDTO getCouponClientCode(ValideCouponDTO valideCouponDTO) throws ResourceNotFoundException, OperationNotAllowedException;
 
     List<CouponType> getCouponTypes() throws Exception;
 
     List<CouponStatus> getCouponStatuses() throws Exception;
+
+
 }

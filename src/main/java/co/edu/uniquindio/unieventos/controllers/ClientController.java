@@ -1,9 +1,6 @@
 package co.edu.uniquindio.unieventos.controllers;
 
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponInfoClientDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemClientDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.CouponItemDTO;
-import co.edu.uniquindio.unieventos.dto.coupondtos.ListCouponsClient;
+import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.dto.eventdtos.EventInfoAdminDTO;
 import co.edu.uniquindio.unieventos.dto.jwtdtos.MessageDTO;
 import co.edu.uniquindio.unieventos.dto.orderdtos.*;
@@ -135,12 +132,12 @@ public class ClientController {
     }
 
 
-    @GetMapping("/coupon/get-info-code/{code}")
-    public ResponseEntity<MessageDTO<CouponInfoClientDTO>> getCouponClientCode(@PathVariable String code) throws Exception{
-        System.out.println("Buscando cupon codigo: "+code);
-        CouponInfoClientDTO coupon= couponService.getCouponClientCode(code);
+    @PostMapping("/coupon/get-info-code")
+    public ResponseEntity<MessageDTO<CouponInfoClientDTO>> getCouponClientCode(@Valid @RequestBody ValideCouponDTO valideCouponDTO) throws Exception {
+        CouponInfoClientDTO coupon = couponService.getCouponClientCode(valideCouponDTO);
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
+
     //TODO ask if it does not matter that the functionality that is to give away the purchase is done as an
     // implementation in the service and with the two new attributes of the order, and in the front end it will
     // be seen as a separate window.

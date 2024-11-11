@@ -53,4 +53,9 @@ public interface OrderRepo extends MongoRepository<Order, String> {
      */
     @Query("{ 'items.eventId': ?0 }")
     List<Order> findByEventId(ObjectId eventId);
+
+    @Query(value = "{ 'clientId': ?0, 'couponId': ?1 }", exists = true)
+    boolean existsByClientIdAndCouponId(ObjectId clientId, ObjectId couponId);
+
+
 }

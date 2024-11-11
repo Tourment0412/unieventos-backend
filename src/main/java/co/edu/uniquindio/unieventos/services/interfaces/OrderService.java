@@ -83,4 +83,6 @@ public interface OrderService {
      */
     void receiveNotificationFromMercadoPago(Map<String, Object> request);
 
+    boolean hasClientUsedCoupon(String clientId, String couponId);
+
 }

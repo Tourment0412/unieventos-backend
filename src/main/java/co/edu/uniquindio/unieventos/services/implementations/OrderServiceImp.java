@@ -81,7 +81,7 @@ public class OrderServiceImp implements OrderService {
         } else {
             order.setTotal(calculateTotal(items, null, createOrderDTO.clientId()));
         }
-        
+
         Account account = accountService.getAccount(createOrderDTO.clientId());
         Order createOrder = orderRepo.save(order);
 
@@ -92,7 +92,10 @@ public class OrderServiceImp implements OrderService {
         return createOrder.getId();
     }
 
-
+    @Override
+    public boolean hasClientUsedCoupon(String clientId, String couponId) {
+        return orderRepo.existsByClientIdAndCouponId(new ObjectId(clientId), new ObjectId(couponId));
+    }
 
     private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order)
             throws ResourceNotFoundException, OperationNotAllowedException {

@@ -3,13 +3,17 @@ package co.edu.uniquindio.unieventos.services.implementations;
 
 import co.edu.uniquindio.unieventos.dto.coupondtos.*;
 import co.edu.uniquindio.unieventos.exceptions.DuplicateResourceException;
+import co.edu.uniquindio.unieventos.exceptions.OperationNotAllowedException;
 import co.edu.uniquindio.unieventos.exceptions.ResourceNotFoundException;
 import co.edu.uniquindio.unieventos.model.documents.Coupon;
+import co.edu.uniquindio.unieventos.model.documents.Order;
 import co.edu.uniquindio.unieventos.model.enums.CouponStatus;
 import co.edu.uniquindio.unieventos.model.enums.CouponType;
 import co.edu.uniquindio.unieventos.repositories.CouponRepo;
 import co.edu.uniquindio.unieventos.services.interfaces.CouponService;
+import co.edu.uniquindio.unieventos.services.interfaces.OrderService;
 import co.edu.uniquindio.unieventos.util.utilitaryClass;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,9 +30,12 @@ import java.util.stream.Collectors;
 public class CouponServiceImp implements CouponService {
 
     private final CouponRepo couponRepo;
+    private final OrderService orderService;
 
-    public CouponServiceImp(CouponRepo couponRepo) {
+
+    public CouponServiceImp(CouponRepo couponRepo, @Lazy OrderService orderService) {
         this.couponRepo = couponRepo;
+        this.orderService = orderService;
     }
 
     public boolean existCupon(String name) {
@@ -136,13 +143,18 @@ public class CouponServiceImp implements CouponService {
     }
 
     @Override
-    public CouponInfoClientDTO getCouponClientCode(String code) throws ResourceNotFoundException {
-        Optional<Coupon> couponOpt = couponRepo.findCouponByCode(code);
+    public CouponInfoClientDTO getCouponClientCode(ValideCouponDTO valideCouponDTO) throws ResourceNotFoundException, OperationNotAllowedException {
+        Optional<Coupon> couponOpt = couponRepo.findCouponByCode(valideCouponDTO.codeCoupon());
 
         if (couponOpt.isEmpty()) {
             throw new ResourceNotFoundException("Coupon with this code does not exist or is not available");
         }
         Coupon coupon = couponOpt.get();
+
+        if (orderService.hasClientUsedCoupon(valideCouponDTO.idUser(), coupon.getId())) {
+            throw new OperationNotAllowedException("You can't use a coupon you previously used");
+        }
+
         return new CouponInfoClientDTO(
                 coupon.getId(),
                 coupon.getName(),
