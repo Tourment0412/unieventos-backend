@@ -76,7 +76,7 @@ public interface EventService {
      * @return
      */
     //The filter depends on the requirements of the  project
-    List<EventItemDTO> filterEventsClient(EventFilterDTO eventFilterDTO);
+    ListEvents filterEventsClient(EventFilterDTO eventFilterDTO);
 
     /**
      *
