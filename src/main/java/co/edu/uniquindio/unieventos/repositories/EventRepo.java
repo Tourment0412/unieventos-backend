@@ -84,7 +84,7 @@ public interface EventRepo extends MongoRepository<Event, String> {
 
     //Aggregation no se puede usar con Pages al parecer se puede usar solo listas o los slides ya me diran que uso
     @Aggregation({"{ $match: ?0 }"})
-    Slice<Event> findEventsByFiltersAdmin(Map<String, Object> filter, Pageable pageable);
+    List<Event> findEventsByFiltersAdmin(Map<String, Object> filter);
 
     @Aggregation(pipeline = {
             "{ '$match': { '_id': ?0 } }",

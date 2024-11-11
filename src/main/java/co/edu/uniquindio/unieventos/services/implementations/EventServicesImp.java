@@ -229,19 +229,37 @@ public class EventServicesImp implements EventService {
     }
 
     @Override
-    public List<EventItemDTO> filterEventsAdmin(EventFilterDTO eventFilterDTO) {
-
+    public ListEvents filterEventsAdmin(EventFilterDTO eventFilterDTO) {
+        System.out.println("Entro service");
         Map<String,Object>params= createFilterMap(eventFilterDTO);
+        System.out.println("1");
+        List<Event> eventsFilteredList= eventRepo.findEventsByFiltersAdmin(params);
+        System.out.println("2");
 
-        List<Event> eventsFiltered= eventRepo.findEventsByFiltersAdmin(params,PageRequest.of(0, 9)).getContent();
-        return eventsFiltered.stream().map(event -> new EventItemDTO(
-                event.getId(),
-                event.getName(),
-                event.getDate(),
-                event.getAddress(),
-                event.getCity(),
-                event.getCoverImage()
-        )).collect(Collectors.toList());
+        int pageSize = 9;
+        int pageNumber = eventFilterDTO.page();
+        int startItem = pageNumber * pageSize;
+        int endItem = Math.min(startItem + pageSize, eventsFilteredList.size());
+
+        System.out.println("3");
+
+        List<Event> paginatedList = eventsFilteredList.subList(startItem, endItem);
+
+        int totalPages=(int) Math.ceil((double) eventsFilteredList.size() / pageSize);
+
+        return new ListEvents(
+                totalPages,
+                paginatedList.stream()
+                        .map(event -> new EventItemDTO(
+                                event.getId(),
+                                event.getName(),
+                                event.getDate(),
+                                event.getAddress(),
+                                event.getCity(),
+                                event.getCoverImage()
+                        ))
+                        .collect(Collectors.toList())
+        );
 
     }
 

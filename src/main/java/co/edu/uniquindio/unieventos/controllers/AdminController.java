@@ -113,8 +113,11 @@ public class AdminController {
     }
 
     @PostMapping("/event/filter-events")
-    public ResponseEntity<MessageDTO<List<EventItemDTO>>> filterEventsAdmin(@Valid @RequestBody EventFilterDTO eventFilterDTO){
-        List<EventItemDTO> eventsFiltered= eventService.filterEventsAdmin(eventFilterDTO);
+    public ResponseEntity<MessageDTO<ListEvents>> filterEventsAdmin(@Valid @RequestBody EventFilterDTO eventFilterDTO){
+        System.out.println("Entro");
+        ListEvents eventsFiltered= eventService.filterEventsAdmin(eventFilterDTO);
+        System.out.println("Salio");
+        System.out.println(eventsFiltered);
         return ResponseEntity.ok(new MessageDTO<>(false, eventsFiltered));
     }
 
