@@ -6,6 +6,6 @@ import java.util.List;
 
 public record ListCoupon(
         int totalPages,
-        List<CouponItemDTO> events
+        List<CouponItemDTO> coupons
 ) {
 }
