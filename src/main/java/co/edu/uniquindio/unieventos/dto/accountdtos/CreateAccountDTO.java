@@ -18,7 +18,7 @@ public record CreateAccountDTO(
         @Size(min = 10, max = 15, message = "The phone number must be between 10 and 15 characters long")
         String phoneNumber,
 
-        @Size(max = 100, message = "The address must have a maximum of 100 characters")
+        @Size(max = 255, message = "The address must have a maximum of 100 characters")
         String address,
 
         @NotBlank(message = "Email can't be empty")
