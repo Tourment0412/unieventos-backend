@@ -138,7 +138,15 @@ public class ClientController {
         return ResponseEntity.ok(new MessageDTO<>(false, coupon));
     }
 
-    //TODO ask if it does not matter that the functionality that is to give away the purchase is done as an
+    @PostMapping("/send-gift")
+    public ResponseEntity<MessageDTO<String>> sendGift(@Valid @RequestBody GiftDTO giftDTO) throws Exception {
+
+        String resultMessage = orderService.sendGift(giftDTO);
+        return ResponseEntity.ok(new MessageDTO<>(false, resultMessage));
+
+    }
+
+        //TODO ask if it does not matter that the functionality that is to give away the purchase is done as an
     // implementation in the service and with the two new attributes of the order, and in the front end it will
     // be seen as a separate window.
 
