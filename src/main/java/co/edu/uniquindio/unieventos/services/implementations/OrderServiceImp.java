@@ -439,6 +439,11 @@ public class OrderServiceImp implements OrderService {
         if(!(order.getPayment().getStatus().equals(PaymentStatus.APPROVED))){
             throw new OperationNotAllowedException("You have to pay for the order before making a gift");
         }
+
+        if(order.isGift()){
+            throw new OperationNotAllowedException("You cannot give tickets more than once");
+        }
+
         Account account = accountService.getAccountEmail(giftDTO.friendEmail());
         order.setGift(true);
         order.setFriendMail(giftDTO.friendEmail());
