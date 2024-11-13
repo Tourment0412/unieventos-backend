@@ -70,11 +70,16 @@ public class OrderServiceImp implements OrderService {
         order.setGift(false);
 
         if (createOrderDTO.couponCode() != null && !createOrderDTO.couponCode().isEmpty()) {
-            System.out.println("Codigo de coupon: "+createOrderDTO.couponCode());
+
             Coupon coupon = couponService.getCouponByCode(createOrderDTO.couponCode());
 
             if (coupon == null) {
-                throw new ResourceNotFoundException("El cupon proporcionado no existe.");
+                throw new ResourceNotFoundException("El cupon proporcionado no existe");
+            }
+
+            // Validar que el cupón tiene un id válido antes de usarlo
+            if (coupon != null && coupon.getId() == null) {
+                throw new ResourceNotFoundException("El cupón no tiene un id válido para crear la orden");
             }
 
             validateCouponUsage(createOrderDTO, order);
@@ -100,38 +105,47 @@ public class OrderServiceImp implements OrderService {
     }
 
 
+
     @Override
-    public boolean hasClientUsedCoupon(String clientId, String couponId) {
+    public boolean hasClientUsedCoupon(String clientId, String couponId) throws ResourceNotFoundException {
+        if (couponId == null) {
+            throw new ResourceNotFoundException("El cupon no fue encontrado");
+        }
         return orderRepo.existsByClientIdAndCouponId(new ObjectId(clientId), new ObjectId(couponId));
     }
 
     private void validateCouponUsage(CreateOrderDTO createOrderDTO, Order order)
             throws ResourceNotFoundException, OperationNotAllowedException {
-
+        
         Coupon couponOrder = couponService.getCouponByCode(createOrderDTO.couponCode());
-        System.out.println("CODE 1 "+ createOrderDTO.couponCode());
-        System.out.println("CODE 2 "+ couponOrder.getCode());
-        System.out.println("ID 2 "+ couponOrder.getId());
+
         if (couponOrder == null) {
             throw new ResourceNotFoundException("Coupon not found with code: " + createOrderDTO.couponCode());
         }
 
+        if (couponOrder.getId() == null) {
+            throw new ResourceNotFoundException("El cupón no tiene un id válido.");
+        }
+
         List<Order> ordersClient = getOrdersByIdClient(createOrderDTO.clientId());
         for (Order orderClient : ordersClient) {
+
             if (orderClient.getCouponId() != null) {
-                System.out.println(orderClient.getCouponId());
                 Coupon couponClient = couponService.getCouponById(orderClient.getCouponId().toString());
+
                 if (couponClient != null && couponClient.getCode().equals(createOrderDTO.couponCode())) {
                     throw new OperationNotAllowedException("You can't use a coupon you previously used");
                 }
             }
         }
 
-        order.setTotal(calculateTotal(order.getItems(), couponOrder.getId(), createOrderDTO.clientId()));
+        if (couponOrder.getId() != null) {
+            order.setTotal(calculateTotal(order.getItems(), couponOrder.getId(), createOrderDTO.clientId()));
+        }
 
-        System.out.println(couponOrder.getId());
         order.setCouponId(new ObjectId(couponOrder.getId()));
     }
+
 
 
     private @NotNull List<OrderDetail> getOrderDetails(ShoppingCar shoppingCar) {
@@ -167,8 +181,8 @@ public class OrderServiceImp implements OrderService {
 
     private float calculateTotal(List<OrderDetail> items, String couponId, String idClient)
             throws ResourceNotFoundException, OperationNotAllowedException {
-
         if (couponId != null && !couponId.isEmpty()) {
+
             Coupon coupon = couponService.getCouponById(couponId);
 
             if (coupon == null) {
@@ -187,7 +201,8 @@ public class OrderServiceImp implements OrderService {
             if (coupon.getType() == CouponType.MULTIPLE) {
                 List<Order> ordersClient = getOrdersByIdClient(idClient);
                 for (Order order : ordersClient) {
-                    if (couponId.equals(order.getCouponId().toString())) {
+                    // Verificar que el CouponId de la orden no sea nulo antes de compararlo
+                    if (order.getCouponId() != null && couponId.equals(order.getCouponId().toString())) {
                         throw new OperationNotAllowedException("Coupon is already in use by this client");
                     }
                 }
