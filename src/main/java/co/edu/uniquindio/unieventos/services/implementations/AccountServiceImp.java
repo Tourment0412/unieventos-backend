@@ -66,7 +66,7 @@ public class AccountServiceImp implements AccountService {
                 .name(account.name())
                 .dni(account.dni())
                 .phoneNumber(account.phoneNumber())
-                .adress(account.phoneNumber())
+                .adress(account.address())
                 .build());
         String validationCode = generateValidationCode();
         newAccount.setRegistrationValidationCode(new ValidationCode(LocalDateTime.now(), validationCode));
