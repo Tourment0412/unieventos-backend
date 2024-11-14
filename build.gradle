@@ -11,10 +11,10 @@ description = 'Proyecto Backend UniEventos Programacion Avanzada'
 
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
 }
+
 
 
 configurations {
@@ -64,9 +64,4 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.3.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-}
-
-
-test {
-    useJUnitPlatform()
 }
