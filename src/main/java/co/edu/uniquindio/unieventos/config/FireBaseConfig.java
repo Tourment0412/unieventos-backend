@@ -16,7 +16,7 @@ public class FireBaseConfig {
 
     @Bean
     public FirebaseApp intializeFirebase() throws IOException {
-        InputStream serviceAccount = new ClassPathResource("unieventos-images-service-firebase.json").getInputStream();
+        InputStream serviceAccount = new ClassPathResource("/etc/secrets/unieventos-images-service-firebase.json").getInputStream();
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setStorageBucket("unieventos-images-service.appspot.com")
