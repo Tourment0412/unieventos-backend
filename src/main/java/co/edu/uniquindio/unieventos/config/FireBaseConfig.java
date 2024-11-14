@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ public class FireBaseConfig {
 
     @Bean
     public FirebaseApp intializeFirebase() throws IOException {
-        InputStream serviceAccount = new ClassPathResource("/etc/secrets/unieventos-images-service-firebase.json").getInputStream();
+        FileInputStream serviceAccount = new FileInputStream(new File("/etc/secrets/unieventos-images-service-firebase.json"));
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setStorageBucket("unieventos-images-service.appspot.com")
