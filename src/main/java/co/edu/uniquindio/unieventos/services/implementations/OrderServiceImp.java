@@ -351,7 +351,7 @@ public class OrderServiceImp implements OrderService {
                 //TODO agregar id orden
                 .metadata(Map.of("id_orden", saveOrder.getId()))
                 //TODO Agregar url de Ngrok (Se actualiza constantemente) la ruta debe incluir la direccion al controlador de las notificaciones 
-                .notificationUrl("https://smooth-unicorn-trusting.ngrok-free.app/api/public/order/receive-notification")
+                .notificationUrl("https://unieventos-backend.onrender.com/api/public/order/receive-notification")
                 .build();
 
 
