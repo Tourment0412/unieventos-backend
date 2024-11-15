@@ -338,9 +338,9 @@ public class OrderServiceImp implements OrderService {
         //TODO
         // Configurar las urls de retorno de la pasarela (Frontend)
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://smooth-unicorn-trusting.ngrok-free.app/?status=success")
-                .failure("https://smooth-unicorn-trusting.ngrok-free.app/?status=failure")
-                .pending("https://smooth-unicorn-trusting.ngrok-free.app/?status=pending")
+                .success("https://unieventos-frontend.web.app/shopping-car?status=success")
+                .failure("https://unieventos-frontend.web.app/shopping-car?status=failure")
+                .pending("https://unieventos-frontend.web.app/shopping-car?status=pending")
                 .build();
 
 
